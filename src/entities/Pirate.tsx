@@ -42,7 +42,7 @@ export default function PirateEntity() {
   const { debug } = useGame();
   return (
     <KeyboardControls map={keyboardMap}>
-      <Ecctrl debug={debug} animated>
+      <Ecctrl debug={debug} animated position={[0, 3, 0]}>
         <EcctrlAnimation
           characterURL={characterURL}
           animationSet={animationSet}
