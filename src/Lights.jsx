@@ -2,7 +2,7 @@ export default function Lights() {
   return (
     <>
       <directionalLight
-        intensity={0.7}
+        intensity={1.7}
         color={'#FFFFED'}
         castShadow
         shadow-bias={-0.0004}
@@ -12,7 +12,7 @@ export default function Lights() {
         shadow-camera-bottom={-20}
         shadow-camera-left={-20}
       />
-      <ambientLight intensity={0.2} />
+      <ambientLight intensity={1.2} />
     </>
   )
 }

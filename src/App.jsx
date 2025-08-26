@@ -7,7 +7,8 @@ import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from 'ecctrl'
 
 import Lights from './Lights'
 import Map from './Map'
-import CharacterModel from './CharacterModel'
+// import CharacterModel from './CharacterModel'
+import PirateCaptain from './CharacterModel'
 
 export default function App() {
   /**
@@ -29,23 +30,23 @@ export default function App() {
   /**
    * Character url preset
    */
-  const characterURL = './Demon.glb'
+  const characterURL = './Pirate Captain-transformed.glb'
 
   /**
    * Character animation set preset
    */
   const animationSet = {
-    idle: 'CharacterArmature|Idle',
-    walk: 'CharacterArmature|Walk',
-    run: 'CharacterArmature|Run',
-    jump: 'CharacterArmature|Jump',
-    jumpIdle: 'CharacterArmature|Jump_Idle',
-    jumpLand: 'CharacterArmature|Jump_Land',
-    fall: 'CharacterArmature|Duck', // This is for falling from high sky
-    action1: 'CharacterArmature|Wave',
-    action2: 'CharacterArmature|Death',
-    action3: 'CharacterArmature|HitReact',
-    action4: 'CharacterArmature|Punch'
+    idle: 'CharacterArmature|CharacterArmature|CharacterArmature|Idle|CharacterArmature|Idle',
+    walk: 'CharacterArmature|CharacterArmature|CharacterArmature|Walk|CharacterArmature|Walk',
+    run: 'CharacterArmature|CharacterArmature|CharacterArmature|Run|CharacterArmature|Run',
+    jump: 'CharacterArmature|CharacterArmature|CharacterArmature|Jump|CharacterArmature|Jump',
+    jumpIdle: 'CharacterArmature|CharacterArmature|CharacterArmature|Jump_Idle|CharacterArmature',
+    jumpLand: 'CharacterArmature|CharacterArmature|CharacterArmature|Jump_Land|CharacterArmature',
+    fall: 'CharacterArmature|CharacterArmature|CharacterArmature|Duck|CharacterArmature|Duck', // This is for falling from high sky
+    action1: 'CharacterArmature|CharacterArmature|CharacterArmature|Sword|CharacterArmature|Swo',
+    action2: 'CharacterArmature|CharacterArmature|CharacterArmature|Death|CharacterArmature|Dea',
+    action3: 'CharacterArmature|CharacterArmature|CharacterArmature|HitReact|CharacterArmature|',
+    action4: 'CharacterArmature|CharacterArmature|CharacterArmature|Wave|CharacterArmature|Wave'
   }
 
   return (
@@ -53,21 +54,21 @@ export default function App() {
       <EcctrlJoystick buttonNumber={5} />
       <Canvas
         shadows
-        // onPointerDown={(e) => {
-        //   if (e.pointerType === "mouse") {
-        //     e.target.requestPointerLock();
-        //   }
-        // }}
+        onPointerDown={(e) => {
+          if (e.pointerType === "mouse") {
+            e.target.requestPointerLock();
+          }
+        }}
       >
         <Perf position="top-left" minimal />
-        <Environment background files="/night.hdr" />
+        {/* <Environment background files="/night.hdr" /> */}
         <Lights />
         <Suspense fallback={null}>
-          <Physics timeStep="vary">
+          <Physics timeStep="vary" debug>
             <KeyboardControls map={keyboardMap}>
               <Ecctrl debug animated>
                 <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
-                  <CharacterModel />
+                  <PirateCaptain position={[0, -0.9, 0]}/>
                 </EcctrlAnimation>
               </Ecctrl>
             </KeyboardControls>
