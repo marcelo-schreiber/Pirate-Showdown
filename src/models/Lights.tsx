@@ -1,20 +1,26 @@
+import useGame from "@/hooks/useGame";
+import { useHelper } from "@react-three/drei";
+import { useRef } from "react";
+import * as THREE from "three";
+
 export default function Lights() {
+  const {debug} = useGame();
+  const dirLightRef = useRef<THREE.DirectionalLight>(null!);
+  useHelper(debug ? dirLightRef : null, THREE.DirectionalLightHelper, 5, "red");
+
   return (
     <>
       <directionalLight
+        ref={dirLightRef}
         castShadow
         shadow-normalBias={0.06}
-        position={[20, 10, 10]}
-        intensity={4}
+        position={[-35, 35, 2]}
+        intensity={5.5}
         shadow-mapSize={[1024, 1024]}
-        shadow-camera-near={1}
-        shadow-camera-far={10}
-        shadow-camera-top={10}
-        shadow-camera-right={10}
-        shadow-camera-bottom={-10}
-        shadow-camera-left={-10}
+        shadow-blurSamples={1} // Adjust for desired blur amount with VSM
+        color={new THREE.Color("#faf8de")}
       />
-      <ambientLight intensity={1.5} />
+      <ambientLight intensity={1.4} />
     </>
   );
 }

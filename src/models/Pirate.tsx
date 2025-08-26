@@ -6,6 +6,15 @@ export default function PirateModel(props: JSX.IntrinsicElements["group"]) {
   const group = useRef<THREE.Group>(null!);
   const { nodes, materials } = useGLTF("/Pirate Captain-transformed.glb");
 
+  materials.AtlasMaterial.side = THREE.DoubleSide;
+
+  // iterate thorugh materials to remove metalness
+  Object.values(materials).forEach((material) => {
+    if (material instanceof THREE.MeshStandardMaterial) {
+      material.roughness = 1;
+    }
+  });
+
   return (
     <group ref={group} {...props} dispose={null}>
       <group name="Root_Scene">
@@ -17,6 +26,8 @@ export default function PirateModel(props: JSX.IntrinsicElements["group"]) {
             <primitive object={nodes.Root} />
           </group>
           <skinnedMesh
+            castShadow
+            receiveShadow
             name="Captain_Barbarossa_"
             geometry={(nodes.Captain_Barbarossa_ as THREE.SkinnedMesh).geometry}
             material={materials.AtlasMaterial}
@@ -24,6 +35,8 @@ export default function PirateModel(props: JSX.IntrinsicElements["group"]) {
             userData={{ name: "Captain_Barbarossa " }}
           />
           <skinnedMesh
+            castShadow
+            receiveShadow
             name="Ernest"
             geometry={(nodes.Ernest as THREE.SkinnedMesh).geometry}
             material={materials.AtlasMaterial}

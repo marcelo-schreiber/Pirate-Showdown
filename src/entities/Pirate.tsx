@@ -1,6 +1,7 @@
 import { KeyboardControls } from "@react-three/drei";
 import Ecctrl, { EcctrlAnimation } from "ecctrl";
-import PirateModel from "../models/Pirate";
+import PirateModel from "@/models/Pirate";
+import useGame from "@/hooks/useGame";
 
 const keyboardMap = [
   { name: "forward", keys: ["ArrowUp", "KeyW"] },
@@ -38,14 +39,15 @@ const animationSet = {
 };
 
 export default function PirateEntity() {
+  const { debug } = useGame();
   return (
     <KeyboardControls map={keyboardMap}>
-      <Ecctrl debug animated>
+      <Ecctrl debug={debug} animated>
         <EcctrlAnimation
           characterURL={characterURL}
           animationSet={animationSet}
         >
-          <PirateModel position={[0, -0.9, 0]} />
+          <PirateModel position={[0, -0.9, 0]} scale={0.88} />
         </EcctrlAnimation>
       </Ecctrl>
     </KeyboardControls>

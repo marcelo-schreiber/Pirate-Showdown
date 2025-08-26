@@ -4,14 +4,18 @@ import { Perf } from "r3f-perf";
 import { Suspense, useEffect, useState } from "react";
 import { EcctrlJoystick } from "ecctrl";
 
-import Lights from "./models/Lights";
-import Ship from "./entities/Ship";
-import PirateEntity from "./entities/Pirate";
+import Lights from "@/models/Lights";
+import Ship from "@/entities/Ship";
+import PirateEntity from "@/entities/Pirate";
 import type { PointerEvent } from "react";
 import { Loader } from "@react-three/drei";
+import * as THREE from "three";
+import useGame from "@/hooks/useGame";
+import Skybox from "@/models/SkyBox";
 
 const EcctrlJoystickControls = () => {
   const [isTouchScreen, setIsTouchScreen] = useState(false);
+
   useEffect(() => {
     // Check if using a touch control device, show/hide joystick
     if ("ontouchstart" in window || navigator.maxTouchPoints > 0) {
@@ -20,10 +24,31 @@ const EcctrlJoystickControls = () => {
       setIsTouchScreen(false);
     }
   }, []);
-  return <>{isTouchScreen && <EcctrlJoystick buttonNumber={5} />}</>;
+  return (
+    <>
+      {isTouchScreen && (
+        <EcctrlJoystick
+          buttonNumber={5}
+          joystickBaseProps={{
+            receiveShadow: true,
+            material: new THREE.MeshStandardMaterial({ color: "grey" }),
+          }}
+        />
+      )}
+    </>
+  );
 };
 
 export default function Experience() {
+  const { debug, setDebug } = useGame();
+
+  useEffect(() => {
+    // if url has hash debug
+    if (window.location.hash === "#debug") {
+      setDebug(true);
+    }
+  }, [setDebug]);
+
   const handleLockControls = (e: PointerEvent<HTMLDivElement>) => {
     if (e.pointerType === "mouse") {
       (e.target as HTMLElement).requestPointerLock();
@@ -35,6 +60,11 @@ export default function Experience() {
       <EcctrlJoystickControls />
       <Canvas
         shadows
+        gl={{ antialias: true }}
+        onCreated={({ gl }) => {
+          gl.shadowMap.enabled = true;
+          gl.shadowMap.type = THREE.PCFSoftShadowMap; // smoother shadows
+        }}
         camera={{
           fov: 65,
           near: 0.1,
@@ -43,10 +73,11 @@ export default function Experience() {
         onPointerDown={handleLockControls}
       >
         <Suspense fallback={null}>
-          <Perf position="top-left" minimal />
+          <Skybox />
+          {debug && <Perf position="top-left" minimal />}
           {/* <Environment background files="/night.hdr" /> */}
           <Lights />
-          <Physics debug>
+          <Physics debug={debug}>
             <PirateEntity />
             <Ship />
           </Physics>

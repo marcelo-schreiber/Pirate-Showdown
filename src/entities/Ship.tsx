@@ -1,60 +1,45 @@
-import { useControls, folder } from "leva";
-import ShipModel from "../models/Ship";
+import ShipModel from "@/models/Ship";
 import {
   HeightfieldCollider,
   RigidBody,
   type RigidBodyProps,
 } from "@react-three/rapier";
-import { type FolderInput } from "leva/dist/declarations/src/types";
 
-const ROWS = 16;
-const COLS = 16;
+const ROWS = 17;
+const COLS = 17;
 
-function makeInitialMatrix(rows: number, cols: number, base: number) {
-  return Array.from({ length: rows }, () =>
-    Array.from({ length: cols }, () => base)
-  );
-}
+const heights = [
+  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, // 17
+  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,  // 17
+  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,  // 17
+  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,  // 17
+  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,  // 17
+  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,  // 17
+  1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9,  // 17
+  1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6,  // 17
+  1.6, 1.6, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.6, 1.6,  // 17
+  1.6, 1.6, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.6, 1.6,  // 17
+  1.6, 1.6, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.6, 1.6,  // 17
+  1.6, 1.6, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.6, 1.6,  // 17
+  2.6, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 2.6,     // 17 
+  2.53, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.53,  // 17
+  2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43,  // 17
+  2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43,  // 17
+  2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43, 2.43,  // 17
+];
+
 
 export default function ShipEntity(props: RigidBodyProps) {
-  // matrix base values
-  const initialMatrix = makeInitialMatrix(ROWS, COLS, 2);
-
-  // build leva controls dynamically
-  const matrixControls: Record<string, FolderInput<unknown>> = {};
-  initialMatrix.forEach((row, r) => {
-    matrixControls[`row${r}`] = folder(
-      row.reduce((acc, val, c) => {
-        // acc[`h${r}_${c}`] = { value: val, min: 0, max: 5, step: 0.1 };
-        Object.assign(acc, {
-          [`h${r}_${c}`]: { value: val, min: 0, max: 5, step: 0.1 },
-        });
-        return acc;
-      }, {})
-    );
-  });
-
-  const matrix = useControls("Heightfield", matrixControls);
-
-  const controls = useControls("Transform", {
-    position: { value: [0.5, 0, 0], step: 0.1 },
-    rotation: { value: [0, 0, 0], step: 0.1 },
-    scale: { value: [12.4, 1, 4.3], step: 0.1 },
-  });
-
-  // flatten matrix values for collider
-  const heightData = Object.values(matrix);
-
   return (
     <RigidBody type="fixed" colliders={false} {...props}>
       <HeightfieldCollider
-        position={controls.position}
-        rotation={controls.rotation}
+        position={[-0.5, -0.5, 0]}
+        rotation={[0, 0, 0]}
         args={[
           ROWS - 1,
           COLS - 1,
-          heightData as unknown as number[],
-          { x: controls.scale[0], y: controls.scale[1], z: controls.scale[2] },
+          heights,
+          { x: 12.5, y: 1.025, z: 4.3 },
         ]}
       />
       <ShipModel />
