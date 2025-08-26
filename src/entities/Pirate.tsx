@@ -1,13 +1,6 @@
-import { Canvas } from "@react-three/fiber";
-import { Physics } from "@react-three/rapier";
 import { KeyboardControls } from "@react-three/drei";
-import { Perf } from "r3f-perf";
-import { Suspense } from "react";
-import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from "ecctrl";
-
-import Lights from "./Lights";
-import Map from "./Map";
-import PirateCaptain from "./CharacterModel";
+import Ecctrl, { EcctrlAnimation } from "ecctrl";
+import PirateModel from "../models/Pirate";
 
 const keyboardMap = [
   { name: "forward", keys: ["ArrowUp", "KeyW"] },
@@ -44,37 +37,17 @@ const animationSet = {
     "CharacterArmature|CharacterArmature|CharacterArmature|Wave|CharacterArmature|Wave",
 };
 
-export default function App() {
+export default function PirateEntity() {
   return (
-    <>
-      <EcctrlJoystick buttonNumber={5} />
-      <Canvas
-        shadows
-        onPointerDown={(e) => {
-          if (e.pointerType === "mouse") {
-            (e.target as HTMLElement).requestPointerLock();
-          }
-        }}
-      >
-        <Perf position="top-left" minimal />
-        {/* <Environment background files="/night.hdr" /> */}
-        <Lights />
-        <Suspense fallback={null}>
-          <Physics timeStep="vary" debug>
-            <KeyboardControls map={keyboardMap}>
-              <Ecctrl debug animated>
-                <EcctrlAnimation
-                  characterURL={characterURL}
-                  animationSet={animationSet}
-                >
-                  <PirateCaptain position={[0, -0.9, 0]} />
-                </EcctrlAnimation>
-              </Ecctrl>
-            </KeyboardControls>
-            <Map />
-          </Physics>
-        </Suspense>
-      </Canvas>
-    </>
+    <KeyboardControls map={keyboardMap}>
+      <Ecctrl debug animated>
+        <EcctrlAnimation
+          characterURL={characterURL}
+          animationSet={animationSet}
+        >
+          <PirateModel position={[0, -0.9, 0]} />
+        </EcctrlAnimation>
+      </Ecctrl>
+    </KeyboardControls>
   );
 }

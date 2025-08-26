@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { JSX, useRef } from "react";
 import { useGLTF } from "@react-three/drei";
 
-export default function Model(props: JSX.IntrinsicElements["group"]) {
+export default function PirateModel(props: JSX.IntrinsicElements["group"]) {
   const group = useRef<THREE.Group>(null!);
   const { nodes, materials } = useGLTF("/Pirate Captain-transformed.glb");
 
