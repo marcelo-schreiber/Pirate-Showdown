@@ -14,8 +14,8 @@ export default function Sun() {
         ref={dirLightRef}
         castShadow
         shadow-normalBias={0.06}
-        position={[-35, 35, 2]}
-        intensity={6}
+        position={[-45, 35, 12]}
+        intensity={6.2}
         shadow-mapSize={[1024, 1024]}
         color={new THREE.Color("#faf8de")}
       />
