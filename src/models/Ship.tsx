@@ -9,6 +9,7 @@ export default function ShipModel(props: JSX.IntrinsicElements["group"]) {
   return (
     <group {...props} dispose={null}>
       <mesh
+        castShadow
         receiveShadow
         geometry={(nodes.Ship_Large as Mesh).geometry}
         material={materials.Atlas}

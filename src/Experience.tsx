@@ -4,11 +4,11 @@ import { Perf } from "r3f-perf";
 import { Suspense, useEffect, useState } from "react";
 import { EcctrlJoystick } from "ecctrl";
 
-import Lights from "@/models/Lights";
+import Sun from "@/models/Sun";
 import Ship from "@/entities/Ship";
 import PirateEntity from "@/entities/Pirate";
 import type { PointerEvent } from "react";
-import { Loader, OrbitControls } from "@react-three/drei";
+import { Environment, Loader } from "@react-three/drei";
 import * as THREE from "three";
 import useGame from "@/hooks/useGame";
 import Skybox from "@/models/SkyBox";
@@ -70,14 +70,14 @@ export default function Experience() {
       >
         <Suspense fallback={null}>
           <Skybox />
+          <Environment files="/env.exr" background={false} />
           {debug && <Perf position="top-left" minimal />}
-          {/* <Environment background files="/night.hdr" /> */}
-          <Lights />
+          <Sun />
           <Physics debug={debug}>
             <PirateEntity />
             <Ship />
+            <RagingSea />
           </Physics>
-          <RagingSea />
         </Suspense>
       </Canvas>
       <Loader />

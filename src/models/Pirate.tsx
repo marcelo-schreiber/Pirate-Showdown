@@ -11,7 +11,7 @@ export default function PirateModel(props: JSX.IntrinsicElements["group"]) {
   // iterate thorugh materials to remove metalness
   Object.values(materials).forEach((material) => {
     if (material instanceof THREE.MeshStandardMaterial) {
-      material.roughness = 1;
+      material.roughness = 0.9;
     }
   });
 
