@@ -4,15 +4,15 @@ import { Perf } from "r3f-perf";
 import { Suspense, useEffect, useState } from "react";
 import { EcctrlJoystick } from "ecctrl";
 
-import Sun from "@/models/Sun";
-import Ship from "@/entities/Ship";
-import PirateEntity from "@/entities/Pirate";
+import { Sun } from "@/models/Sun";
+import { ShipEntity as Ship } from "@/entities/Ship";
+import { PirateEntity } from "@/entities/Pirate";
 import type { PointerEvent } from "react";
 import { Environment, Loader } from "@react-three/drei";
 import * as THREE from "three";
-import useGame from "@/hooks/useGame";
-import Skybox from "@/models/SkyBox";
-import RagingSea from "./models/Sea";
+import { useDebug } from "@/hooks/useDebug";
+import { Skybox } from "@/models/SkyBox";
+import { RagingSea } from "./models/Sea";
 import { Leva } from "leva";
 
 const EcctrlJoystickControls = () => {
@@ -41,8 +41,8 @@ const EcctrlJoystickControls = () => {
   );
 };
 
-export default function Experience() {
-  const { debug, setDebug } = useGame();
+export function Experience() {
+  const { debug, setDebug } = useDebug();
 
   useEffect(() => {
     // if url has hash debug

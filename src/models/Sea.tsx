@@ -24,7 +24,7 @@ const RagingSeaMaterial = shaderMaterial(
     uSmallIterations: 4,
   },
   vertexShader,
-  fragmentShader
+  fragmentShader,
 );
 RagingSeaMaterial.key = `$${Math.random()}`;
 extend({ RagingSeaMaterial });
@@ -50,7 +50,7 @@ declare module "@react-three/fiber" {
   }
 }
 
-export default function RagingSea() {
+export function RagingSea() {
   const {
     animate,
     bigWavesElevation,

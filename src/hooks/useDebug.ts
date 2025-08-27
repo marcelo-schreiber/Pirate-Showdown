@@ -5,9 +5,7 @@ type Store = {
   setDebug: (debug: boolean) => void;
 };
 
-const useGame = create<Store>((set) => ({
+export const useDebug = create<Store>((set) => ({
   debug: false,
   setDebug: (debug: boolean) => set({ debug }),
 }));
-
-export default useGame;

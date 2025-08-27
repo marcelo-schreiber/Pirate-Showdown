@@ -1,10 +1,10 @@
-import useGame from "@/hooks/useGame";
+import { useDebug } from "@/hooks/useDebug";
 import { useHelper } from "@react-three/drei";
 import { useRef } from "react";
 import * as THREE from "three";
 
-export default function Sun() {
-  const { debug } = useGame();
+export function Sun() {
+  const { debug } = useDebug();
   const dirLightRef = useRef<THREE.DirectionalLight>(null!);
   useHelper(debug ? dirLightRef : null, THREE.DirectionalLightHelper, 5, "red");
 
