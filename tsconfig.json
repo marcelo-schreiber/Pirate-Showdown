@@ -23,7 +23,8 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "types": ["vite-plugin-glsl/ext"]
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

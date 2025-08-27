@@ -8,10 +8,11 @@ import Lights from "@/models/Lights";
 import Ship from "@/entities/Ship";
 import PirateEntity from "@/entities/Pirate";
 import type { PointerEvent } from "react";
-import { Loader } from "@react-three/drei";
+import { Loader, OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import useGame from "@/hooks/useGame";
 import Skybox from "@/models/SkyBox";
+import RagingSea from "./models/Sea";
 
 const EcctrlJoystickControls = () => {
   const [isTouchScreen, setIsTouchScreen] = useState(false);
@@ -60,11 +61,6 @@ export default function Experience() {
       <EcctrlJoystickControls />
       <Canvas
         shadows
-        gl={{ antialias: true }}
-        onCreated={({ gl }) => {
-          gl.shadowMap.enabled = true;
-          gl.shadowMap.type = THREE.PCFSoftShadowMap; // smoother shadows
-        }}
         camera={{
           fov: 65,
           near: 0.1,
@@ -81,6 +77,7 @@ export default function Experience() {
             <PirateEntity />
             <Ship />
           </Physics>
+          <RagingSea />
         </Suspense>
       </Canvas>
       <Loader />
