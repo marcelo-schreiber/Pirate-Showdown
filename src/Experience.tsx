@@ -2,7 +2,7 @@ import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Perf } from "r3f-perf";
 import { Suspense, useEffect, useState } from "react";
-import { EcctrlJoystick } from "ecctrl";
+import { EcctrlJoystick } from "@/libs/ecctrl/src/Ecctrl";
 
 import { Sun } from "@/models/Sun";
 import { ShipEntity as Ship } from "@/entities/Ship";
@@ -12,7 +12,7 @@ import { Environment, Loader } from "@react-three/drei";
 import * as THREE from "three";
 import { useDebug } from "@/hooks/useDebug";
 import { Skybox } from "@/models/SkyBox";
-import { RagingSea } from "./models/Sea";
+import { RagingSea } from "@/models/Sea";
 import { Leva } from "leva";
 
 const EcctrlJoystickControls = () => {

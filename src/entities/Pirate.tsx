@@ -1,5 +1,5 @@
 import { KeyboardControls } from "@react-three/drei";
-import Ecctrl, { EcctrlAnimation } from "ecctrl";
+import Ecctrl, { EcctrlAnimation } from "@/libs/ecctrl/src/Ecctrl";
 import { PirateModel } from "@/models/Pirate";
 import { useDebug } from "@/hooks/useDebug";
 
