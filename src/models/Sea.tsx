@@ -66,18 +66,18 @@ export default function RagingSea() {
     smallIterations,
   } = useControls({
     animate: true,
-    colors: folder({
+    "Ocean colors": folder({
       surfaceColor: "#27aace",
       depthColor: "#26a0c2",
       colorOffset: 0.08,
       colorMultiplier: 1.4,
     }),
-    bigWaves: folder({
+    "Big waves": folder({
       bigWavesElevation: 0.55,
       bigWavesFrequency: [0.16, 0.7],
       bigWaveSpeed: 0.75,
     }),
-    smallWaves: folder({
+    "Small waves": folder({
       smallWavesElevation: 0.2,
       smallWavesFrequency: 3,
       smallWavesSpeed: 0.2,

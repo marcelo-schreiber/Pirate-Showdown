@@ -13,6 +13,7 @@ import * as THREE from "three";
 import useGame from "@/hooks/useGame";
 import Skybox from "@/models/SkyBox";
 import RagingSea from "./models/Sea";
+import { Leva } from "leva";
 
 const EcctrlJoystickControls = () => {
   const [isTouchScreen, setIsTouchScreen] = useState(false);
@@ -81,6 +82,7 @@ export default function Experience() {
         </Suspense>
       </Canvas>
       <Loader />
+      <Leva hidden={!debug} />
     </>
   );
 }
