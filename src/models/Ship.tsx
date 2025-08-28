@@ -9,8 +9,8 @@ export function ShipModel(props: JSX.IntrinsicElements["group"]) {
   materials.Atlas.side = THREE.DoubleSide;
 
   const shadowControls = useControls("Shadow", {
-    color: "#ff0000",
-    opacity: 1,
+    color: "#000000",
+    opacity: 0.4,
   });
 
   return (
