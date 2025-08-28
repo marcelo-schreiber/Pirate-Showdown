@@ -21,16 +21,17 @@ export function ShipModel(props: JSX.IntrinsicElements["group"]) {
         geometry={(nodes.Ship_Large as Mesh).geometry}
         scale={100}
       >
-        <shadowMaterial attach="material" color={shadowControls.color} opacity={shadowControls.opacity} />
+        <shadowMaterial
+          attach="material"
+          color={shadowControls.color}
+          opacity={shadowControls.opacity}
+        />
       </mesh>
-            <mesh
-        castShadow
-        receiveShadow
+      <mesh
         geometry={(nodes.Ship_Large as Mesh).geometry}
         material={materials.Atlas}
         scale={100}
-      >
-      </mesh>
+      ></mesh>
     </group>
   );
 }
