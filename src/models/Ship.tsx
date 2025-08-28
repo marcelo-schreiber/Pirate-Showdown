@@ -5,7 +5,7 @@ import type { Mesh } from "three";
 import { useControls } from "leva";
 
 export function ShipModel(props: JSX.IntrinsicElements["group"]) {
-  const { nodes, materials } = useGLTF("/Ship-transformed.glb");
+  const { nodes, materials } = useGLTF("/models/Ship.glb");
   materials.Atlas.side = THREE.DoubleSide;
 
   const shadowControls = useControls("Shadow", {
@@ -36,4 +36,4 @@ export function ShipModel(props: JSX.IntrinsicElements["group"]) {
   );
 }
 
-useGLTF.preload("/Ship-transformed.glb");
+useGLTF.preload("/models/Ship.glb");

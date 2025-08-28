@@ -16,7 +16,7 @@ const keyboardMap = [
   { name: "action4", keys: ["KeyF"] },
 ];
 
-const characterURL = "./Pirate Captain-transformed.glb";
+const characterURL = "./models/Pirate Captain.glb";
 
 const animationSet = {
   idle: "CharacterArmature|CharacterArmature|CharacterArmature|Idle|CharacterArmature|Idle",
