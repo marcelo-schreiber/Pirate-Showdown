@@ -7,6 +7,7 @@ import * as THREE from "three";
 import vertexShader from "../shaders/vertexShaders.vert";
 import fragmentShader from "../shaders/fragmentShaders.frag";
 import { RigidBody } from "@react-three/rapier";
+import { useGame } from "@/hooks/useGame";
 
 const RagingSeaMaterial = shaderMaterial(
   {
@@ -98,10 +99,16 @@ export function RagingSea() {
     }
   });
 
+  const { characterRef } = useGame();
+
   return (
     <>
       <RigidBody
-        onCollisionEnter={() => console.log("collided")}
+        onCollisionEnter={() => {
+          if (characterRef) {
+            characterRef.group?.setTranslation({ x: 0, y: 2, z: 0 }, true);
+          }
+        }}
         type="fixed"
         colliders="cuboid"
         position-y={-0.67}

@@ -1,7 +1,11 @@
 import { KeyboardControls } from "@react-three/drei";
-import Ecctrl, { EcctrlAnimation } from "@/libs/ecctrl/src/Ecctrl";
+import Ecctrl, {
+  CustomEcctrlRigidBody,
+  EcctrlAnimation,
+} from "@/libs/ecctrl/src/Ecctrl";
 import { PirateModel } from "@/models/Pirate";
-import { useDebug } from "@/hooks/useDebug";
+import { useGame } from "@/hooks/useGame";
+import { useEffect, useRef } from "react";
 
 const keyboardMap = [
   { name: "forward", keys: ["ArrowUp", "KeyW"] },
@@ -39,10 +43,22 @@ const animationSet = {
 };
 
 export function PirateEntity() {
-  const { debug } = useDebug();
+  const { debug, setCharacterRef } = useGame();
+  const characterRef = useRef<CustomEcctrlRigidBody>(null!);
+
+  useEffect(() => {
+    setCharacterRef(characterRef.current);
+  }, [characterRef, setCharacterRef]);
+
   return (
     <KeyboardControls map={keyboardMap}>
-      <Ecctrl debug={debug} animated position={[0, 3, 0]}>
+      <Ecctrl
+        debug={debug}
+        animated
+        position={[0, 3, 0]}
+        ref={characterRef}
+        type="dynamic"
+      >
         <EcctrlAnimation
           characterURL={characterURL}
           animationSet={animationSet}

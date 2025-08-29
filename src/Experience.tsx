@@ -8,9 +8,9 @@ import { Sun } from "@/models/Sun";
 import { ShipEntity as Ship } from "@/entities/Ship";
 import { PirateEntity } from "@/entities/Pirate";
 import type { PointerEvent } from "react";
-import { Environment, Loader } from "@react-three/drei";
+import { Loader } from "@react-three/drei";
 import * as THREE from "three";
-import { useDebug } from "@/hooks/useDebug";
+import { useGame } from "@/hooks/useGame";
 import { Skybox } from "@/models/SkyBox";
 import { RagingSea } from "@/models/Sea";
 import { Leva } from "leva";
@@ -20,7 +20,8 @@ const EcctrlJoystickControls = () => {
 
   useEffect(() => {
     // Check if using a touch control device, show/hide joystick
-    const isUsingTouchScreen = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+    const isUsingTouchScreen =
+      "ontouchstart" in window || navigator.maxTouchPoints > 0;
     setIsTouchScreen(isUsingTouchScreen);
   }, []);
 
@@ -40,7 +41,7 @@ const EcctrlJoystickControls = () => {
 };
 
 export function Experience() {
-  const { debug, setDebug } = useDebug();
+  const { debug, setDebug } = useGame();
 
   useEffect(() => {
     // if url has hash debug

@@ -160,7 +160,7 @@ export const useGame = /* @__PURE__ */ create(
         };
       },
     };
-  })
+  }),
 );
 
 export type AnimationSet = {

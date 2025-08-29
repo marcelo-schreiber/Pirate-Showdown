@@ -1,23 +1,23 @@
-import { useDebug } from "@/hooks/useDebug";
+import { useGame } from "@/hooks/useGame";
 import { useHelper } from "@react-three/drei";
 import { useControls } from "leva";
 import { useRef } from "react";
 import * as THREE from "three";
 
 export function Sun() {
-  const { debug } = useDebug();
+  const { debug } = useGame();
   const dirLightRef = useRef<THREE.DirectionalLight>(null!);
   useHelper(debug ? dirLightRef : null, THREE.DirectionalLightHelper, 5, "red");
   const {
     directionalIntensity,
     directionalColor,
     environmentIntensity,
-    environmentColor
+    environmentColor,
   } = useControls("Sun", {
     directionalIntensity: { value: 6.2, min: 0, max: 10, step: 0.1 },
     directionalColor: "#faf8de",
     environmentIntensity: { value: 1, min: 0, max: 2, step: 0.1 },
-    environmentColor: "#ffffff"
+    environmentColor: "#ffffff",
   });
 
   return (
@@ -31,7 +31,10 @@ export function Sun() {
         shadow-mapSize={[1024, 1024]}
         color={new THREE.Color(directionalColor)}
       />
-      <ambientLight intensity={environmentIntensity} color={new THREE.Color(environmentColor)} />
+      <ambientLight
+        intensity={environmentIntensity}
+        color={new THREE.Color(environmentColor)}
+      />
     </>
   );
 }

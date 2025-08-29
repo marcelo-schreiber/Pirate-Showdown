@@ -22,7 +22,7 @@ export function EcctrlAnimation(props: EcctrlAnimationProps) {
   const curAnimation = useGame((state) => state.curAnimation);
   const resetAnimation = useGame((state) => state.reset);
   const initializeAnimationSet = useGame(
-    (state) => state.initializeAnimationSet
+    (state) => state.initializeAnimationSet,
   );
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export function EcctrlAnimation(props: EcctrlAnimationProps) {
     const action = key ? actions[key] : null;
 
     // For jump and jump land animation, only play once and clamp when finish
-    if (action === null) return
+    if (action === null) return;
 
     if (
       curAnimation === props.animationSet.jump ||
@@ -54,23 +54,41 @@ export function EcctrlAnimation(props: EcctrlAnimationProps) {
     }
 
     // When any action is clamp and finished reset animation
-    (action as ActionWithPrivateVars)._mixer.addEventListener("finished", () => resetAnimation());
+    (action as ActionWithPrivateVars)._mixer.addEventListener("finished", () =>
+      resetAnimation(),
+    );
 
     return () => {
       // Fade out previous action
       action.fadeOut(0.2);
 
       // Clean up mixer listener, and empty the _listeners array
-      (action as ActionWithPrivateVars)._mixer.removeEventListener("finished", () =>
-        resetAnimation()
+      (action as ActionWithPrivateVars)._mixer.removeEventListener(
+        "finished",
+        () => resetAnimation(),
       );
       (action as ActionWithPrivateVars)._mixer._listeners = [];
     };
-  }, [actions, curAnimation, props.animationSet.action1, props.animationSet.action2, props.animationSet.action3, props.animationSet.action4, props.animationSet.jump, props.animationSet.jumpIdle, props.animationSet.jumpLand, resetAnimation]);
+  }, [
+    actions,
+    curAnimation,
+    props.animationSet.action1,
+    props.animationSet.action2,
+    props.animationSet.action3,
+    props.animationSet.action4,
+    props.animationSet.jump,
+    props.animationSet.jumpIdle,
+    props.animationSet.jumpLand,
+    resetAnimation,
+  ]);
 
   return (
     <Suspense fallback={null}>
-      <group ref={group} dispose={null} userData={{ camExcludeCollision: true }}>
+      <group
+        ref={group}
+        dispose={null}
+        userData={{ camExcludeCollision: true }}
+      >
         {props.children}
       </group>
     </Suspense>

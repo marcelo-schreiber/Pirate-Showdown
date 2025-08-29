@@ -40,7 +40,7 @@ const getMovingDirection = (
   backward: boolean,
   leftward: boolean,
   rightward: boolean,
-  pivot: THREE.Object3D
+  pivot: THREE.Object3D,
 ): number | null => {
   if (!forward && !backward && !leftward && !rightward) return null;
   if (forward && leftward) return pivot.rotation.y + Math.PI / 4;
@@ -159,13 +159,13 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     // Other rigibody props from parent
     ...props
   }: EcctrlProps,
-  ref
+  ref,
 ) => {
   const characterRef = useRef<RapierRigidBody | null>(null);
   const characterModelRef = useRef<THREE.Group | null>(null);
   const characterModelIndicator: THREE.Object3D = useMemo(
     () => new THREE.Object3D(),
-    []
+    [],
   );
 
   /**
@@ -192,15 +192,15 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
   const bodyBalanceVec: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
   const bodyBalanceVecOnX: THREE.Vector3 = useMemo(
     () => new THREE.Vector3(),
-    []
+    [],
   );
   const bodyFacingVecOnY: THREE.Vector3 = useMemo(
     () => new THREE.Vector3(),
-    []
+    [],
   );
   const bodyBalanceVecOnZ: THREE.Vector3 = useMemo(
     () => new THREE.Vector3(),
-    []
+    [],
   );
   const vectorY: THREE.Vector3 = useMemo(() => new THREE.Vector3(0, 1, 0), []);
   const vectorZ: THREE.Vector3 = useMemo(() => new THREE.Vector3(0, 0, 1), []);
@@ -209,15 +209,15 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
   const crossVecOnZ: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
   const bodyContactForce: THREE.Vector3 = useMemo(
     () => new THREE.Vector3(),
-    []
+    [],
   );
   const slopeRayOriginUpdatePosition: THREE.Vector3 = useMemo(
     () => new THREE.Vector3(),
-    []
+    [],
   );
   const camBasedMoveCrossVecOnY: THREE.Vector3 = useMemo(
     () => new THREE.Vector3(),
-    []
+    [],
   );
 
   // Animation change functions
@@ -226,20 +226,20 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
   const runAnimation = useGame((state) => (!animated ? null : state.run));
   const jumpAnimation = useGame((state) => (!animated ? null : state.jump));
   const jumpIdleAnimation = useGame((state) =>
-    !animated ? null : state.jumpIdle
+    !animated ? null : state.jumpIdle,
   );
   const fallAnimation = useGame((state) => (!animated ? null : state.fall));
   const action1Animation = useGame((state) =>
-    !animated ? null : state.action1
+    !animated ? null : state.action1,
   );
   const action2Animation = useGame((state) =>
-    !animated ? null : state.action2
+    !animated ? null : state.action2,
   );
   const action3Animation = useGame((state) =>
-    !animated ? null : state.action3
+    !animated ? null : state.action3,
   );
   const action4Animation = useGame((state) =>
-    !animated ? null : state.action4
+    !animated ? null : state.action4,
   );
 
   /**
@@ -341,7 +341,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
           },
         }
       : {},
-    { collapsed: true }
+    { collapsed: true },
   ) as Partial<CharacterControlsSchema>;
   if (debug) {
     maxVelLimit = characterControlsDebug.maxVelLimit ?? maxVelLimit;
@@ -407,7 +407,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
           },
         }
       : {},
-    { collapsed: true }
+    { collapsed: true },
   ) as Partial<FloatingRaySchema>;
   if (debug) {
     rayOriginOffest = floatingRayDebug.rayOriginOffest ?? rayOriginOffest;
@@ -458,7 +458,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
           },
         }
       : {},
-    { collapsed: true }
+    { collapsed: true },
   ) as Partial<SlopeRaySchema>;
   if (debug) {
     showSlopeRayOrigin = slopeRayDebug.showSlopeRayOrigin ?? showSlopeRayOrigin;
@@ -506,7 +506,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
           },
         }
       : {},
-    { collapsed: true }
+    { collapsed: true },
   ) as Partial<AutoBalanceForceSchema>;
   if (debug) {
     autoBalance = autoBalanceForceDebug.autoBalance ?? autoBalance;
@@ -550,7 +550,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
    * Joystick controls setup
    */
   const getJoystickValues = useJoystickControls(
-    (state) => state.getJoystickValues
+    (state) => state.getJoystickValues,
   );
   const pressButton1 = useJoystickControls((state) => state.pressButton1);
   const pressButton2 = useJoystickControls((state) => state.pressButton2);
@@ -558,7 +558,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
   const pressButton4 = useJoystickControls((state) => state.pressButton4);
   const pressButton5 = useJoystickControls((state) => state.pressButton5);
   const releaseAllButtons = useJoystickControls(
-    (state) => state.releaseAllButtons
+    (state) => state.releaseAllButtons,
   );
   const setJoystick = useJoystickControls((state) => state.setJoystick);
   const resetJoystick = useJoystickControls((state) => state.resetJoystick);
@@ -575,7 +575,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
   };
   const gamepadJoystickVec2: THREE.Vector2 = useMemo(
     () => new THREE.Vector2(),
-    []
+    [],
   );
   let gamepadJoystickDis: number = 0;
   let gamepadJoystickAng: number = 0;
@@ -587,7 +587,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
   };
   const mergedKeys = useMemo(
     () => Object.assign({}, defaultControllerKeys, controllerKeys),
-    [controllerKeys]
+    [controllerKeys],
   );
   const handleButtons = (buttons: readonly GamepadButton[]) => {
     gamepadKeys.forward = buttons[mergedKeys.forward].pressed;
@@ -618,9 +618,9 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
       gamepadJoystickDis = Math.min(
         Math.sqrt(
           Math.pow(gamepadJoystickVec2.x, 2) +
-            Math.pow(gamepadJoystickVec2.y, 2)
+            Math.pow(gamepadJoystickVec2.y, 2),
         ),
-        1
+        1,
       );
       gamepadJoystickAng = gamepadJoystickVec2.angle();
       const runState = gamepadJoystickDis > 0.7;
@@ -641,7 +641,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
   let isFalling: boolean = false;
   const initialGravityScale: number = useMemo(
     () => props.gravityScale ?? 1,
-    [props.gravityScale]
+    [props.gravityScale],
   );
 
   // on moving object state
@@ -649,27 +649,27 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
   let isOnMovingObject: boolean = false;
   const standingForcePoint: THREE.Vector3 = useMemo(
     () => new THREE.Vector3(),
-    []
+    [],
   );
   const movingObjectDragForce: THREE.Vector3 = useMemo(
     () => new THREE.Vector3(),
-    []
+    [],
   );
   const movingObjectVelocity: THREE.Vector3 = useMemo(
     () => new THREE.Vector3(),
-    []
+    [],
   );
   const movingObjectVelocityInCharacterDir: THREE.Vector3 = useMemo(
     () => new THREE.Vector3(),
-    []
+    [],
   );
   const distanceFromCharacterToObject: THREE.Vector3 = useMemo(
     () => new THREE.Vector3(),
-    []
+    [],
   );
   const objectAngvelToLinvel: THREE.Vector3 = useMemo(
     () => new THREE.Vector3(),
-    []
+    [],
   );
   const velocityDiff: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
 
@@ -706,19 +706,19 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
   const pivotPosition: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
   const pivotXAxis: THREE.Vector3 = useMemo(
     () => new THREE.Vector3(1, 0, 0),
-    []
+    [],
   );
   const pivotYAxis: THREE.Vector3 = useMemo(
     () => new THREE.Vector3(0, 1, 0),
-    []
+    [],
   );
   const pivotZAxis: THREE.Vector3 = useMemo(
     () => new THREE.Vector3(0, 0, 1),
-    []
+    [],
   );
   const followCamPosition: THREE.Vector3 = useMemo(
     () => new THREE.Vector3(),
-    []
+    [],
   );
   const modelEuler: THREE.Euler = useMemo(() => new THREE.Euler(), []);
   const modelQuat: THREE.Quaternion = useMemo(() => new THREE.Quaternion(), []);
@@ -741,7 +741,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
   const springDirVec: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
   const characterMassForce: THREE.Vector3 = useMemo(
     () => new THREE.Vector3(),
-    []
+    [],
   );
   const rayOrigin: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
   const rayCast = new rapier.Ray(rayOrigin, rayDir);
@@ -758,11 +758,11 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
   let actualSlopeAngle: number = 0;
   const actualSlopeNormalVec: THREE.Vector3 = useMemo(
     () => new THREE.Vector3(),
-    []
+    [],
   );
   const floorNormal: THREE.Vector3 = useMemo(
     () => new THREE.Vector3(0, 1, 0),
-    []
+    [],
   );
   const slopeRayOriginRef = useRef<THREE.Mesh | null>(null);
   const slopeRayorigin: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
@@ -793,7 +793,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     _: number,
     run: boolean,
     slopeAngle: number,
-    movingObjectVelocity: THREE.Vector3
+    movingObjectVelocity: THREE.Vector3,
   ) => {
     if (!characterRef.current) return;
 
@@ -815,7 +815,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
       movingDirection.set(
         0,
         Math.sin(slopeAngle) > 0 ? 0 : Math.sin(slopeAngle),
-        Math.sin(slopeAngle) > 0 ? 0.1 : 1
+        Math.sin(slopeAngle) > 0 ? 0.1 : 1,
       );
     } else {
       movingDirection.set(0, 0, 1);
@@ -843,7 +843,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     wantToMoveVel.set(
       movingDirection.x * wantToMoveMeg,
       0,
-      movingDirection.z * wantToMoveMeg
+      movingDirection.z * wantToMoveMeg,
     );
     rejectVel.copy(currentVel).sub(wantToMoveVel);
 
@@ -869,12 +869,12 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
           movingObjectVelocity.z *
             Math.sin(angleBetweenCharacterDirAndObjectDir) +
           rejectVel.z * (isOnMovingObject ? 0 : rejectVelMult))) /
-        accDeltaTime
+        accDeltaTime,
     );
 
     // Wanted to move force function: F = ma
     const moveForceNeeded = moveAccNeeded.multiplyScalar(
-      characterRef.current.mass()
+      characterRef.current.mass(),
     );
 
     /**
@@ -900,7 +900,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
               (run ? sprintMult : 1),
         moveForceNeeded.z *
           turnVelMultiplier *
-          (canJump ? 1 : airDragMultiplier) // if it's in the air, give it less control
+          (canJump ? 1 : airDragMultiplier), // if it's in the air, give it less control
       );
     }
     // If character complete turning, change the impulse quaternion default
@@ -914,7 +914,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
                 ? slopeUpExtraForce
                 : slopeDownExtraForce) *
               (run ? sprintMult : 1),
-        moveForceNeeded.z * (canJump ? 1 : airDragMultiplier)
+        moveForceNeeded.z * (canJump ? 1 : airDragMultiplier),
       );
     }
 
@@ -926,7 +926,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         y: currentPos.y + moveImpulsePointY,
         z: currentPos.z,
       },
-      true
+      true,
     );
   };
 
@@ -960,13 +960,13 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         slopeRayOriginOffest *
         Math.sin(
           slopeRayOriginUpdatePosition.angleTo(modelFacingVec) *
-            (camBasedMoveCrossVecOnY.y < 0 ? 1 : -1)
+            (camBasedMoveCrossVecOnY.y < 0 ? 1 : -1),
         );
       slopeRayOriginRef.current.position.z =
         slopeRayOriginOffest *
         Math.cos(
           slopeRayOriginUpdatePosition.angleTo(modelFacingVec) *
-            (camBasedMoveCrossVecOnY.y < 0 ? 1 : -1)
+            (camBasedMoveCrossVecOnY.y < 0 ? 1 : -1),
         );
     } else {
       characterModelIndicator.getWorldDirection(modelFacingVec);
@@ -987,7 +987,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
       (crossVecOnZ.z < 0 ? 1 : -1) *
         autoBalanceSpringK *
         bodyBalanceVecOnZ.angleTo(vectorY) -
-        characterRef.current.angvel().z * autoBalanceDampingC
+        characterRef.current.angvel().z * autoBalanceDampingC,
     );
 
     // Apply balance torque impulse
@@ -1015,14 +1015,14 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     delta: number,
     slopeAngle: number,
     movingObjectVelocity: THREE.Vector3,
-    functionKeyDown: boolean
+    functionKeyDown: boolean,
   ) => {
     const moveToPoint = getMoveToPoint().moveToPoint;
     if (moveToPoint) {
       pointToPoint.set(
         moveToPoint.x - currentPos.x,
         0,
-        moveToPoint.z - currentPos.z
+        moveToPoint.z - currentPos.z,
       );
       crossVector.crossVectors(pointToPoint, vectorZ);
       // Rotate character to moving direction
@@ -1033,7 +1033,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         pivot.rotation.y = THREE.MathUtils.lerp(
           pivot.rotation.y,
           modelEuler.y,
-          fixedCamRotMult * delta * 3
+          fixedCamRotMult * delta * 3,
         );
       // Once character close to the target point (distance<0.3),
       // Or character close to the wall (bodySensor intersects)
@@ -1058,10 +1058,10 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
       pivot.rotation.y += y;
       followCam.rotation.x = Math.min(
         Math.max(followCam.rotation.x + x, camLowLimit),
-        camUpLimit
+        camUpLimit,
       );
     },
-    [pivot, followCam, camLowLimit, camUpLimit]
+    [pivot, followCam, camLowLimit, camUpLimit],
   );
 
   /**
@@ -1071,7 +1071,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     (rad: number) => {
       modelEuler.y += rad;
     },
-    [modelEuler]
+    [modelEuler],
   );
 
   useEffect(() => {
@@ -1096,7 +1096,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
       rotateCamera,
       rotateCharacterOnY,
     }),
-    [rotateCamera, rotateCharacterOnY]
+    [rotateCamera, rotateCharacterOnY],
   );
   /**
    * Keyboard controls subscribe setup
@@ -1113,7 +1113,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         if (value && action1Animation) {
           action1Animation();
         }
-      }
+      },
     );
 
     // Action 2 key subscribe for special animation
@@ -1123,7 +1123,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         if (value && action2Animation) {
           action2Animation();
         }
-      }
+      },
     );
 
     // Action 3 key subscribe for special animation
@@ -1133,7 +1133,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         if (value && action3Animation) {
           action3Animation();
         }
-      }
+      },
     );
 
     // Trigger key subscribe for special animation
@@ -1143,7 +1143,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         if (value && action4Animation) {
           action4Animation();
         }
-      }
+      },
     );
 
     return () => {
@@ -1166,7 +1166,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         if (value && action4Animation) {
           action4Animation();
         }
-      }
+      },
     );
 
     // Subscribe button 3
@@ -1176,7 +1176,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         if (value && action2Animation) {
           action2Animation();
         }
-      }
+      },
     );
 
     // Subscribe button 4
@@ -1186,7 +1186,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         if (value && action3Animation) {
           action3Animation();
         }
-      }
+      },
     );
 
     // Subscribe button 5
@@ -1196,7 +1196,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         if (value && action1Animation) {
           action1Animation();
         }
-      }
+      },
     );
 
     return () => {
@@ -1274,7 +1274,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
       .addScaledVector(pivotXAxis, camTargetPos.x)
       .addScaledVector(
         pivotYAxis,
-        camTargetPos.y + (capsuleHalfHeight + capsuleRadius / 2)
+        camTargetPos.y + (capsuleHalfHeight + capsuleRadius / 2),
       )
       .addScaledVector(pivotZAxis, camTargetPos.z);
     pivot.position.lerp(pivotPosition, 1 - Math.exp(-camFollowMult * delta));
@@ -1283,7 +1283,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
       followCam.getWorldPosition(followCamPosition);
       state.camera.position.lerp(
         followCamPosition,
-        1 - Math.exp(-camLerpMult * delta)
+        1 - Math.exp(-camLerpMult * delta),
       );
       state.camera.lookAt(pivot.position);
     }
@@ -1314,8 +1314,8 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
           gamepadKeys.backward,
           gamepadKeys.leftward,
           gamepadKeys.rightward,
-          pivot
-        )
+          pivot,
+        ),
       );
     }
 
@@ -1341,7 +1341,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     // Getting moving directions (IIFE)
     modelEuler.y = ((movingDirection) =>
       movingDirection === null ? modelEuler.y : movingDirection)(
-      getMovingDirection(forward, backward, leftward, rightward, pivot)
+      getMovingDirection(forward, backward, leftward, rightward, pivot),
     );
 
     // Move character to the moving direction
@@ -1363,7 +1363,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
       jumpVelocityVec.set(
         currentVel.x,
         run ? sprintJumpMult * jumpVel : jumpVel,
-        currentVel.z
+        currentVel.z,
       );
       // Apply slope normal to jump direction
       characterRef.current.setLinvel(
@@ -1371,7 +1371,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
           .set(0, (run ? sprintJumpMult * jumpVel : jumpVel) * slopJumpMult, 0)
           .projectOnVector(actualSlopeNormalVec)
           .add(jumpVelocityVec),
-        true
+        true,
       );
       // Apply jump force downward to the standing platform
       characterMassForce.y *= jumpForceToGroundMult;
@@ -1384,7 +1384,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     modelQuat.setFromEuler(modelEuler);
     characterModelIndicator.quaternion.rotateTowards(
       modelQuat,
-      delta * turnSpeed
+      delta * turnSpeed,
     );
 
     // If autobalance is off, rotate character model itself
@@ -1393,7 +1393,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         characterModelRef.current.quaternion.copy(pivot.quaternion);
       } else {
         characterModelRef.current.quaternion.copy(
-          characterModelIndicator.quaternion
+          characterModelIndicator.quaternion,
         );
       }
     }
@@ -1416,7 +1416,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         if (!parent) return false;
         const data = parent.userData as userDataType | undefined;
         return !data?.excludeEcctrlRay;
-      }
+      },
     );
 
     /**Test shape ray */
@@ -1452,7 +1452,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         standingForcePoint.set(
           rayOrigin.x,
           rayOrigin.y - rayHit.current.timeOfImpact,
-          rayOrigin.z
+          rayOrigin.z,
         );
         const rayHitObjectBodyType = rayHit.current.collider
           .parent()
@@ -1467,7 +1467,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
           distanceFromCharacterToObject
             .copy(currentPos)
             .sub(
-              rayHit.current.collider.parent()?.translation() as THREE.Vector3
+              rayHit.current.collider.parent()?.translation() as THREE.Vector3,
             );
           // Moving object linear velocity
           const movingObjectLinvel = rayHit.current.collider
@@ -1483,14 +1483,14 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
               movingObjectLinvel.x +
                 objectAngvelToLinvel.crossVectors(
                   movingObjectAngvel,
-                  distanceFromCharacterToObject
+                  distanceFromCharacterToObject,
                 ).x,
               movingObjectLinvel.y,
               movingObjectLinvel.z +
                 objectAngvelToLinvel.crossVectors(
                   movingObjectAngvel,
-                  distanceFromCharacterToObject
-                ).z
+                  distanceFromCharacterToObject,
+                ).z,
             )
             .multiplyScalar(Math.min(1, 1 / massRatio));
           // If the velocity diff is too high (> 30), ignore movingObjectVelocity
@@ -1531,7 +1531,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
               ?.applyImpulseAtPoint(
                 movingObjectDragForce,
                 standingForcePoint,
-                true
+                true,
               );
           }
         } else {
@@ -1569,7 +1569,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         if (!parent) return false;
         const data = parent.userData as userDataType | undefined;
         return !data?.excludeEcctrlRay;
-      }
+      },
     );
 
     // Calculate slope angle
@@ -1578,13 +1578,13 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         slopeRayHit.current.collider.castRayAndGetNormal(
           slopeRayCast,
           slopeRayLength,
-          false
+          false,
         )?.normal ?? null;
       if (actualSlopeNormal) {
         actualSlopeNormalVec?.set(
           actualSlopeNormal.x,
           actualSlopeNormal.y,
-          actualSlopeNormal.z
+          actualSlopeNormal.z,
         );
         actualSlopeAngle = actualSlopeNormalVec?.angleTo(floorNormal);
       }
@@ -1599,8 +1599,8 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         slopeAngle = Number(
           Math.atan(
             (rayHit.current.timeOfImpact - slopeRayHit.current.timeOfImpact) /
-              slopeRayOriginOffest
-          ).toFixed(2)
+              slopeRayOriginOffest,
+          ).toFixed(2),
         );
       } else {
         slopeAngle = 0;
@@ -1619,7 +1619,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
           characterRef.current.linvel().y * dampingC;
         characterRef.current.applyImpulse(
           springDirVec.set(0, floatingForce, 0),
-          false
+          false,
         );
 
         // Apply opposite force to standing object (gravity g in rapier is 0.11 ?_?)
@@ -1651,7 +1651,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         dragForce.set(
           -currentVel.x * dragDampingC,
           0,
-          -currentVel.z * dragDampingC
+          -currentVel.z * dragDampingC,
         );
         characterRef.current.applyImpulse(dragForce, false);
       }
@@ -1660,7 +1660,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         dragForce.set(
           (movingObjectVelocity.x - currentVel.x) * dragDampingC,
           0,
-          (movingObjectVelocity.z - currentVel.z) * dragDampingC
+          (movingObjectVelocity.z - currentVel.z) * dragDampingC,
         );
         characterRef.current.applyImpulse(dragForce, true);
       }
