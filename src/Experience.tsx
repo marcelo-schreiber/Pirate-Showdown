@@ -70,9 +70,9 @@ export function Experience() {
         <Suspense fallback={null}>
           <Skybox />
           {/* <Environment files="/environment/env.exr" background={false} environmentIntensity={0.2}/> */}
-          {debug && <Perf position="top-left" minimal />}
+          {debug && <Perf position="top-left" />}
           <Sun />
-          <Physics debug={debug}>
+          <Physics>
             <PirateEntity />
             <Ship />
             <RagingSea />
