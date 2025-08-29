@@ -69,7 +69,7 @@ export function Experience() {
       >
         <Suspense fallback={null}>
           <Skybox />
-          <Environment files="/environment/env.exr" background={false} />
+          {/* <Environment files="/environment/env.exr" background={false} environmentIntensity={0.2}/> */}
           {debug && <Perf position="top-left" minimal />}
           <Sun />
           <Physics debug={debug}>
