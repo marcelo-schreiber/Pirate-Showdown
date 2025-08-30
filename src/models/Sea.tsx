@@ -52,6 +52,7 @@ declare module "@react-three/fiber" {
 }
 
 export function RagingSea() {
+  const { characterRef } = useGame();
   const {
     animate,
     bigWavesElevation,
@@ -66,12 +67,12 @@ export function RagingSea() {
     smallWavesSpeed,
     smallIterations,
   } = useControls({
-    animate: true,
-    "Ocean colors": folder({
+    "Ocean": folder({
       surfaceColor: "#27aace",
       depthColor: "#26a0c2",
       colorOffset: 0.08,
       colorMultiplier: 1.4,
+      animate: true,
     }),
     "Big waves": folder({
       bigWavesElevation: 0.55,
@@ -99,12 +100,11 @@ export function RagingSea() {
     }
   });
 
-  const { characterRef } = useGame();
 
   return (
     <>
       <RigidBody
-        onCollisionEnter={() => {
+        onIntersectionEnter={() => {
           if (characterRef) {
             characterRef.group?.setTranslation({ x: 0, y: 2, z: 0 }, true);
           }
@@ -113,6 +113,7 @@ export function RagingSea() {
         colliders="cuboid"
         position-y={-0.67}
         rotation-x={-Math.PI / 2}
+        sensor
       >
         <Plane args={[100, 100, 55, 55]} receiveShadow>
           <ragingSeaMaterial
