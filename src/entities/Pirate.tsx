@@ -62,12 +62,14 @@ export function PirateEntity() {
         jumpVel={3.25}
         rayOriginOffset={{ x: 0, y: -0.6, z: 0 }}
         slopeUpExtraForce={0.2}
+        rayLength={0.5}
+        slopeRayLength={0.5}
       >
         <EcctrlAnimation
           characterURL={characterURL}
           animationSet={animationSet}
         >
-          <PirateModel position={[0, -0.79, 0]} scale={0.85} />
+          <PirateModel position={[0, -0.74, 0]} scale={0.85} />
         </EcctrlAnimation>
       </Ecctrl>
     </KeyboardControls>
