@@ -64,7 +64,7 @@ export function Experience() {
         camera={{
           fov: 65,
           near: 0.1,
-          far: 1000,
+          far: 400,
         }}
         onPointerDown={handleLockControls}
       >
