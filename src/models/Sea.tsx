@@ -4,9 +4,9 @@ import { folder, useControls } from "leva";
 import { useRef } from "react";
 import * as THREE from "three";
 
-import vertexShader from "../shaders/vertexShaders.vert";
-import fragmentShader from "../shaders/fragmentShaders.frag";
-import { RigidBody } from "@react-three/rapier";
+import vertexShader from "@/shaders/vertexShaders.vert";
+import fragmentShader from "@/shaders/fragmentShaders.frag";
+import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import { useGame } from "@/hooks/useGame";
 
 const RagingSeaMaterial = shaderMaterial(
@@ -25,7 +25,7 @@ const RagingSeaMaterial = shaderMaterial(
     uSmallIterations: 4,
   },
   vertexShader,
-  fragmentShader,
+  fragmentShader
 );
 RagingSeaMaterial.key = `$${Math.random()}`;
 extend({ RagingSeaMaterial });
@@ -67,7 +67,7 @@ export function RagingSea() {
     smallWavesSpeed,
     smallIterations,
   } = useControls({
-    "Ocean": folder({
+    Ocean: folder({
       surfaceColor: "#27aace",
       depthColor: "#26a0c2",
       colorOffset: 0.08,
@@ -100,21 +100,24 @@ export function RagingSea() {
     }
   });
 
-
   return (
     <>
       <RigidBody
-        onIntersectionEnter={() => {
-          if (characterRef) {
-            characterRef.group?.setTranslation({ x: 0, y: 2, z: 0 }, true);
-          }
-        }}
         type="fixed"
-        colliders="cuboid"
+        colliders={false}
         position-y={-0.67}
         rotation-x={-Math.PI / 2}
-        sensor
       >
+        <CuboidCollider
+          args={[50, 50, 50]}
+          position={[0, 0, -50.1]}
+          sensor
+          onIntersectionEnter={() => {
+            if (characterRef) {
+              characterRef.group?.setTranslation({ x: 0, y: 2, z: 0 }, true);
+            }
+          }}
+        />
         <Plane args={[100, 100, 55, 55]}>
           <ragingSeaMaterial
             key={RagingSeaMaterial.key}
