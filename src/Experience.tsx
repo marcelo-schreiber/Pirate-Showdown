@@ -8,7 +8,7 @@ import { Sun } from "@/models/Sun";
 import { ShipEntity as Ship } from "@/entities/Ship";
 import { PirateEntity } from "@/entities/Pirate";
 import type { PointerEvent } from "react";
-import { Loader } from "@react-three/drei";
+import { Environment, Loader } from "@react-three/drei";
 import * as THREE from "three";
 import { useGame } from "@/hooks/useGame";
 import { Skybox } from "@/models/SkyBox";
@@ -40,6 +40,12 @@ const EcctrlJoystickControls = () => {
   );
 };
 
+const handleLockControls = (e: PointerEvent<HTMLDivElement>) => {
+  if (e.pointerType === "mouse") {
+    (e.target as HTMLElement).requestPointerLock();
+  }
+};
+
 export function Experience() {
   const { debug, setDebug } = useGame();
 
@@ -49,12 +55,6 @@ export function Experience() {
       setDebug(true);
     }
   }, [setDebug]);
-
-  const handleLockControls = (e: PointerEvent<HTMLDivElement>) => {
-    if (e.pointerType === "mouse") {
-      (e.target as HTMLElement).requestPointerLock();
-    }
-  };
 
   return (
     <>
@@ -70,10 +70,10 @@ export function Experience() {
       >
         <Suspense fallback={null}>
           <Skybox />
-          {/* <Environment files="/environment/env.exr" background={false} environmentIntensity={0.2}/> */}
+          <Environment files="/environment/env.exr" background={false} />
           {debug && <Perf position="top-left" />}
           <Sun />
-          <Physics>
+          <Physics debug={debug} timeStep="vary">
             <PirateEntity />
             <Ship />
             <RagingSea />
