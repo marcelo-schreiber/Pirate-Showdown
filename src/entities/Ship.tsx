@@ -362,7 +362,7 @@ export function ShipEntity(props: RigidBodyProps) {
 
       {/* Rudder */}
       <CuboidCollider
-        position={[3.6, 2.4, 0]}
+        position={[3.6, 2.35, 0]}
         args={[0.14, 0.5, 0.25]}
         rotation={[0, 0, 0]}
       />
