@@ -115,7 +115,7 @@ export function RagingSea() {
         rotation-x={-Math.PI / 2}
         sensor
       >
-        <Plane args={[100, 100, 55, 55]} receiveShadow>
+        <Plane args={[100, 100, 55, 55]}>
           <ragingSeaMaterial
             key={RagingSeaMaterial.key}
             ref={closeShaderRef}
@@ -135,7 +135,6 @@ export function RagingSea() {
       </RigidBody>
       <Plane
         args={[300, 300, 28, 28]}
-        receiveShadow
         position-y={-1.8}
         rotation-x={-Math.PI / 2}
       >
