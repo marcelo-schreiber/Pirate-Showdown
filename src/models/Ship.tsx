@@ -2,32 +2,16 @@ import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
 import type { JSX } from "react";
 import type { Mesh } from "three";
-import { useControls } from "leva";
 
 export function ShipModel(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF("/models/Ship.glb");
   materials.Atlas.side = THREE.DoubleSide;
 
-  const shadowControls = useControls("Shadow", {
-    color: "#000000",
-    opacity: 0.4,
-  });
-
   return (
     <group {...props} dispose={null}>
       <mesh
-        castShadow
         receiveShadow
-        geometry={(nodes.Ship_Large as Mesh).geometry}
-        scale={100}
-      >
-        <shadowMaterial
-          attach="material"
-          color={shadowControls.color}
-          opacity={shadowControls.opacity}
-        />
-      </mesh>
-      <mesh
+        castShadow
         geometry={(nodes.Ship_Large as Mesh).geometry}
         material={materials.Atlas}
         scale={100}
