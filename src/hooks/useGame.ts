@@ -1,4 +1,4 @@
-import type { CustomEcctrlRigidBody } from "@/libs/ecctrl/src/Ecctrl";
+import type { CustomEcctrlRigidBody } from "@/libs/ecctrl/Ecctrl";
 import { create } from "zustand";
 
 type Store = {

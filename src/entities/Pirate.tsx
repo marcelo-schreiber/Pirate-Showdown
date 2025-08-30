@@ -2,7 +2,7 @@ import { KeyboardControls } from "@react-three/drei";
 import Ecctrl, {
   CustomEcctrlRigidBody,
   EcctrlAnimation,
-} from "@/libs/ecctrl/src/Ecctrl";
+} from "@/libs/ecctrl/Ecctrl";
 import { PirateModel } from "@/models/Pirate";
 import { useGame } from "@/hooks/useGame";
 import { useEffect, useRef } from "react";

@@ -2,7 +2,7 @@ import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Perf } from "r3f-perf";
 import { Suspense, useEffect, useState } from "react";
-import { EcctrlJoystick } from "@/libs/ecctrl/src/Ecctrl";
+import { EcctrlJoystick } from "@/libs/ecctrl/Ecctrl";
 
 import { Sun } from "@/models/Sun";
 import { ShipEntity as Ship } from "@/entities/Ship";
