@@ -8,12 +8,12 @@ import { Sun } from "@/models/Sun";
 import { ShipEntity as Ship } from "@/entities/Ship";
 import { PirateEntity } from "@/entities/Pirate";
 import type { PointerEvent } from "react";
-import { Environment, Loader } from "@react-three/drei";
+import { Environment, Float, Loader } from "@react-three/drei";
 import * as THREE from "three";
 import { useGame } from "@/hooks/useGame";
 import { Skybox } from "@/models/SkyBox";
 import { RagingSea } from "@/models/Sea";
-import { Leva } from "leva";
+import { Leva, useControls } from "leva";
 
 const EcctrlJoystickControls = () => {
   const [isTouchScreen, setIsTouchScreen] = useState(false);
@@ -56,13 +56,22 @@ export function Experience() {
     }
   }, [setDebug]);
 
+  const {
+    speed,
+    rotation,
+    floatIntensity
+  } = useControls("Float", {
+    speed: { value: 5, min: 0, max: 10 },
+    rotation: { value: 0.11, min: 0, max: 1 },
+    floatIntensity: { value: 0.4, min: 0, max: 1 },
+  })
+
   return (
     <>
-      <EcctrlJoystickControls />
       <Canvas
         shadows
         camera={{
-          fov: 65,
+          fov: 47,
           near: 0.1,
           far: 400,
         }}
@@ -74,14 +83,17 @@ export function Experience() {
           {debug && <Perf position="top-left" />}
           <Sun />
           <Physics debug={debug} timeStep="vary">
-            <PirateEntity />
-            <Ship />
+            <Float speed={speed} rotationIntensity={rotation} floatIntensity={floatIntensity}>
+              <PirateEntity />
+              <Ship />
+            </Float>
             <RagingSea />
           </Physics>
         </Suspense>
       </Canvas>
       <Loader />
       <Leva hidden={!debug} />
+      <EcctrlJoystickControls />
     </>
   );
 }
