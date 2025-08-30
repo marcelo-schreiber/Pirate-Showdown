@@ -370,9 +370,9 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     debug
       ? {
           rayOriginOffset: {
-            x: 0,
-            y: -capsuleHalfHeight,
-            z: 0,
+            x: rayOriginOffset.x,
+            y: rayOriginOffset.y,
+            z: rayOriginOffset.z,
           },
           rayHitForgiveness: {
             value: rayHitForgiveness,
@@ -381,12 +381,16 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
             step: 0.01,
           },
           rayLength: {
-            value: capsuleRadius + 2,
+            value: rayLength,
             min: 0,
             max: capsuleRadius + 10,
             step: 0.01,
           },
-          rayDir: { x: 0, y: -1, z: 0 },
+          rayDir: {
+            x: rayDir.x,
+            y: rayDir.y,
+            z: rayDir.z,
+          },
           floatingDis: {
             value: floatingDis,
             min: 0,

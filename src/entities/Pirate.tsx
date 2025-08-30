@@ -57,13 +57,17 @@ export function PirateEntity() {
         animated
         position={[0, 3, 0]}
         ref={characterRef}
-        type="dynamic"
+        followLight={false}
+        floatingDis={0.2}
+        jumpVel={3.25}
+        rayOriginOffset={{ x: 0, y: -0.6, z: 0 }}
+        slopeUpExtraForce={0.2}
       >
         <EcctrlAnimation
           characterURL={characterURL}
           animationSet={animationSet}
         >
-          <PirateModel position={[0, -0.9, 0]} scale={0.88} />
+          <PirateModel position={[0, -0.79, 0]} scale={0.85} />
         </EcctrlAnimation>
       </Ecctrl>
     </KeyboardControls>
