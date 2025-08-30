@@ -116,7 +116,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     fallingMaxVel = -20,
     wakeUpDelay = 200,
     // Floating Ray setups
-    rayOriginOffest = { x: 0, y: -capsuleHalfHeight, z: 0 },
+    rayOriginOffset = { x: 0, y: -capsuleHalfHeight, z: 0 },
     rayHitForgiveness = 0.1,
     rayLength = capsuleRadius + 2,
     rayDir = { x: 0, y: -1, z: 0 },
@@ -126,7 +126,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     // Slope Ray setups
     showSlopeRayOrigin = false,
     slopeMaxAngle = 1, // in rad
-    slopeRayOriginOffest = capsuleRadius - 0.03,
+    slopeRayOriginOffset = capsuleRadius - 0.03,
     slopeRayLength = capsuleRadius + 3,
     slopeRayDir = { x: 0, y: -1, z: 0 },
     slopeUpExtraForce = 0.1,
@@ -369,7 +369,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     "Floating Ray",
     debug
       ? {
-          rayOriginOffest: {
+          rayOriginOffset: {
             x: 0,
             y: -capsuleHalfHeight,
             z: 0,
@@ -388,7 +388,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
           },
           rayDir: { x: 0, y: -1, z: 0 },
           floatingDis: {
-            value: capsuleRadius + floatHeight,
+            value: floatingDis,
             min: 0,
             max: capsuleRadius + 2,
             step: 0.01,
@@ -410,7 +410,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     { collapsed: true },
   ) as Partial<FloatingRaySchema>;
   if (debug) {
-    rayOriginOffest = floatingRayDebug.rayOriginOffest ?? rayOriginOffest;
+    rayOriginOffset = floatingRayDebug.rayOriginOffset ?? rayOriginOffset;
     rayHitForgiveness = floatingRayDebug.rayHitForgiveness ?? rayHitForgiveness;
     rayLength = floatingRayDebug.rayLength ?? rayLength;
     rayDir = floatingRayDebug.rayDir ?? rayDir;
@@ -431,7 +431,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
             max: 1.57,
             step: 0.01,
           },
-          slopeRayOriginOffest: {
+          slopeRayOriginOffset: {
             value: capsuleRadius,
             min: 0,
             max: capsuleRadius + 3,
@@ -463,8 +463,8 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
   if (debug) {
     showSlopeRayOrigin = slopeRayDebug.showSlopeRayOrigin ?? showSlopeRayOrigin;
     slopeMaxAngle = slopeRayDebug.slopeMaxAngle ?? slopeMaxAngle;
-    slopeRayOriginOffest =
-      slopeRayDebug.slopeRayOriginOffest ?? slopeRayOriginOffest;
+    slopeRayOriginOffset =
+      slopeRayDebug.slopeRayOriginOffset ?? slopeRayOriginOffset;
     slopeRayLength = slopeRayDebug.slopeRayLength ?? slopeRayLength;
     slopeRayDir = slopeRayDebug.slopeRayDir ?? slopeRayDir;
     slopeUpExtraForce = slopeRayDebug.slopeUpExtraForce ?? slopeUpExtraForce;
@@ -957,13 +957,13 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         .copy(slopeRayOriginUpdatePosition)
         .cross(modelFacingVec);
       slopeRayOriginRef.current.position.x =
-        slopeRayOriginOffest *
+        slopeRayOriginOffset *
         Math.sin(
           slopeRayOriginUpdatePosition.angleTo(modelFacingVec) *
             (camBasedMoveCrossVecOnY.y < 0 ? 1 : -1),
         );
       slopeRayOriginRef.current.position.z =
-        slopeRayOriginOffest *
+        slopeRayOriginOffset *
         Math.cos(
           slopeRayOriginUpdatePosition.angleTo(modelFacingVec) *
             (camBasedMoveCrossVecOnY.y < 0 ? 1 : -1),
@@ -1401,7 +1401,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     /**
      * Ray casting detect if on ground
      */
-    rayOrigin.addVectors(currentPos, rayOriginOffest as THREE.Vector3);
+    rayOrigin.addVectors(currentPos, rayOriginOffset as THREE.Vector3);
     rayHit.current = world.castRay(
       rayCast,
       rayLength,
@@ -1599,7 +1599,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         slopeAngle = Number(
           Math.atan(
             (rayHit.current.timeOfImpact - slopeRayHit.current.timeOfImpact) /
-              slopeRayOriginOffest,
+              slopeRayOriginOffset,
           ).toFixed(2),
         );
       } else {
@@ -1840,9 +1840,9 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         {/* This mesh is used for positioning the slope ray origin */}
         <mesh
           position={[
-            rayOriginOffest.x,
-            rayOriginOffest.y,
-            rayOriginOffest.z + slopeRayOriginOffest,
+            rayOriginOffset.x,
+            rayOriginOffset.y,
+            rayOriginOffset.z + slopeRayOriginOffset,
           ]}
           ref={slopeRayOriginRef}
           visible={showSlopeRayOrigin}
@@ -1877,7 +1877,7 @@ type CharacterControlsSchema = {
 };
 
 type FloatingRaySchema = {
-  rayOriginOffest: { x: number; y: number; z: number };
+  rayOriginOffset: { x: number; y: number; z: number };
   rayHitForgiveness: number;
   rayLength: number;
   rayDir: { x: number; y: number; z: number };
@@ -1889,7 +1889,7 @@ type FloatingRaySchema = {
 type SlopeRaySchema = {
   showSlopeRayOrigin: boolean;
   slopeMaxAngle: number;
-  slopeRayOriginOffest: number;
+  slopeRayOriginOffset: number;
   slopeRayLength: number;
   slopeRayDir: { x: number; y: number; z: number };
   slopeUpExtraForce: number;
@@ -1961,7 +1961,7 @@ export interface EcctrlProps extends RigidBodyProps {
   fallingMaxVel?: number;
   wakeUpDelay?: number;
   // Floating Ray setups
-  rayOriginOffest?: { x: number; y: number; z: number };
+  rayOriginOffset?: { x: number; y: number; z: number };
   rayHitForgiveness?: number;
   rayLength?: number;
   rayDir?: { x: number; y: number; z: number };
@@ -1971,14 +1971,14 @@ export interface EcctrlProps extends RigidBodyProps {
   // Slope Ray setups
   showSlopeRayOrigin?: boolean;
   slopeMaxAngle?: number;
-  slopeRayOriginOffest?: number;
+  slopeRayOriginOffset?: number;
   slopeRayLength?: number;
   slopeRayDir?: { x: number; y: number; z: number };
   slopeUpExtraForce?: number;
   slopeDownExtraForce?: number;
   // Head Ray setups
   showHeadRayOrigin?: boolean;
-  headRayOriginOffest?: number;
+  headrayOriginOffset?: number;
   headRayLength?: number;
   headRayDir?: { x: number; y: number; z: number };
   // AutoBalance Force setups
