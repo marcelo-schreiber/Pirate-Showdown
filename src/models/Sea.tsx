@@ -105,7 +105,6 @@ export function RagingSea() {
       <RigidBody
         type="fixed"
         colliders={false}
-        position-y={-0.67}
         rotation-x={-Math.PI / 2}
       >
         <CuboidCollider
@@ -138,7 +137,6 @@ export function RagingSea() {
       </RigidBody>
       <Plane
         args={[300, 300, 28, 28]}
-        position-y={-1.8}
         rotation-x={-Math.PI / 2}
       >
         <ragingSeaMaterial
