@@ -76,7 +76,7 @@ export function Experience() {
       <Canvas
         shadows
         camera={{
-          fov: 47,
+          fov: 60,
           near: 0.1,
           far: 400,
         }}
