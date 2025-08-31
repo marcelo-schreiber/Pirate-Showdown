@@ -14,6 +14,12 @@ import { useGame } from "@/hooks/useGame";
 import { Skybox } from "@/models/SkyBox";
 import { RagingSea } from "@/models/Sea";
 import { Leva, useControls } from "leva";
+import {
+  EffectComposer,
+  ToneMapping,
+  Vignette,
+} from "@react-three/postprocessing";
+import { ToneMappingMode } from "postprocessing";
 
 const EcctrlJoystickControls = () => {
   const [isTouchScreen, setIsTouchScreen] = useState(false);
@@ -50,21 +56,20 @@ export function Experience() {
   const { debug, setDebug } = useGame();
 
   useEffect(() => {
-    // if url has hash debug
     if (window.location.hash === "#debug") {
       setDebug(true);
     }
   }, [setDebug]);
 
-  const {
-    speed,
-    rotation,
-    floatIntensity
-  } = useControls("Float", {
+  const { speed, rotation, floatIntensity } = useControls("Float", {
     speed: { value: 4.2, min: 0, max: 10 },
     rotation: { value: 0.11, min: 0, max: 1 },
     floatIntensity: { value: 0.4, min: 0, max: 1 },
-  })
+  });
+
+  const { ToneMappingModeControl } = useControls("Tone Mapping", {
+    ToneMappingModeControl: { value: "NEUTRAL", options: Object.keys(ToneMappingMode) },
+  });
 
   return (
     <>
@@ -78,12 +83,24 @@ export function Experience() {
         onPointerDown={handleLockControls}
       >
         <Suspense fallback={null}>
+          <EffectComposer>
+            <ToneMapping mode={ToneMappingMode[ToneMappingModeControl as keyof typeof ToneMappingMode]} />
+            <Vignette />
+          </EffectComposer>
           <Skybox />
-          <Environment files="/environment/env.exr" background={false} environmentIntensity={1.06}/>
-          {debug && <Perf position="top-left" />}
+          <Environment
+            files="/environment/env.exr"
+            background={false}
+            environmentIntensity={1.06}
+          />
+          <Perf position="top-left" minimal={!debug} />
           <Sun />
           <Physics debug={debug} timeStep="vary">
-            <Float speed={speed} rotationIntensity={rotation} floatIntensity={floatIntensity}>
+            <Float
+              speed={speed}
+              rotationIntensity={rotation}
+              floatIntensity={floatIntensity}
+            >
               <PirateEntity />
               <Ship />
             </Float>

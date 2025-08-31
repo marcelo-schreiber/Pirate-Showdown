@@ -15,10 +15,10 @@ const RagingSeaMaterial = shaderMaterial(
     uBigWavesElevation: 0.8,
     uBigWavesFrequency: [0.2, 0.7],
     uBigWavesSpeed: 0.75,
-    uSurfaceColor: new THREE.Color("#c1e4fe"),
-    uDepthColor: new THREE.Color("#0066b3"),
+    uSurfaceColor: new THREE.Color("#99e5e1"),
+    uDepthColor: new THREE.Color("#26a0c2"),
     uColorOffset: 0.08,
-    uColorMultiplier: 1.4,
+    uColorMultiplier: 1.1,
     uSmallWavesElevation: 0.15,
     uSmallWavesFrequency: 3,
     uSmallWavesSpeed: 0.2,
@@ -68,10 +68,10 @@ export function RagingSea() {
     smallIterations,
   } = useControls({
     Ocean: folder({
-      surfaceColor: "#27aace",
+      surfaceColor: "#99e5e1",
       depthColor: "#26a0c2",
       colorOffset: 0.08,
-      colorMultiplier: 1.4,
+      colorMultiplier: 1.1,
       animate: true,
     }),
     "Big waves": folder({
