@@ -62,9 +62,9 @@ export function Experience() {
   }, [setDebug]);
 
   const { speed, rotation, floatIntensity } = useControls("Float", {
-    speed: { value: 4.2, min: 0, max: 10 },
-    rotation: { value: 0.11, min: 0, max: 1 },
-    floatIntensity: { value: 0.4, min: 0, max: 1 },
+    speed: { value: 5.1, min: 0, max: 10 },
+    rotation: { value: 0.09, min: 0, max: 1 },
+    floatIntensity: { value: 0.38, min: 0, max: 1 },
   });
 
   const { ToneMappingModeControl } = useControls("Tone Mapping", {
