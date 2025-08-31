@@ -1,4 +1,4 @@
-import { KeyboardControls } from "@react-three/drei";
+import { useKeyboardControls } from "@react-three/drei";
 import Ecctrl, {
   CustomEcctrlRigidBody,
   EcctrlAnimation,
@@ -6,19 +6,7 @@ import Ecctrl, {
 import { PirateModel } from "@/models/Pirate";
 import { useGame } from "@/hooks/useGame";
 import { useEffect, useRef } from "react";
-
-const keyboardMap = [
-  { name: "forward", keys: ["ArrowUp", "KeyW"] },
-  { name: "backward", keys: ["ArrowDown", "KeyS"] },
-  { name: "leftward", keys: ["ArrowLeft", "KeyA"] },
-  { name: "rightward", keys: ["ArrowRight", "KeyD"] },
-  { name: "jump", keys: ["Space"] },
-  { name: "run", keys: ["Shift"] },
-  { name: "action1", keys: ["1"] },
-  { name: "action2", keys: ["2"] },
-  { name: "action3", keys: ["3"] },
-  { name: "action4", keys: ["KeyF"] },
-];
+import { useKeyHold } from "@/hooks/useKeyHold";
 
 const characterURL = "./models/Pirate Captain.glb";
 
@@ -48,30 +36,31 @@ export function PirateEntity() {
 
   useEffect(() => {
     setCharacterRef(characterRef.current);
-  }, [characterRef, setCharacterRef]);
+  }, []);
+
+  const FPressed = useKeyboardControls((state) => state.action4);
+
+  useKeyHold(FPressed, 1.5, () => {
+    console.log("F key held for more than 1.5 seconds (only once per hold)");
+  });
 
   return (
-    <KeyboardControls map={keyboardMap}>
-      <Ecctrl
-        debug={debug}
-        animated
-        position={[0, 3, 0]}
-        ref={characterRef}
-        followLight={false}
-        floatingDis={0.2}
-        jumpVel={3.25}
-        rayOriginOffset={{ x: 0, y: -0.6, z: 0 }}
-        slopeUpExtraForce={0.2}
-        rayLength={0.5}
-        slopeRayLength={0.5}
-      >
-        <EcctrlAnimation
-          characterURL={characterURL}
-          animationSet={animationSet}
-        >
-          <PirateModel position={[0, -0.74, 0]} scale={0.85} />
-        </EcctrlAnimation>
-      </Ecctrl>
-    </KeyboardControls>
+    <Ecctrl
+      debug={debug}
+      animated
+      position={[0, 3, 0]}
+      ref={characterRef}
+      followLight={false}
+      floatingDis={0.2}
+      jumpVel={3.25}
+      rayOriginOffset={{ x: 0, y: -0.6, z: 0 }}
+      slopeUpExtraForce={0.2}
+      rayLength={0.5}
+      slopeRayLength={0.5}
+    >
+      <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
+        <PirateModel position={[0, -0.74, 0]} scale={0.85} />
+      </EcctrlAnimation>
+    </Ecctrl>
   );
 }

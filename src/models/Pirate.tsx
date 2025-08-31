@@ -23,7 +23,9 @@ export function PirateModel(props: JSX.IntrinsicElements["group"]) {
             name="CharacterArmature"
             userData={{ name: "CharacterArmature" }}
           >
-            <primitive object={nodes.Root} />
+            <mesh>
+              <primitive object={nodes.Root} />
+            </mesh>
           </group>
           <skinnedMesh
             castShadow
