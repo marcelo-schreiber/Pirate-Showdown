@@ -61,7 +61,7 @@ export function Experience() {
     rotation,
     floatIntensity
   } = useControls("Float", {
-    speed: { value: 5, min: 0, max: 10 },
+    speed: { value: 4.2, min: 0, max: 10 },
     rotation: { value: 0.11, min: 0, max: 1 },
     floatIntensity: { value: 0.4, min: 0, max: 1 },
   })
@@ -79,7 +79,7 @@ export function Experience() {
       >
         <Suspense fallback={null}>
           <Skybox />
-          <Environment files="/environment/env.exr" background={false} />
+          <Environment files="/environment/env.exr" background={false} environmentIntensity={1.06}/>
           {debug && <Perf position="top-left" />}
           <Sun />
           <Physics debug={debug} timeStep="vary">
