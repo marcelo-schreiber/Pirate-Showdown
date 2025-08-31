@@ -36,7 +36,8 @@ export function PirateEntity() {
 
   useEffect(() => {
     setCharacterRef(characterRef.current);
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [characterRef]);
 
   const FPressed = useKeyboardControls((state) => state.action4);
 
