@@ -1,4 +1,4 @@
-import { RedXModel } from "@/models/Red X";
+// import { RedXModel } from "@/models/Red X";
 import { ShipModel } from "@/models/Ship";
 import {
   CuboidCollider,
@@ -401,7 +401,7 @@ export function ShipEntity(props: RigidBodyProps) {
         />
         <ShipModel />
       </RigidBody>
-      <RedXModel position={[-0.1, 1, -0.9]} scale={30} />
+      {/* <RedXModel position={[-0.1, 1, -0.9]} scale={30} /> */}
     </>
   );
 }
