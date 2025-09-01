@@ -1,0 +1,10 @@
+- lock player in cannon
+- shoot cannon
+- beach + dock
+- tasks to shoot cannon
+- duplicate without copy
+- multiplayer
+- proximity chat
+- UI
+- character selection
+- fix bugs and improvements
