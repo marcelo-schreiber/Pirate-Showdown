@@ -7,6 +7,7 @@ import { PirateModel } from "@/models/Pirate";
 import { useGame } from "@/hooks/useGame";
 import { useEffect, useRef } from "react";
 import { useKeyHold } from "@/hooks/useKeyHold";
+import { useShallow } from "zustand/react/shallow";
 
 const characterURL = "./models/Pirate Captain.glb";
 
@@ -31,12 +32,14 @@ const animationSet = {
 };
 
 export function PirateEntity() {
-  const { debug, setCharacterRef } = useGame();
+  const { debug, setCharacterRef } = useGame(
+    useShallow((s) => ({ debug: s.debug, setCharacterRef: s.setCharacterRef })),
+  );
   const characterRef = useRef<CustomEcctrlRigidBody>(null!);
 
   useEffect(() => {
     setCharacterRef(characterRef.current);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [characterRef]);
 
   const FPressed = useKeyboardControls((state) => state.action4);

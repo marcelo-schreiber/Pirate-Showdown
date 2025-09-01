@@ -1,7 +1,7 @@
 import { useThree } from "@react-three/fiber";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
-import type { camListenerTargetType } from "../Ecctrl";
+import type { camListenerTargetType } from "@/libs/ecctrl/Ecctrl";
 
 export const useFollowCam = function ({
   disableFollowCam = false,

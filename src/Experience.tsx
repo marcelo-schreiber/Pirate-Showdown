@@ -8,7 +8,12 @@ import { Sun } from "@/models/Sun";
 import { ShipEntity as Ship } from "@/entities/Ship";
 import { PirateEntity } from "@/entities/Pirate";
 import type { PointerEvent } from "react";
-import { Environment, Float, KeyboardControls, Loader } from "@react-three/drei";
+import {
+  Environment,
+  Float,
+  KeyboardControls,
+  Loader,
+} from "@react-three/drei";
 import * as THREE from "three";
 import { useGame } from "@/hooks/useGame";
 import { Skybox } from "@/models/SkyBox";
@@ -20,6 +25,7 @@ import {
   Vignette,
 } from "@react-three/postprocessing";
 import { ToneMappingMode } from "postprocessing";
+import { useShallow } from "zustand/react/shallow";
 
 const EcctrlJoystickControls = () => {
   const [isTouchScreen, setIsTouchScreen] = useState(false);
@@ -66,7 +72,9 @@ const handleLockControls = (e: PointerEvent<HTMLDivElement>) => {
 };
 
 export function Experience() {
-  const { debug, setDebug } = useGame();
+  const { debug, setDebug } = useGame(
+    useShallow((s) => ({ debug: s.debug, setDebug: s.setDebug })),
+  );
 
   useEffect(() => {
     if (window.location.hash === "#debug") {
@@ -81,7 +89,10 @@ export function Experience() {
   });
 
   const { ToneMappingModeControl } = useControls("Tone Mapping", {
-    ToneMappingModeControl: { value: "NEUTRAL", options: Object.keys(ToneMappingMode) },
+    ToneMappingModeControl: {
+      value: "NEUTRAL",
+      options: Object.keys(ToneMappingMode),
+    },
   });
 
   return (
@@ -97,7 +108,13 @@ export function Experience() {
       >
         <Suspense fallback={null}>
           <EffectComposer>
-            <ToneMapping mode={ToneMappingMode[ToneMappingModeControl as keyof typeof ToneMappingMode]} />
+            <ToneMapping
+              mode={
+                ToneMappingMode[
+                  ToneMappingModeControl as keyof typeof ToneMappingMode
+                ]
+              }
+            />
             <Vignette />
           </EffectComposer>
           <Skybox />
@@ -114,10 +131,9 @@ export function Experience() {
               rotationIntensity={rotation}
               floatIntensity={floatIntensity}
             >
-                 <KeyboardControls map={keyboardMap}>
-
-              <PirateEntity />
-                 </KeyboardControls>
+              <KeyboardControls map={keyboardMap}>
+                <PirateEntity />
+              </KeyboardControls>
               <Ship />
             </Float>
             <RagingSea />

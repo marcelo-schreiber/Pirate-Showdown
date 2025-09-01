@@ -303,7 +303,6 @@ const heights = [
 ];
 
 export function ShipEntity(props: RigidBodyProps) {
-
   return (
     <>
       <RigidBody type="fixed" colliders={false} {...props}>

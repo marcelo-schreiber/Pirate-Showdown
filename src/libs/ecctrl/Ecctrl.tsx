@@ -22,17 +22,17 @@ import {
 } from "react";
 import * as THREE from "three";
 import { useControls } from "leva";
-import { useFollowCam } from "./hooks/useFollowCam";
-import { useGame } from "./hooks/useGame";
-import { useJoystickControls } from "./hooks/useJoystickControls";
+import { useFollowCam } from "@/hooks/useFollowCam";
+import { useGame } from "@/hooks/useGame";
+import { useJoystickControls } from "@/hooks/useJoystickControls";
 import { QueryFilterFlags, RayColliderHit } from "@dimforge/rapier3d-compat";
 import type { Collider, Vector } from "@dimforge/rapier3d-compat";
 
 export { EcctrlAnimation } from "./EcctrlAnimation";
-export { useFollowCam } from "./hooks/useFollowCam";
-export { useGame } from "./hooks/useGame";
+export { useFollowCam } from "@/hooks/useFollowCam";
+export { useGame } from "@/hooks/useGame";
 export { EcctrlJoystick } from "./EcctrlJoystick";
-export { useJoystickControls } from "./hooks/useJoystickControls";
+export { useJoystickControls } from "@/hooks/useJoystickControls";
 
 // Retrieve current moving direction of the character
 const getMovingDirection = (

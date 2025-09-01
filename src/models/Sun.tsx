@@ -5,7 +5,7 @@ import { useRef } from "react";
 import * as THREE from "three";
 
 export function Sun() {
-  const { debug } = useGame();
+  const debug = useGame((s) => s.debug);
   const dirLightRef = useRef<THREE.DirectionalLight>(null!);
 
   useHelper(debug ? dirLightRef : null, THREE.DirectionalLightHelper, 5, "red");

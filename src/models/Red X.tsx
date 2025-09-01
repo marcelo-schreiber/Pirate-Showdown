@@ -4,7 +4,7 @@ import type { Mesh } from "three";
 
 export function RedXModel(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF("/models/Red X.glb");
-  
+
   return (
     <group {...props} dispose={null}>
       <mesh
