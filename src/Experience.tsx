@@ -99,6 +99,7 @@ export function Experience() {
     <>
       <Canvas
         shadows
+        dpr={Math.min(window.devicePixelRatio, 2)}
         camera={{
           fov: 60,
           near: 0.1,
