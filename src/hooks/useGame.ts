@@ -6,6 +6,8 @@ import { CustomEcctrlRigidBody } from "@/libs/ecctrl/Ecctrl";
 export const useGame = /* @__PURE__ */ create(
   /* @__PURE__ */ subscribeWithSelector<State>((set, get) => {
     return {
+      isLocked: false,
+      toggleIsLocked: () => set((state) => ({ isLocked: !state.isLocked })),
       characterRef: null,
       setCharacterRef: (characterRef: CustomEcctrlRigidBody | null) =>
         set({ characterRef }),
@@ -187,6 +189,8 @@ export type AnimationSet = {
 type State = {
   characterRef: CustomEcctrlRigidBody | null;
   setCharacterRef: (characterRef: CustomEcctrlRigidBody | null) => void;
+  isLocked: boolean;
+  toggleIsLocked: () => void;
   debug: boolean;
   setDebug: (debug: boolean) => void;
   moveToPoint: THREE.Vector3 | null;

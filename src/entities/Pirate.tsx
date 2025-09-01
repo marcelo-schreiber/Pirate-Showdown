@@ -32,8 +32,13 @@ const animationSet = {
 };
 
 export function PirateEntity() {
-  const { debug, setCharacterRef } = useGame(
-    useShallow((s) => ({ debug: s.debug, setCharacterRef: s.setCharacterRef })),
+  const { debug, setCharacterRef, isLocked, toggleIsLocked } = useGame(
+    useShallow((s) => ({
+      debug: s.debug,
+      setCharacterRef: s.setCharacterRef,
+      isLocked: s.isLocked,
+      toggleIsLocked: s.toggleIsLocked,
+    }))
   );
   const characterRef = useRef<CustomEcctrlRigidBody>(null!);
 
@@ -45,6 +50,22 @@ export function PirateEntity() {
   const FPressed = useKeyboardControls((state) => state.action4);
 
   useKeyHold(FPressed, 1.5, () => {
+    const character = characterRef.current.group;
+    if (!character) return;
+
+
+    if (isLocked) {
+      character.lockRotations(false, false);
+      character.lockTranslations(false, false);
+    } else {
+      character.setTranslation({ x: -0.1, y: 1, z: -0.9 }, true);
+      character.lockTranslations(true, true);
+
+      character.setRotation({ x: 0, y: 1, z: 0, w: Math.PI / 4 }, true);
+      character.lockRotations(true, true);
+    }
+
+    toggleIsLocked();
     console.log("F key held for more than 1.5 seconds (only once per hold)");
   });
 
