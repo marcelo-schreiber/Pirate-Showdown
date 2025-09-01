@@ -11,7 +11,7 @@ import React, {
   useRef,
 } from "react";
 import { useSpring, animated } from "@react-spring/three";
-import { useJoystickControls } from "./hooks/useJoystickControls";
+import { useJoystickControls } from "@/hooks/useJoystickControls";
 
 const JoystickComponents = (props: EcctrlJoystickProps) => {
   /**
@@ -116,7 +116,6 @@ const JoystickComponents = (props: EcctrlJoystickProps) => {
 
       // Pass values to joystick store
       setJoystick(joystickDis.current, joystickAng.current, runState);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     },
     [
       api,

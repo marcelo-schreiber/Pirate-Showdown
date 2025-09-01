@@ -4,7 +4,11 @@ import { useEffect, useRef } from "react";
  * Detects when a key (from useKeyboardControls) has been held for a duration.
  * Fires only once per hold.
  */
-export function useKeyHold(isPressed: boolean, duration: number, onTrigger: () => void) {
+export function useKeyHold(
+  isPressed: boolean,
+  duration: number,
+  onTrigger: () => void,
+) {
   const timerRef = useRef<number | null>(null);
 
   useEffect(() => {

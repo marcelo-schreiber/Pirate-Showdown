@@ -1,7 +1,7 @@
 import { useGLTF, useAnimations } from "@react-three/drei";
 import { useEffect, useRef, Suspense } from "react";
 import * as THREE from "three";
-import { useGame, type AnimationSet } from "./hooks/useGame";
+import { useGame, type AnimationSet } from "@/hooks/useGame";
 import React from "react";
 
 type ActionWithPrivateVars = THREE.AnimationAction & {

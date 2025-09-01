@@ -25,7 +25,7 @@ const RagingSeaMaterial = shaderMaterial(
     uSmallIterations: 4,
   },
   vertexShader,
-  fragmentShader
+  fragmentShader,
 );
 RagingSeaMaterial.key = `$${Math.random()}`;
 extend({ RagingSeaMaterial });
@@ -52,7 +52,7 @@ declare module "@react-three/fiber" {
 }
 
 export function RagingSea() {
-  const { characterRef } = useGame();
+  const characterRef = useGame((s) => s.characterRef);
   const {
     animate,
     bigWavesElevation,
@@ -102,11 +102,7 @@ export function RagingSea() {
 
   return (
     <>
-      <RigidBody
-        type="fixed"
-        colliders={false}
-        rotation-x={-Math.PI / 2}
-      >
+      <RigidBody type="fixed" colliders={false} rotation-x={-Math.PI / 2}>
         <CuboidCollider
           args={[50, 50, 50]}
           position={[0, 0, -50.1]}
@@ -135,10 +131,7 @@ export function RagingSea() {
           />
         </Plane>
       </RigidBody>
-      <Plane
-        args={[300, 300, 28, 28]}
-        rotation-x={-Math.PI / 2}
-      >
+      <Plane args={[300, 300, 28, 28]} rotation-x={-Math.PI / 2}>
         <ragingSeaMaterial
           key={RagingSeaMaterial.key}
           ref={farShaderRef}
