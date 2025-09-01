@@ -26,6 +26,7 @@ import {
 } from "@react-three/postprocessing";
 import { ToneMappingMode } from "postprocessing";
 import { useShallow } from "zustand/react/shallow";
+import { useIsMobile } from "./hooks/useIsMobile";
 
 const EcctrlJoystickControls = () => {
   const [isTouchScreen, setIsTouchScreen] = useState(false);
@@ -76,6 +77,8 @@ export function Experience() {
     useShallow((s) => ({ debug: s.debug, setDebug: s.setDebug })),
   );
 
+  const isMobile = useIsMobile();
+
   useEffect(() => {
     if (window.location.hash === "#debug") {
       setDebug(true);
@@ -99,6 +102,7 @@ export function Experience() {
     <>
       <Canvas
         shadows
+        dpr={Math.min(window.devicePixelRatio, 2)}
         camera={{
           fov: 60,
           near: 0.1,
@@ -107,7 +111,7 @@ export function Experience() {
         onPointerDown={handleLockControls}
       >
         <Suspense fallback={null}>
-          <EffectComposer>
+          <EffectComposer enabled={!isMobile}>
             <ToneMapping
               mode={
                 ToneMappingMode[
