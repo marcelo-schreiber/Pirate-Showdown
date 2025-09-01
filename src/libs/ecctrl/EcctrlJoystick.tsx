@@ -117,6 +117,7 @@ const JoystickComponents = (props: EcctrlJoystickProps) => {
       // Pass values to joystick store
       setJoystick(joystickDis.current, joystickAng.current, runState);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       api,
       joystickMovementVec2,
