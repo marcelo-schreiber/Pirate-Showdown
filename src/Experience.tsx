@@ -1,8 +1,7 @@
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Perf } from "r3f-perf";
-import { Suspense, useEffect, useState } from "react";
-import { EcctrlJoystick } from "@/libs/ecctrl/Ecctrl";
+import { Suspense, useEffect } from "react";
 
 import { Sun } from "@/models/Sun";
 import { ShipEntity as Ship } from "@/entities/Ship";
@@ -21,32 +20,10 @@ import {
 } from "@react-three/postprocessing";
 import { ToneMappingMode } from "postprocessing";
 import { useShallow } from "zustand/react/shallow";
-import { useIsMobile } from "./hooks/useIsMobile";
+import { useIsMobile } from "@/hooks/useIsMobile";
+import { Trajectory } from "@/models/Parabula";
+import { EcctrlJoystickControls } from "@/components/EcctrlJoystickControls";
 
-const EcctrlJoystickControls = () => {
-  const [isTouchScreen, setIsTouchScreen] = useState(false);
-
-  useEffect(() => {
-    // Check if using a touch control device, show/hide joystick
-    const isUsingTouchScreen =
-      "ontouchstart" in window || navigator.maxTouchPoints > 0;
-    setIsTouchScreen(isUsingTouchScreen);
-  }, []);
-
-  return (
-    <>
-      {isTouchScreen && (
-        <EcctrlJoystick
-          buttonNumber={5}
-          joystickBaseProps={{
-            receiveShadow: true,
-            material: new THREE.MeshStandardMaterial({ color: "grey" }),
-          }}
-        />
-      )}
-    </>
-  );
-};
 
 const keyboardMap = [
   { name: "forward", keys: ["ArrowUp", "KeyW"] },
@@ -55,10 +32,8 @@ const keyboardMap = [
   { name: "rightward", keys: ["ArrowRight", "KeyD"] },
   { name: "jump", keys: ["Space"] },
   { name: "run", keys: ["Shift"] },
-  { name: "action1", keys: ["1"] },
-  { name: "action2", keys: ["2"] },
-  { name: "action3", keys: ["3"] },
-  { name: "action4", keys: ["KeyF"] },
+  { name: "action2", keys: ["f"] },
+  { name: "action3", keys: ["e"] },
 ];
 
 const handleLockControls = (e: PointerEvent<HTMLDivElement>) => {
@@ -69,7 +44,7 @@ const handleLockControls = (e: PointerEvent<HTMLDivElement>) => {
 
 export function Experience() {
   const { debug, setDebug } = useGame(
-    useShallow((s) => ({ debug: s.debug, setDebug: s.setDebug })),
+    useShallow((s) => ({ debug: s.debug, setDebug: s.setDebug }))
   );
 
   const isMobile = useIsMobile();
@@ -82,8 +57,8 @@ export function Experience() {
 
   const { ToneMappingModeControl } = useControls("Tone Mapping", {
     ToneMappingModeControl: {
-      value: "NEUTRAL",
-      options: Object.keys(ToneMappingMode),
+      value: "NEUTRAL" as keyof typeof ToneMappingMode,
+      options: Object.keys(ToneMappingMode) as (keyof typeof ToneMappingMode)[],
     },
   });
 
@@ -101,13 +76,7 @@ export function Experience() {
       >
         <Suspense fallback={null}>
           <EffectComposer enabled={!isMobile}>
-            <ToneMapping
-              mode={
-                ToneMappingMode[
-                  ToneMappingModeControl as keyof typeof ToneMappingMode
-                ]
-              }
-            />
+            <ToneMapping mode={ToneMappingMode[ToneMappingModeControl]} />
             <Vignette />
           </EffectComposer>
           <Skybox />
@@ -124,6 +93,10 @@ export function Experience() {
             </KeyboardControls>
             <Ship />
             <RagingSea />
+            <Trajectory
+              startPos={new THREE.Vector3(0, 5, 0)}
+              startVel={new THREE.Vector3(5, 5, 0)}
+            />
           </Physics>
         </Suspense>
       </Canvas>

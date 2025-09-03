@@ -1167,8 +1167,8 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     const unSubPressButton2 = useJoystickControls.subscribe(
       (state) => state.curButton2Pressed,
       (value) => {
-        if (value && action4Animation) {
-          action4Animation();
+        if (value && action2Animation) {
+          action2Animation();
         }
       },
     );
@@ -1177,8 +1177,8 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     const unSubPressButton3 = useJoystickControls.subscribe(
       (state) => state.curButton3Pressed,
       (value) => {
-        if (value && action2Animation) {
-          action2Animation();
+        if (value && action3Animation) {
+          action3Animation();
         }
       },
     );
@@ -1187,18 +1187,8 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     const unSubPressButton4 = useJoystickControls.subscribe(
       (state) => state.curButton4Pressed,
       (value) => {
-        if (value && action3Animation) {
-          action3Animation();
-        }
-      },
-    );
-
-    // Subscribe button 5
-    const unSubPressButton5 = useJoystickControls.subscribe(
-      (state) => state.curButton5Pressed,
-      (value) => {
-        if (value && action1Animation) {
-          action1Animation();
+        if (value && action4Animation) {
+          action4Animation();
         }
       },
     );
@@ -1207,7 +1197,6 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
       unSubPressButton2();
       unSubPressButton3();
       unSubPressButton4();
-      unSubPressButton5();
     };
   });
 

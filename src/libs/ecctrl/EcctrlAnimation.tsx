@@ -44,7 +44,7 @@ export function EcctrlAnimation(props: EcctrlAnimationProps) {
       curAnimation === props.animationSet.jumpLand ||
       curAnimation === props.animationSet.action1 ||
       curAnimation === props.animationSet.action2 ||
-      curAnimation === props.animationSet.action3 ||
+      // curAnimation === props.animationSet.action3 || // action 3 should be played continously because of lock
       curAnimation === props.animationSet.action4
     ) {
       action.reset().fadeIn(0.2).setLoop(THREE.LoopOnce, 0).play();
