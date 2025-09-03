@@ -1,5 +1,6 @@
 import { useThree } from "@react-three/fiber";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+// import { useRapier } from "@react-three/rapier";
+import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import type { camListenerTargetType } from "@/libs/ecctrl/Ecctrl";
 
@@ -23,8 +24,8 @@ export const useFollowCam = function ({
   // const { rapier, world } = useRapier();
 
   const isMouseDown = useRef(false);
-  const previousTouch1 = useRef<Touch | null>(null);
-  const previousTouch2 = useRef<Touch | null>(null);
+  let previousTouch1: Touch | null = null;
+  let previousTouch2: Touch | null = null;
 
   const originZDis = useRef<number>(camInitDis ?? -5);
   const pivot = useMemo(() => new THREE.Object3D(), []);
@@ -36,13 +37,13 @@ export const useFollowCam = function ({
       originZDis.current * Math.cos(-camInitDir.x),
     );
     return origin;
-  }, [camInitDir.x]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /** Camera collison detect setups */
-  const smallestDistance = useRef<number | null>(null);
-  const cameraDistance = useRef<number | null>(null);
-  const intersects = useRef<THREE.Intersection[]>(null);
-
+  let smallestDistance = null;
+  let cameraDistance = null;
+  let intersects = null;
   // let intersectObjects: THREE.Object3D[] = [];
   const intersectObjects = useRef<THREE.Object3D[]>([]);
   const cameraRayDir = useMemo(() => new THREE.Vector3(), []);
@@ -61,37 +62,84 @@ export const useFollowCam = function ({
   // let rayHit = null;
 
   // Mouse move event
-  const onDocumentMouseMove = useCallback(
-    (e: MouseEvent) => {
-      if (document.pointerLockElement || isMouseDown.current) {
-        pivot.rotation.y -= e.movementX * 0.002 * camMoveSpeed;
-        const vy = followCam.rotation.x + e.movementY * 0.002 * camMoveSpeed;
+  const onDocumentMouseMove = (e: MouseEvent) => {
+    if (document.pointerLockElement || isMouseDown.current) {
+      pivot.rotation.y -= e.movementX * 0.002 * camMoveSpeed;
+      const vy = followCam.rotation.x + e.movementY * 0.002 * camMoveSpeed;
 
-        cameraDistance.current = followCam.position.length();
+      cameraDistance = followCam.position.length();
 
-        if (vy >= camLowLimit && vy <= camUpLimit) {
-          followCam.rotation.x = vy;
-          followCam.position.y = -cameraDistance.current * Math.sin(-vy);
-          followCam.position.z = -cameraDistance.current * Math.cos(-vy);
-        }
+      if (vy >= camLowLimit && vy <= camUpLimit) {
+        followCam.rotation.x = vy;
+        followCam.position.y = -cameraDistance * Math.sin(-vy);
+        followCam.position.z = -cameraDistance * Math.cos(-vy);
       }
-      return false;
-    },
-    [
-      camLowLimit,
-      camMoveSpeed,
-      camUpLimit,
-      followCam.position,
-      followCam.rotation,
-      pivot.rotation,
-    ],
-  );
+    }
+    return false;
+  };
 
   // Mouse scroll event
-  const onDocumentMouseWheel = useCallback(
-    (e: Event) => {
+  const onDocumentMouseWheel = (e: Event) => {
+    const vz =
+      originZDis.current - (e as WheelEvent).deltaY * 0.002 * camZoomSpeed;
+    const vy = followCam.rotation.x;
+
+    if (vz >= camMaxDis && vz <= camMinDis) {
+      originZDis.current = vz;
+      followCam.position.z = originZDis.current * Math.cos(-vy);
+      followCam.position.y = originZDis.current * Math.sin(-vy);
+    }
+    return false;
+  };
+
+  /**
+   * Touch events
+   */
+  // Touch end event
+  const onTouchEnd = () => {
+    previousTouch1 = null;
+    previousTouch2 = null;
+  };
+
+  // Touch move event
+  const onTouchMove = (e: TouchEvent) => {
+    // prevent swipe to navigate gesture
+    e.preventDefault();
+    e.stopImmediatePropagation();
+
+    const touch1 = e.targetTouches[0];
+    const touch2 = e.targetTouches[1];
+
+    // One finger touch to rotate camera
+    if (previousTouch1 && !previousTouch2) {
+      const touch1MovementX = touch1.pageX - previousTouch1.pageX;
+      const touch1MovementY = touch1.pageY - previousTouch1.pageY;
+
+      pivot.rotation.y -= touch1MovementX * 0.005 * camMoveSpeed;
+      const vy = followCam.rotation.x + touch1MovementY * 0.005 * camMoveSpeed;
+
+      cameraDistance = followCam.position.length();
+
+      if (vy >= camLowLimit && vy <= camUpLimit) {
+        followCam.rotation.x = vy;
+        followCam.position.y = -cameraDistance * Math.sin(-vy);
+        followCam.position.z = -cameraDistance * Math.cos(-vy);
+      }
+    }
+
+    // Two fingers touch to zoom in/out camera
+    if (previousTouch1 && previousTouch2) {
+      const prePinchDis = Math.hypot(
+        previousTouch1.pageX - previousTouch2.pageX,
+        previousTouch1.pageY - previousTouch2.pageY,
+      );
+      const pinchDis = Math.hypot(
+        e.touches[0].pageX - e.touches[1].pageX,
+        e.touches[0].pageY - e.touches[1].pageY,
+      );
+
       const vz =
-        originZDis.current - (e as WheelEvent).deltaY * 0.002 * camZoomSpeed;
+        originZDis.current - (prePinchDis - pinchDis) * 0.01 * camZoomSpeed;
       const vy = followCam.rotation.x;
 
       if (vz >= camMaxDis && vz <= camMinDis) {
@@ -99,91 +147,11 @@ export const useFollowCam = function ({
         followCam.position.z = originZDis.current * Math.cos(-vy);
         followCam.position.y = originZDis.current * Math.sin(-vy);
       }
-      return false;
-    },
-    [
-      camMaxDis,
-      camMinDis,
-      camZoomSpeed,
-      followCam.position,
-      followCam.rotation.x,
-    ],
-  );
+    }
 
-  /**
-   * Touch events
-   */
-  // Touch end event
-  const onTouchEnd = useCallback(() => {
-    previousTouch1.current = null;
-    previousTouch2.current = null;
-  }, []);
-
-  // Touch move event
-  const onTouchMove = useCallback(
-    (e: TouchEvent) => {
-      // prevent swipe to navigate gesture
-      e.preventDefault();
-      e.stopImmediatePropagation();
-
-      const touch1 = e.targetTouches[0];
-      const touch2 = e.targetTouches[1];
-
-      // One finger touch to rotate camera
-      if (previousTouch1.current && !previousTouch2.current) {
-        const touch1MovementX = touch1.pageX - previousTouch1.current.pageX;
-        const touch1MovementY = touch1.pageY - previousTouch1.current.pageY;
-
-        pivot.rotation.y -= touch1MovementX * 0.005 * camMoveSpeed;
-        const vy =
-          followCam.rotation.x + touch1MovementY * 0.005 * camMoveSpeed;
-
-        cameraDistance.current = followCam.position.length();
-
-        if (vy >= camLowLimit && vy <= camUpLimit) {
-          followCam.rotation.x = vy;
-          followCam.position.y = -cameraDistance.current * Math.sin(-vy);
-          followCam.position.z = -cameraDistance.current * Math.cos(-vy);
-        }
-      }
-
-      // Two fingers touch to zoom in/out camera
-      if (previousTouch1.current && previousTouch2.current) {
-        const prePinchDis = Math.hypot(
-          previousTouch1.current.pageX - previousTouch2.current.pageX,
-          previousTouch1.current.pageY - previousTouch2.current.pageY,
-        );
-        const pinchDis = Math.hypot(
-          e.touches[0].pageX - e.touches[1].pageX,
-          e.touches[0].pageY - e.touches[1].pageY,
-        );
-
-        const vz =
-          originZDis.current - (prePinchDis - pinchDis) * 0.01 * camZoomSpeed;
-        const vy = followCam.rotation.x;
-
-        if (vz >= camMaxDis && vz <= camMinDis) {
-          originZDis.current = vz;
-          followCam.position.z = originZDis.current * Math.cos(-vy);
-          followCam.position.y = originZDis.current * Math.sin(-vy);
-        }
-      }
-
-      previousTouch1.current = touch1;
-      previousTouch2.current = touch2;
-    },
-    [
-      camLowLimit,
-      camMaxDis,
-      camMinDis,
-      camMoveSpeed,
-      camUpLimit,
-      camZoomSpeed,
-      followCam.position,
-      followCam.rotation,
-      pivot.rotation,
-    ],
-  );
+    previousTouch1 = touch1;
+    previousTouch2 = touch2;
+  };
 
   /**
    * Gamepad second joystick event
@@ -192,12 +160,12 @@ export const useFollowCam = function ({
     pivot.rotation.y -= movementX * 0.005 * camMoveSpeed * 5;
     const vy = followCam.rotation.x + movementY * 0.005 * camMoveSpeed * 5;
 
-    cameraDistance.current = followCam.position.length();
+    cameraDistance = followCam.position.length();
 
     if (vy >= camLowLimit && vy <= camUpLimit) {
       followCam.rotation.x = vy;
-      followCam.position.y = -cameraDistance.current * Math.sin(-vy);
-      followCam.position.z = -cameraDistance.current * Math.cos(vy);
+      followCam.position.y = -cameraDistance * Math.sin(-vy);
+      followCam.position.z = -cameraDistance * Math.cos(vy);
     }
   };
 
@@ -205,7 +173,7 @@ export const useFollowCam = function ({
    * Custom traverse function
    */
   // Prepare intersect objects for camera collision
-  const customTraverseAdd = useCallback((object: THREE.Object3D) => {
+  function customTraverseAdd(object: THREE.Object3D) {
     // Chekc if the object's userData camExcludeCollision is true
     if (object.userData && object.userData.camExcludeCollision === true) {
       return;
@@ -220,10 +188,9 @@ export const useFollowCam = function ({
     object.children.forEach((child) => {
       customTraverseAdd(child); // Continue the traversal for all child objects
     });
-  }, []);
-
+  }
   // Remove intersect objects from camera collision array
-  const customTraverseRemove = useCallback((object: THREE.Object3D) => {
+  function customTraverseRemove(object: THREE.Object3D) {
     intersectObjects.current = intersectObjects.current.filter(
       (item) => item.uuid !== object.uuid, // Keep all items except the one to remove
     );
@@ -232,7 +199,7 @@ export const useFollowCam = function ({
     object.children.forEach((child) => {
       customTraverseRemove(child); // Continue the traversal for all child objects
     });
-  }, []);
+  }
 
   /**
    * Camera collision detection function
@@ -246,34 +213,31 @@ export const useFollowCam = function ({
     // rayLength = cameraRayDir.length();
 
     // casting ray hit, if object in between character and camera,
-    // change the smallestDistance.current to the ray hit toi
-    // otherwise the smallestDistance.current is same as camera original position (originZDis)
-    intersects.current = camRayCast.intersectObjects(intersectObjects.current);
-    if (
-      intersects.current.length &&
-      intersects.current[0].distance <= -originZDis.current
-    ) {
-      smallestDistance.current = Math.min(
-        -intersects.current[0].distance * camCollisionOffset,
+    // change the smallestDistance to the ray hit toi
+    // otherwise the smallestDistance is same as camera original position (originZDis)
+    intersects = camRayCast.intersectObjects(intersectObjects.current);
+    if (intersects.length && intersects[0].distance <= -originZDis.current) {
+      smallestDistance = Math.min(
+        -intersects[0].distance * camCollisionOffset,
         camMinDis,
       );
     } else {
-      smallestDistance.current = originZDis.current;
+      smallestDistance = originZDis.current;
     }
 
     // Rapier ray hit setup (optional)
     // rayHit = world.castRay(rayCast, rayLength + 1, true, null, null, character);
     // if (rayHit && rayHit.toi && rayHit.toi > originZDis) {
-    //   smallestDistance.current = -rayHit.toi + 0.5;
+    //   smallestDistance = -rayHit.toi + 0.5;
     // } else if (rayHit == null) {
-    //   smallestDistance.current = originZDis;
+    //   smallestDistance = originZDis;
     // }
 
     // Update camera next lerping position, and lerp the camera
     camLerpingPoint.set(
       followCam.position.x,
-      smallestDistance.current * Math.sin(-followCam.rotation.x),
-      smallestDistance.current * Math.cos(-followCam.rotation.x),
+      smallestDistance * Math.sin(-followCam.rotation.x),
+      smallestDistance * Math.cos(-followCam.rotation.x),
     );
 
     followCam.position.lerp(
@@ -349,20 +313,8 @@ export const useFollowCam = function ({
         document.removeEventListener("touchmove", onTouchMove);
       }
     };
-  }, [
-    camInitDir.x,
-    camInitDir.y,
-    camListenerTarget,
-    customTraverseAdd,
-    followCam,
-    gl.domElement,
-    onDocumentMouseMove,
-    onDocumentMouseWheel,
-    onTouchEnd,
-    onTouchMove,
-    pivot,
-    scene,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // If followCam is disabled set to disableFollowCamPos, target to disableFollowCamTarget
   useEffect(() => {
@@ -382,7 +334,8 @@ export const useFollowCam = function ({
           ),
         );
     }
-  }, [camera, disableFollowCam, disableFollowCamPos, disableFollowCamTarget]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [disableFollowCam]);
 
   // Handle scene add/remove objects events
   useEffect(() => {
@@ -396,7 +349,8 @@ export const useFollowCam = function ({
       scene.removeEventListener("childadded", onObjectAdded);
       scene.removeEventListener("childremoved", onObjectRemoved);
     };
-  }, [customTraverseAdd, customTraverseRemove, scene]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scene]);
 
   return { pivot, followCam, cameraCollisionDetect, joystickCamMove };
 };

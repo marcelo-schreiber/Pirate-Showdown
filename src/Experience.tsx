@@ -8,12 +8,7 @@ import { Sun } from "@/models/Sun";
 import { ShipEntity as Ship } from "@/entities/Ship";
 import { PirateEntity } from "@/entities/Pirate";
 import type { PointerEvent } from "react";
-import {
-  Environment,
-  Float,
-  KeyboardControls,
-  Loader,
-} from "@react-three/drei";
+import { Environment, KeyboardControls, Loader } from "@react-three/drei";
 import * as THREE from "three";
 import { useGame } from "@/hooks/useGame";
 import { Skybox } from "@/models/SkyBox";
@@ -85,12 +80,6 @@ export function Experience() {
     }
   }, [setDebug]);
 
-  const { speed, rotation, floatIntensity } = useControls("Float", {
-    speed: { value: 5.1, min: 0, max: 10 },
-    rotation: { value: 0.09, min: 0, max: 1 },
-    floatIntensity: { value: 0.38, min: 0, max: 1 },
-  });
-
   const { ToneMappingModeControl } = useControls("Tone Mapping", {
     ToneMappingModeControl: {
       value: "NEUTRAL",
@@ -130,16 +119,10 @@ export function Experience() {
           <Perf position="top-left" minimal={!debug} />
           <Sun />
           <Physics debug={debug}>
-            <Float
-              speed={speed}
-              rotationIntensity={rotation}
-              floatIntensity={floatIntensity}
-            >
-              <KeyboardControls map={keyboardMap}>
-                <PirateEntity />
-              </KeyboardControls>
-              <Ship />
-            </Float>
+            <KeyboardControls map={keyboardMap}>
+              <PirateEntity />
+            </KeyboardControls>
+            <Ship />
             <RagingSea />
           </Physics>
         </Suspense>

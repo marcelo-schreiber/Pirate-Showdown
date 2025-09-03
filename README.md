@@ -1,10 +1,25 @@
-- lock player in cannon
-- shoot cannon
-- beach + dock
-- tasks to shoot cannon
-- duplicate without copy
-- multiplayer
-- proximity chat
+# Todo
+
+- lock/unlock player in cannon
+- shoot both cannons
+- add ship navigation
+- when player dies reset with cooldown
+- add other ship
+- ship collision
+- ship destruction
+- ship healing
+- add powerups
+- optimize models
+- add local multiplayer
+- add remote multiplayer
 - UI
 - character selection
-- fix bugs and improvements
+
+## Ideas
+
+- Wind particles
+- Water splashes
+- Cannon smoke
+- Seagulls flying
+- Underwater effects
+- Ship trails

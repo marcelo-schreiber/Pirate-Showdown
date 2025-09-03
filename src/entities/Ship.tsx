@@ -1,11 +1,15 @@
+import { useGame } from "@/hooks/useGame";
 import { RedXModel } from "@/models/Red X";
 import { ShipModel } from "@/models/Ship";
 import {
   CuboidCollider,
   HeightfieldCollider,
+  type RapierRigidBody,
   RigidBody,
   type RigidBodyProps,
 } from "@react-three/rapier";
+import { useRef } from "react";
+import { useShallow } from "zustand/shallow";
 
 const ROWS = 17;
 const COLS = 17;
@@ -303,9 +307,27 @@ const heights = [
 ];
 
 export function ShipEntity(props: RigidBodyProps) {
+  const { setShipRef } = useGame(
+    useShallow((state) => {
+      return {
+        setShipRef: state.setShipRef,
+      };
+    }),
+  );
+  const shipRef = useRef<RapierRigidBody>(null!);
   return (
     <>
-      <RigidBody type="fixed" colliders={false} {...props}>
+      <RigidBody
+        type="fixed"
+        colliders={false}
+        {...props}
+        ref={(r) => {
+          if (r) {
+            shipRef.current = r;
+            setShipRef(shipRef);
+          }
+        }}
+      >
         {/* Floor */}
         <HeightfieldCollider
           position={[-0.5, -0.5, 0]}
@@ -400,8 +422,8 @@ export function ShipEntity(props: RigidBodyProps) {
           rotation={[0, 0, 0]}
         />
         <ShipModel />
+        <RedXModel position={[-0.1, 1, -0.9]} scale={30} />
       </RigidBody>
-      <RedXModel position={[-0.1, 1, -0.9]} scale={30} />
     </>
   );
 }
