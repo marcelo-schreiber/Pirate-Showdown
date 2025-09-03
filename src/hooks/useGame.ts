@@ -2,15 +2,19 @@ import * as THREE from "three";
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import { CustomEcctrlRigidBody } from "@/libs/ecctrl/Ecctrl";
+import type { RefObject } from "react";
+import type { RapierRigidBody } from "@react-three/rapier";
 
 export const useGame = /* @__PURE__ */ create(
   /* @__PURE__ */ subscribeWithSelector<State>((set, get) => {
     return {
-      isLocked: false,
-      toggleIsLocked: () => set((state) => ({ isLocked: !state.isLocked })),
-      characterRef: null,
-      setCharacterRef: (characterRef: CustomEcctrlRigidBody | null) =>
+      characterRef: null!,
+      setCharacterRef: (characterRef: RefObject<CustomEcctrlRigidBody>) =>
         set({ characterRef }),
+
+      shipRef: null!,
+      setShipRef: (shipRef: RefObject<RapierRigidBody>) => set({ shipRef }),
+
       debug: false,
       setDebug: (debug: boolean) => set({ debug }),
       /**
@@ -187,10 +191,10 @@ export type AnimationSet = {
 };
 
 type State = {
-  characterRef: CustomEcctrlRigidBody | null;
-  setCharacterRef: (characterRef: CustomEcctrlRigidBody | null) => void;
-  isLocked: boolean;
-  toggleIsLocked: () => void;
+  characterRef: RefObject<CustomEcctrlRigidBody>;
+  setCharacterRef: (characterRef: RefObject<CustomEcctrlRigidBody>) => void;
+  shipRef: RefObject<RapierRigidBody>;
+  setShipRef: (shipRef: RefObject<RapierRigidBody>) => void;
   debug: boolean;
   setDebug: (debug: boolean) => void;
   moveToPoint: THREE.Vector3 | null;

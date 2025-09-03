@@ -1,13 +1,16 @@
-import { useKeyboardControls } from "@react-three/drei";
 import Ecctrl, {
   CustomEcctrlRigidBody,
   EcctrlAnimation,
+  useJoystickControls,
 } from "@/libs/ecctrl/Ecctrl";
 import { PirateModel } from "@/models/Pirate";
 import { useGame } from "@/hooks/useGame";
-import { useEffect, useRef } from "react";
-import { useKeyHold } from "@/hooks/useKeyHold";
+import { RefObject, useEffect, useRef, useState } from "react";
+import { useButtonHold } from "@/hooks/useKeyHold";
 import { useShallow } from "zustand/react/shallow";
+import { RapierRigidBody, useRapier } from "@react-three/rapier";
+import type { ImpulseJoint } from "@dimforge/rapier3d-compat";
+import { Quaternion, Vector3 } from "three";
 
 const characterURL = "./models/Pirate Captain.glb";
 
@@ -31,50 +34,98 @@ const animationSet = {
     "CharacterArmature|CharacterArmature|CharacterArmature|Wave|CharacterArmature|Wave",
 };
 
+function localToWorld(
+  shipRef: RefObject<RapierRigidBody>,
+  localOffset: Vector3,
+) {
+  if (!shipRef.current) return new Vector3();
+
+  const pos = shipRef.current.translation(); // world pos
+  const rot = shipRef.current.rotation(); // quaternion
+
+  const quat = new Quaternion(rot.x, rot.y, rot.z, rot.w);
+
+  // world position = shipPos + shipRot * localOffset
+  return localOffset
+    .clone()
+    .applyQuaternion(quat)
+    .add(new Vector3(pos.x, pos.y, pos.z));
+}
+
 export function PirateEntity() {
-  const { debug, setCharacterRef, isLocked, toggleIsLocked } = useGame(
+  const characterRef = useRef<CustomEcctrlRigidBody>(null!);
+  const localCharacterRef = useRef<RapierRigidBody>(null!);
+  const { rapier, world } = useRapier();
+  const [joint, setJoint] = useState<ImpulseJoint | null>(null);
+
+  const { debug, setCharacterRef, shipRef } = useGame(
     useShallow((s) => ({
       debug: s.debug,
       setCharacterRef: s.setCharacterRef,
-      isLocked: s.isLocked,
-      toggleIsLocked: s.toggleIsLocked,
-    }))
+      shipRef: s.shipRef,
+    })),
   );
-  const characterRef = useRef<CustomEcctrlRigidBody>(null!);
+
+  const joystickButton = useJoystickControls(
+    useShallow((s) => s.curButton5Pressed),
+  );
+  const isHoldingE = useButtonHold("e", 500);
+
+  const toggleJoint = () => {
+    if (!localCharacterRef?.current || !shipRef?.current) return;
+
+    const pirate = localCharacterRef.current;
+    const ship = shipRef.current;
+
+    if (joint) {
+      world.removeImpulseJoint(joint, true);
+      setJoint(null);
+    } else {
+      // pick world lock position (e.g. pirate's current pos)
+      const redXOffset = new Vector3(-0.1, 1.801, -0.7);
+      const dockWorld = localToWorld(shipRef, redXOffset);
+
+      const piratePos = pirate.translation();
+      const pirateVec = new Vector3(piratePos.x, piratePos.y, piratePos.z);
+
+      // only lock if close enough
+      if (pirateVec.distanceTo(dockWorld) > 1.0) {
+        console.info("Too far from docking point, not locking.");
+        return;
+      }
+
+      // create joint with local anchors
+      const params = rapier.JointData.fixed(
+        { x: 0, y: 0, z: 0 }, // pirate local anchor
+        { x: 0, y: 1, z: 0, w: 0.3 },
+        { x: redXOffset.x, y: redXOffset.y, z: redXOffset.z }, // ship local anchor
+        { x: 0, y: 0, z: 0, w: 1 },
+      );
+
+      const newJoint = world.createImpulseJoint(params, pirate, ship, true);
+      setJoint(newJoint);
+    }
+  };
 
   useEffect(() => {
-    setCharacterRef(characterRef.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [characterRef]);
-
-  const FPressed = useKeyboardControls((state) => state.action4);
-
-  useKeyHold(FPressed, 1.5, () => {
-    const character = characterRef.current.group;
-    if (!character) return;
-
-
-    if (isLocked) {
-      character.lockRotations(false, false);
-      character.lockTranslations(false, false);
-    } else {
-      character.setTranslation({ x: -0.1, y: 1, z: -0.9 }, true);
-      character.lockTranslations(true, true);
-
-      character.setRotation({ x: 0, y: 1, z: 0, w: Math.PI / 4 }, true);
-      character.lockRotations(true, true);
+    if (isHoldingE || joystickButton) {
+      toggleJoint();
     }
-
-    toggleIsLocked();
-    console.log("F key held for more than 1.5 seconds (only once per hold)");
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isHoldingE, joystickButton]);
 
   return (
     <Ecctrl
       debug={debug}
-      animated
+      animated={joint == null}
       position={[0, 3, 0]}
-      ref={characterRef}
+      ref={(r) => {
+        if (r) {
+          characterRef.current = r;
+          localCharacterRef.current = r.group!;
+          setCharacterRef(characterRef);
+        }
+      }}
       followLight={false}
       floatingDis={0.2}
       jumpVel={3.25}
@@ -82,9 +133,14 @@ export function PirateEntity() {
       slopeUpExtraForce={0.2}
       rayLength={0.5}
       slopeRayLength={0.5}
+      camCollision={true}
     >
       <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
-        <PirateModel position={[0, -0.74, 0]} scale={0.85} />
+        <PirateModel
+          position={[0, -0.74, 0]}
+          scale={0.85}
+          onClick={toggleJoint}
+        />
       </EcctrlAnimation>
     </Ecctrl>
   );

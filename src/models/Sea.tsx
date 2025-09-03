@@ -108,8 +108,11 @@ export function RagingSea() {
           position={[0, 0, -50.1]}
           sensor
           onIntersectionEnter={() => {
-            if (characterRef) {
-              characterRef.group?.setTranslation({ x: 0, y: 2, z: 0 }, true);
+            if (characterRef.current) {
+              characterRef.current.group?.setTranslation(
+                { x: 0, y: 2, z: 0 },
+                true,
+              );
             }
           }}
         />
