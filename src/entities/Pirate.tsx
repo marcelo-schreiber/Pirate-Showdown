@@ -82,23 +82,34 @@ export function PirateEntity() {
       setJoint(null);
     } else {
       // pick world lock position (e.g. pirate's current pos)
-      const redXOffset = new Vector3(-0.1, 1.801, -0.7);
-      const dockWorld = localToWorld(shipRef, redXOffset);
+      const rightRedXOffset = new Vector3(-0.1, 1.801, -0.7);
+      const leftRedXOffset = new Vector3(0.1, 1.801, 0.7);
+
+      const leftRedXAngle = 3;
+      const rightRedXAngle = 0.3;
+
+      const rightDockWorld = localToWorld(shipRef, rightRedXOffset);
+      const leftDockWorld = localToWorld(shipRef, leftRedXOffset);
 
       const piratePos = pirate.translation();
       const pirateVec = new Vector3(piratePos.x, piratePos.y, piratePos.z);
 
       // only lock if close enough
-      if (pirateVec.distanceTo(dockWorld) > 1.0) {
-        console.info("Too far from docking point, not locking.");
+      if (pirateVec.distanceTo(rightDockWorld) > 1.0 && pirateVec.distanceTo(leftDockWorld) > 1.0) {
+        console.info("Too far from left and right docking points");
         return;
       }
+
+      const isRightClosest = pirateVec.distanceTo(rightDockWorld) < pirateVec.distanceTo(leftDockWorld);
+
+      const closestRedXOffset = isRightClosest ? rightRedXOffset : leftRedXOffset;
+      const closestRedXAngle = isRightClosest ? rightRedXAngle : leftRedXAngle;
 
       // create joint with local anchors
       const params = rapier.JointData.fixed(
         { x: 0, y: 0, z: 0 }, // pirate local anchor
-        { x: 0, y: 1, z: 0, w: 0.3 },
-        { x: redXOffset.x, y: redXOffset.y, z: redXOffset.z }, // ship local anchor
+        { x: 0, y: 1, z: 0, w: closestRedXAngle },
+        { x: closestRedXOffset.x, y: closestRedXOffset.y, z: closestRedXOffset.z },
         { x: 0, y: 0, z: 0, w: 1 },
       );
 

@@ -5,8 +5,8 @@ import { CustomEcctrlRigidBody } from "@/libs/ecctrl/Ecctrl";
 import type { RefObject } from "react";
 import type { RapierRigidBody } from "@react-three/rapier";
 
-export const useGame = /* @__PURE__ */ create(
-  /* @__PURE__ */ subscribeWithSelector<State>((set, get) => {
+export const useGame = create(
+  subscribeWithSelector<State>((set, get) => {
     return {
       characterRef: null!,
       setCharacterRef: (characterRef: RefObject<CustomEcctrlRigidBody>) =>
