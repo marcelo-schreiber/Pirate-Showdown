@@ -58,4 +58,4 @@ export function PirateModel(props: JSX.IntrinsicElements["group"]) {
   );
 }
 
-useGLTF.preload("/models/Pirate Captain.glb");
+// useGLTF.preload("/models/Pirate Captain.glb");

@@ -28,4 +28,4 @@ export function ShipModel(props: JSX.IntrinsicElements["group"]) {
   );
 }
 
-useGLTF.preload("/models/Ship.glb");
+// useGLTF.preload("/models/Ship.glb");
