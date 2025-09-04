@@ -423,7 +423,7 @@ export function ShipEntity(props: RigidBodyProps) {
         />
         <ShipModel />
         <RedXModel position={[-0.1, 1, -0.9]} scale={30} />
-        <RedXModel position={[0.1, 1, 0.9]} scale={30} />
+        <RedXModel position={[-0.1, 1, 0.9]} scale={30} />
       </RigidBody>
     </>
   );

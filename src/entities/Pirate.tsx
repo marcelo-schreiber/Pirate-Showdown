@@ -61,16 +61,16 @@ export function PirateEntity() {
       setJoint(null);
     } else {
       // pick world lock position (e.g. pirate's current pos)
-      const rightRedXOffset = new Vector3(-0.1, 1.8, -0.7);
-      const leftRedXOffset = new Vector3(0.1, 1.8, 0.7);
+      const rightRedXOffset = new Vector3(0.03, 1.8, -0.7);
+      const leftRedXOffset = new Vector3(0.03, 1.8, 0.7);
 
       const leftRedXQuaternion = new Quaternion().setFromAxisAngle(
         new Vector3(0, 1, 0),
-        MathUtils.degToRad(30)
+        MathUtils.degToRad(32)
       );
       const rightRedXQuaternion = new Quaternion().setFromAxisAngle(
         new Vector3(0, 1, 0),
-        MathUtils.degToRad(180 - 30)
+        MathUtils.degToRad(180 - 32)
       );
 
       console.log(leftRedXQuaternion);
