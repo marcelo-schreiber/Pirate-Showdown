@@ -24,7 +24,6 @@ import { Trajectory } from "@/models/Parabula";
 import { EcctrlJoystickControls } from "@/components/EcctrlJoystickControls";
 import { Euler, Vector3 } from "three";
 
-
 const keyboardMap = [
   { name: "forward", keys: ["ArrowUp", "KeyW"] },
   { name: "backward", keys: ["ArrowDown", "KeyS"] },
@@ -71,8 +70,7 @@ export function Experience() {
       value: { x: 0, y: 0, z: 0 },
       step: 0.1,
     },
-  } 
-  )
+  });
 
   return (
     <>
@@ -104,13 +102,15 @@ export function Experience() {
               <PirateEntity />
             </KeyboardControls>
             <Ship
-              position={new Vector3(shipPosition.x, shipPosition.y, shipPosition.z)}
-              rotation={new Euler(shipRotation.x, shipRotation.y, shipRotation.z)}
+              position={
+                new Vector3(shipPosition.x, shipPosition.y, shipPosition.z)
+              }
+              rotation={
+                new Euler(shipRotation.x, shipRotation.y, shipRotation.z)
+              }
             />
             <RagingSea />
-            <Trajectory
-              startVel={10}
-            />
+            <Trajectory elevationDeg={10} />
           </Physics>
         </Suspense>
       </Canvas>
