@@ -1,10 +1,16 @@
 import * as THREE from "three";
 import { JSX, useRef } from "react";
 import { useGLTF } from "@react-three/drei";
+import { useNeedleProgressive } from "@needle-tools/gltf-progressive";
+import { useThree } from "@react-three/fiber";
 
 export function PirateModel(props: JSX.IntrinsicElements["group"]) {
   const group = useRef<THREE.Group>(null!);
-  const { nodes, materials } = useGLTF("/models/Pirate Captain.glb");
+  const { gl } = useThree();
+  const { nodes, materials } = useGLTF("/models/Pirate Captain.glb", false, false, (loader) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks, @typescript-eslint/no-explicit-any
+    useNeedleProgressive(loader as any, gl as any);
+  });
 
   materials.AtlasMaterial.side = THREE.DoubleSide;
 
