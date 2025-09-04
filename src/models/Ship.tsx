@@ -2,16 +2,10 @@ import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
 import { useRef, type JSX } from "react";
 import type { Mesh } from "three";
-import { useThree } from "@react-three/fiber";
-import { useNeedleProgressive } from "@needle-tools/gltf-progressive";
 
 export function ShipModel(props: JSX.IntrinsicElements["group"]) {
-  const { gl } = useThree();
   const meshRef = useRef<THREE.Mesh>(null!);
-  const { nodes, materials } = useGLTF("/models/Ship.glb", false, false, (loader) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks, @typescript-eslint/no-explicit-any
-    useNeedleProgressive(loader as any, gl as any);
-  });
+  const { nodes, materials } = useGLTF("/models/Ship.glb");
   materials.Atlas.side = THREE.DoubleSide;
 
   return (
@@ -28,4 +22,4 @@ export function ShipModel(props: JSX.IntrinsicElements["group"]) {
   );
 }
 
-// useGLTF.preload("/models/Ship.glb");
+useGLTF.preload("/models/Ship.glb");
