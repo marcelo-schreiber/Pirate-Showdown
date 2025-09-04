@@ -8,7 +8,6 @@ import { ShipEntity as Ship } from "@/entities/Ship";
 import { PirateEntity } from "@/entities/Pirate";
 import type { PointerEvent } from "react";
 import { Environment, KeyboardControls, Loader } from "@react-three/drei";
-import * as THREE from "three";
 import { useGame } from "@/hooks/useGame";
 import { Skybox } from "@/models/SkyBox";
 import { RagingSea } from "@/models/Sea";
@@ -23,6 +22,7 @@ import { useShallow } from "zustand/react/shallow";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { Trajectory } from "@/models/Parabula";
 import { EcctrlJoystickControls } from "@/components/EcctrlJoystickControls";
+import { Euler, Vector3 } from "three";
 
 
 const keyboardMap = [
@@ -62,6 +62,18 @@ export function Experience() {
     },
   });
 
+  const { shipPosition, shipRotation } = useControls("Ship", {
+    shipPosition: {
+      value: { x: 0, y: 0, z: 0 },
+      step: 0.1,
+    },
+    shipRotation: {
+      value: { x: 0, y: 0, z: 0 },
+      step: 0.1,
+    },
+  } 
+  )
+
   return (
     <>
       <Canvas
@@ -83,7 +95,7 @@ export function Experience() {
           <Environment
             files="/environment/env.exr"
             background={false}
-            environmentIntensity={1.06}
+            environmentIntensity={1.1}
           />
           <Perf position="top-left" minimal={!debug} />
           <Sun />
@@ -91,11 +103,13 @@ export function Experience() {
             <KeyboardControls map={keyboardMap}>
               <PirateEntity />
             </KeyboardControls>
-            <Ship />
+            <Ship
+              position={new Vector3(shipPosition.x, shipPosition.y, shipPosition.z)}
+              rotation={new Euler(shipRotation.x, shipRotation.y, shipRotation.z)}
+            />
             <RagingSea />
             <Trajectory
-              startPos={new THREE.Vector3(0, 5, 0)}
-              startVel={new THREE.Vector3(5, 5, 0)}
+              startVel={10}
             />
           </Physics>
         </Suspense>

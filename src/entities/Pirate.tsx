@@ -9,7 +9,7 @@ import { useEffect, useRef } from "react";
 import { useButtonHold } from "@/hooks/useKeyHold";
 import { useShallow } from "zustand/react/shallow";
 import { RapierRigidBody, useRapier } from "@react-three/rapier";
-import { Vector3 } from "three";
+import { MathUtils, Quaternion, Vector3 } from "three";
 import { localToWorld } from "@/utils/localToWorld";
 
 const characterURL = "./models/Pirate Captain.glb";
@@ -26,7 +26,8 @@ const animationSet = {
   fall: "CharacterArmature|CharacterArmature|CharacterArmature|Duck|CharacterArmature|Duck", // This is for falling from high sky
   action2:
     "CharacterArmature|CharacterArmature|CharacterArmature|Sword|CharacterArmature|Swo",
-  action3: "CharacterArmature|CharacterArmature|CharacterArmature|Idle|CharacterArmature|Idle"
+  action3:
+    "CharacterArmature|CharacterArmature|CharacterArmature|Idle|CharacterArmature|Idle",
 };
 
 export function PirateEntity() {
@@ -60,11 +61,19 @@ export function PirateEntity() {
       setJoint(null);
     } else {
       // pick world lock position (e.g. pirate's current pos)
-      const rightRedXOffset = new Vector3(-0.1, 1.801, -0.7);
-      const leftRedXOffset = new Vector3(0.1, 1.801, 0.7);
+      const rightRedXOffset = new Vector3(-0.1, 1.8, -0.7);
+      const leftRedXOffset = new Vector3(0.1, 1.8, 0.7);
 
-      const leftRedXAngle = 3;
-      const rightRedXAngle = 0.3;
+      const leftRedXQuaternion = new Quaternion().setFromAxisAngle(
+        new Vector3(0, 1, 0),
+        MathUtils.degToRad(30)
+      );
+      const rightRedXQuaternion = new Quaternion().setFromAxisAngle(
+        new Vector3(0, 1, 0),
+        MathUtils.degToRad(180 - 30)
+      );
+
+      console.log(leftRedXQuaternion);
 
       const rightDockWorld = localToWorld(shipRef, rightRedXOffset);
       const leftDockWorld = localToWorld(shipRef, leftRedXOffset);
@@ -88,12 +97,14 @@ export function PirateEntity() {
       const closestRedXOffset = isRightClosest
         ? rightRedXOffset
         : leftRedXOffset;
-      const closestRedXAngle = isRightClosest ? rightRedXAngle : leftRedXAngle;
+      const closestRedXAngle = isRightClosest ?
+        rightRedXQuaternion :
+        leftRedXQuaternion;
 
       // create joint with local anchors
       const params = rapier.JointData.fixed(
         { x: 0, y: 0, z: 0 }, // pirate local anchor
-        { x: 0, y: 1, z: 0, w: closestRedXAngle },
+        { x: closestRedXAngle.x, y: closestRedXAngle.y, z: closestRedXAngle.z, w: closestRedXAngle.w }, // pirate local anchor rotation
         {
           x: closestRedXOffset.x,
           y: closestRedXOffset.y,
@@ -133,7 +144,7 @@ export function PirateEntity() {
       slopeUpExtraForce={0.2}
       rayLength={0.5}
       slopeRayLength={0.5}
-      camCollision={true}
+      camCollision={false}
       controllerKeys={{
         forward: 12,
         backward: 13,
@@ -148,7 +159,6 @@ export function PirateEntity() {
         <PirateModel
           position={[0, -0.74, 0]}
           scale={0.85}
-          onClick={toggleJoint}
         />
       </EcctrlAnimation>
     </Ecctrl>
