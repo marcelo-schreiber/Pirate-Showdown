@@ -232,7 +232,7 @@ export const shipOptions = Object.freeze({
       2.39,
       2.39,
       2.39,
-      1.5,
+      2.39,
       1.5,
       1.5,
       1.5,
