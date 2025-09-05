@@ -663,10 +663,6 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     () => new THREE.Vector3(),
     [],
   );
-  const movingObjectVelocityInCharacterDir: THREE.Vector3 = useMemo(
-    () => new THREE.Vector3(),
-    [],
-  );
   const distanceFromCharacterToObject: THREE.Vector3 = useMemo(
     () => new THREE.Vector3(),
     [],
@@ -781,6 +777,8 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
   const crossVector: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
   const pointToPoint: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
   const getMoveToPoint = useGame((state) => state.getMoveToPoint);
+  // Access moving ship rigidbody for relative velocity compensation
+  const shipRef = useGame((state) => state.shipRef);
   const bodySensorRef = useRef<Collider | null>(null);
   const handleOnIntersectionEnter = () => {
     isBodyHitWall = true;
@@ -794,7 +792,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
    */
   let characterRotated: boolean = true;
   const moveCharacter = (
-    _: number,
+    delta: number,
     run: boolean,
     slopeAngle: number,
     movingObjectVelocity: THREE.Vector3,
@@ -828,101 +826,103 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     // Apply character quaternion to moving direction
     movingDirection.applyQuaternion(characterModelIndicator.quaternion);
 
-    /**
-     * Moving object conditions
-     */
-    // Calculate moving object velocity direction according to character moving direction
-    movingObjectVelocityInCharacterDir
-      .copy(movingObjectVelocity)
-      .projectOnVector(movingDirection)
-      .multiply(movingDirection);
-    // Calculate angle between moving object velocity direction and character moving direction
-    const angleBetweenCharacterDirAndObjectDir =
-      movingObjectVelocity.angleTo(movingDirection);
+    // ---------------- New platform-aware movement model ----------------
+    // Goal: desiredWorldVel = platformVel + desiredRelativeVel (no stacking)
+    // Then accelerate toward that with strong traction & braking.
 
-    /**
-     * Setup rejection velocity, (currently only work on ground)
-     */
-    const wantToMoveMeg = currentVel.dot(movingDirection);
-    wantToMoveVel.set(
-      movingDirection.x * wantToMoveMeg,
-      0,
-      movingDirection.z * wantToMoveMeg,
-    );
-    rejectVel.copy(currentVel).sub(wantToMoveVel);
+    const platformLin = shipRef?.current?.linvel();
+    const platformVel = platformLin
+      ? wantToMoveVel.set(platformLin.x, platformLin.y, platformLin.z)
+      : wantToMoveVel.copy(movingObjectVelocity); // reuse wantToMoveVel as temp container
 
-    /**
-     * Calculate required accelaration and force: a = Δv/Δt
-     * If it's on a moving/rotating platform, apply platform velocity to Δv accordingly
-     * Also, apply reject velocity when character is moving opposite of it's moving direction
-     */
-    moveAccNeeded.set(
-      (movingDirection.x *
-        (maxVelLimit * (run ? sprintMult : 1) +
-          movingObjectVelocityInCharacterDir.x) -
-        (currentVel.x -
-          movingObjectVelocity.x *
-            Math.sin(angleBetweenCharacterDirAndObjectDir) +
-          rejectVel.x * (isOnMovingObject ? 0 : rejectVelMult))) /
-        accDeltaTime,
-      0,
-      (movingDirection.z *
-        (maxVelLimit * (run ? sprintMult : 1) +
-          movingObjectVelocityInCharacterDir.z) -
-        (currentVel.z -
-          movingObjectVelocity.z *
-            Math.sin(angleBetweenCharacterDirAndObjectDir) +
-          rejectVel.z * (isOnMovingObject ? 0 : rejectVelMult))) /
-        accDeltaTime,
-    );
+    // Horizontal only movement direction for speed target (ignore any slope Y for cap)
+    const horizontalDirLen = Math.hypot(movingDirection.x, movingDirection.z);
+    if (horizontalDirLen > 0) {
+      movingDirection.x /= horizontalDirLen;
+      movingDirection.z /= horizontalDirLen;
+    }
 
-    // Wanted to move force function: F = ma
+    const targetRelativeSpeed = maxVelLimit * (run ? sprintMult : 1);
+
+    // Desired relative velocity (character vs platform) along moving direction
+    moveAccNeeded
+      .copy(movingDirection)
+      .multiplyScalar(targetRelativeSpeed);
+
+    // Remove any unintended vertical from slope calc for target (keep separate slopeY force later)
+    moveAccNeeded.y = 0;
+
+    // Convert desired relative to desired world (add platform velocity horizontal components)
+    const desiredWorldVel = rejectVel
+      .copy(platformVel)
+      .setY(currentVel.y) // preserve current vertical; vertical handled by floating/slope/gravity
+      .add(moveAccNeeded);
+
+    // Strong lateral traction: eliminate sideways component relative to movingDirection quickly when grounded
+    if (canJump) {
+      // Current relative horizontal vel (world - platform)
+      const relHoriz = moveImpulse
+        .copy(currentVel)
+        .sub(platformVel)
+        .setY(0);
+      // Component along move dir
+      const relAlong = movingDirection.clone().multiplyScalar(relHoriz.dot(movingDirection));
+      // Side component
+      const relSide = relHoriz.sub(relAlong);
+      // Apply aggressive damping to side component (higher when on moving object to stick better)
+  const sideDamp = 1 - Math.exp(-delta * (isOnMovingObject ? 25 : 18));
+      desiredWorldVel.add(relSide.multiplyScalar(-sideDamp));
+    }
+
+    // Acceleration needed to reach desiredWorldVel over accDeltaTime seconds
+    const deltaVel = desiredWorldVel.sub(currentVel);
+    // If reversing direction (dot < 0) allow stronger braking multiplier
+    const reversing = deltaVel.dot(currentVel) < 0;
+    const brakingBoost = reversing ? 1.8 : 1;
+    const accTime = Math.max(0.0001, accDeltaTime * (canJump ? 1 : 1.5));
+    moveAccNeeded.copy(deltaVel).multiplyScalar(brakingBoost / accTime);
+
+    // Cap maximum horizontal acceleration to avoid sudden spikes (tunable)
+    const maxAcc = targetRelativeSpeed * 6; // reach full speed in ~0.17s if allowed
+    const horizAccMag = Math.hypot(moveAccNeeded.x, moveAccNeeded.z);
+    if (horizAccMag > maxAcc) {
+      moveAccNeeded.x = (moveAccNeeded.x / horizAccMag) * maxAcc;
+      moveAccNeeded.z = (moveAccNeeded.z / horizAccMag) * maxAcc;
+    }
+
+    // Final force needed (mass * acceleration)
     const moveForceNeeded = moveAccNeeded.multiplyScalar(
       characterRef.current.mass(),
     );
 
-    /**
-     * Check if character complete turned to the wanted direction
-     */
+    // Determine if fully rotated
     characterRotated =
-      Math.sin(characterModelIndicator.rotation.y).toFixed(3) ==
+      Math.sin(characterModelIndicator.rotation.y).toFixed(3) ===
       Math.sin(modelEuler.y).toFixed(3);
 
-    // If character hasn't complete turning, change the impulse quaternion follow characterModelIndicator quaternion
+    // Slope contribution
+    const slopeY =
+      slopeAngle === null || slopeAngle === 0
+        ? 0
+        : movingDirection.y *
+          (movingDirection.y > 0 ? slopeUpExtraForce : slopeDownExtraForce) *
+          (run ? sprintMult : 1) *
+          (characterRotated ? 1 : turnVelMultiplier);
+
     if (!characterRotated) {
       moveImpulse.set(
-        moveForceNeeded.x *
-          turnVelMultiplier *
-          (canJump ? 1 : airDragMultiplier), // if it's in the air, give it less control
-        slopeAngle === null || slopeAngle == 0 // if it's on a slope, apply extra up/down force to the body
-          ? 0
-          : movingDirection.y *
-              turnVelMultiplier *
-              (movingDirection.y > 0 // check it is on slope up or slope down
-                ? slopeUpExtraForce
-                : slopeDownExtraForce) *
-              (run ? sprintMult : 1),
-        moveForceNeeded.z *
-          turnVelMultiplier *
-          (canJump ? 1 : airDragMultiplier), // if it's in the air, give it less control
+        moveForceNeeded.x * turnVelMultiplier * (canJump ? 1 : airDragMultiplier),
+        slopeY * turnVelMultiplier,
+        moveForceNeeded.z * turnVelMultiplier * (canJump ? 1 : airDragMultiplier),
       );
-    }
-    // If character complete turning, change the impulse quaternion default
-    else {
+    } else {
       moveImpulse.set(
         moveForceNeeded.x * (canJump ? 1 : airDragMultiplier),
-        slopeAngle === null || slopeAngle == 0 // if it's on a slope, apply extra up/down force to the body
-          ? 0
-          : movingDirection.y *
-              (movingDirection.y > 0 // check it is on slope up or slope down
-                ? slopeUpExtraForce
-                : slopeDownExtraForce) *
-              (run ? sprintMult : 1),
+        slopeY,
         moveForceNeeded.z * (canJump ? 1 : airDragMultiplier),
       );
     }
 
-    // Move character at proper direction and impulse
     characterRef.current.applyImpulseAtPoint(
       moveImpulse,
       {

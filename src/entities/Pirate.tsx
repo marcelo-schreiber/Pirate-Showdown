@@ -140,6 +140,8 @@ export function PirateEntity() {
       followLight={false}
       floatingDis={0.2}
       jumpVel={3.25}
+      maxVelLimit={2.3}
+      airDragMultiplier={0.1}
       rayOriginOffset={{ x: 0, y: -0.6, z: 0 }}
       slopeUpExtraForce={0.2}
       rayLength={0.5}
