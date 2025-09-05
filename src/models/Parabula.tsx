@@ -132,8 +132,7 @@ export function Trajectory({
 
     // Dynamic velocity variation (sawtooth pattern similar to prior console output)
     const t = state.clock.getElapsedTime();
-    const saw = ((t * 10) % 20) / 20; // 0..1 repeating
-    const magnitudeScale = 0.5 + saw; // range 0.5..1.5 (adjustable)
+    const magnitudeScale = 0.5 + t % 1; // range 0.5..1.5 (adjustable)
     const dynVel = baseVel.multiplyScalar(magnitudeScale);
 
     // Integrate trajectory using simple Euler integration
@@ -167,7 +166,7 @@ export function Trajectory({
       object={
         (lineRef.current ||= new THREE.Line(
           geometryRef.current,
-          new THREE.LineBasicMaterial({ color })
+          new THREE.LineBasicMaterial({ color, opacity: 0.35, transparent: true })
         ))
       }
       {...props}
