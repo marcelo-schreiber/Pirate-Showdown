@@ -8,6 +8,7 @@ import {
   RigidBody,
   type RigidBodyProps,
 } from "@react-three/rapier";
+import { useControls } from "leva";
 import { useRef } from "react";
 import { useShallow } from "zustand/shallow";
 
@@ -314,11 +315,24 @@ export function ShipEntity(props: RigidBodyProps) {
       };
     }),
   );
+
+  const {shipVelocity} = useControls("Ship", {
+    shipVelocity: {
+      value: 0,
+      min: -10,
+      max: 10,
+      step: 0.1,
+    },
+  });
   const shipRef = useRef<RapierRigidBody>(null!);
   return (
     <>
       <RigidBody
-        type="fixed"
+        type="dynamic"
+        gravityScale={0}
+        linearVelocity={[shipVelocity, 0, 0]}
+        lockRotations
+        enabledTranslations={[true, false, false]}
         colliders={false}
         {...props}
         ref={(r) => {
