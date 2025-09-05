@@ -8,6 +8,7 @@ import vertexShader from "@/shaders/vertexShaders.vert";
 import fragmentShader from "@/shaders/fragmentShaders.frag";
 import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import { useGame } from "@/hooks/useGame";
+import { useShallow } from "zustand/react/shallow";
 
 const RagingSeaMaterial = shaderMaterial(
   {
@@ -52,7 +53,10 @@ declare module "@react-three/fiber" {
 }
 
 export function RagingSea() {
-  const characterRef = useGame((s) => s.characterRef);
+  const {
+    characterRef,
+    shipRef,
+  } = useGame(useShallow((s) => ({ characterRef: s.characterRef, shipRef: s.shipRef })));
   const {
     animate,
     bigWavesElevation,
@@ -109,8 +113,10 @@ export function RagingSea() {
           sensor
           onIntersectionEnter={() => {
             if (characterRef.current) {
+              const targetPos = shipRef.current?.translation() || { x: 0, y: 0, z: 0 };
+              targetPos.y += 2; // slightly above
               characterRef.current.group?.setTranslation(
-                { x: 0, y: 2, z: 0 },
+                targetPos,
                 true,
               );
             }
