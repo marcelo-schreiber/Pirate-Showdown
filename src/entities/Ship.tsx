@@ -11,301 +11,7 @@ import {
 import { useControls } from "leva";
 import { useRef } from "react";
 import { useShallow } from "zustand/shallow";
-
-const ROWS = 17;
-const COLS = 17;
-
-const heights = [
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  2,
-  2,
-  2,
-  2,
-  2,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1, // 17
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2, // 17
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2, // 17
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2, // 17
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2, // 17
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2, // 17
-  1.9,
-  1.9,
-  1.9,
-  1.9,
-  1.9,
-  1.9,
-  1.9,
-  1.9,
-  1.9,
-  1.9,
-  1.9,
-  1.9,
-  1.9,
-  1.9,
-  1.9,
-  1.9,
-  1.9, // 17
-  1.6,
-  1.6,
-  1.6,
-  1.6,
-  1.6,
-  1.6,
-  1.6,
-  1.6,
-  1.6,
-  1.6,
-  1.6,
-  1.6,
-  1.6,
-  1.6,
-  1.6,
-  1.6,
-  1.6, // 17
-  1.6,
-  1.6,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.6,
-  1.6, // 17
-  1.6,
-  1.6,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.6,
-  1.6, // 17
-  1.6,
-  1.6,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.6,
-  1.6, // 17
-  1.6,
-  1.6,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.6,
-  1.6, // 17
-  2.6,
-  1.9,
-  1.9,
-  1.9,
-  1.9,
-  1.9,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.5,
-  1.9,
-  1.9,
-  1.9,
-  1.9,
-  1.9,
-  2.6, // 17
-  2.53,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.53, // 17
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39, // 17
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39, // 17
-  1,
-  1,
-  1,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  2.39,
-  1,
-  1,
-  1, // 17
-];
+import { shipOptions } from "@/utils/shipOptions";
 
 export function ShipEntity(props: RigidBodyProps) {
   const { setShipRef } = useGame(
@@ -316,7 +22,7 @@ export function ShipEntity(props: RigidBodyProps) {
     }),
   );
 
-  const {shipVelocity} = useControls("Ship", {
+  const { shipVelocity } = useControls("Ship", {
     shipVelocity: {
       value: 0,
       min: -10,
@@ -332,7 +38,7 @@ export function ShipEntity(props: RigidBodyProps) {
         gravityScale={0}
         linearVelocity={[shipVelocity, 0, 0]}
         lockRotations
-        enabledTranslations={[true, false, false]}
+        enabledTranslations={[false, false, false]}
         colliders={false}
         {...props}
         ref={(r) => {
@@ -346,7 +52,12 @@ export function ShipEntity(props: RigidBodyProps) {
         <HeightfieldCollider
           position={[-0.5, -0.5, 0]}
           rotation={[0, 0, 0]}
-          args={[ROWS - 1, COLS - 1, heights, { x: 12.5, y: 1.025, z: 4.3 }]}
+          args={[
+            shipOptions.heightFieldOptions.rows - 1,
+            shipOptions.heightFieldOptions.cols - 1,
+            shipOptions.heightFieldOptions.heights,
+            shipOptions.heightFieldOptions.scale,
+          ]}
         />
         {/* Cannon */}
         <CuboidCollider
@@ -436,8 +147,18 @@ export function ShipEntity(props: RigidBodyProps) {
           rotation={[0, 0, 0]}
         />
         <ShipModel />
-        <RedXModel position={[-0.1, 1, -0.9]} scale={30} />
-        <RedXModel position={[-0.1, 1, 0.9]} scale={30} />
+        <RedXModel
+          position={shipOptions.redX.leftCannon.offset}
+          scale={shipOptions.redX.leftCannon.scale}
+        />
+        <RedXModel
+          position={shipOptions.redX.rightCannon.offset}
+          scale={shipOptions.redX.rightCannon.scale}
+        />
+        <RedXModel
+          position={shipOptions.redX.centerRudder.offset}
+          scale={shipOptions.redX.centerRudder.scale}
+        />
       </RigidBody>
     </>
   );

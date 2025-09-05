@@ -53,10 +53,9 @@ declare module "@react-three/fiber" {
 }
 
 export function RagingSea() {
-  const {
-    characterRef,
-    shipRef,
-  } = useGame(useShallow((s) => ({ characterRef: s.characterRef, shipRef: s.shipRef })));
+  const { characterRef, shipRef } = useGame(
+    useShallow((s) => ({ characterRef: s.characterRef, shipRef: s.shipRef })),
+  );
   const {
     animate,
     bigWavesElevation,
@@ -113,12 +112,13 @@ export function RagingSea() {
           sensor
           onIntersectionEnter={() => {
             if (characterRef.current) {
-              const targetPos = shipRef.current?.translation() || { x: 0, y: 0, z: 0 };
+              const targetPos = shipRef.current?.translation() || {
+                x: 0,
+                y: 0,
+                z: 0,
+              };
               targetPos.y += 2; // slightly above
-              characterRef.current.group?.setTranslation(
-                targetPos,
-                true,
-              );
+              characterRef.current.group?.setTranslation(targetPos, true);
             }
           }}
         />

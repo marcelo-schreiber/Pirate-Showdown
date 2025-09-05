@@ -9,26 +9,9 @@ import { useEffect, useRef } from "react";
 import { useButtonHold } from "@/hooks/useKeyHold";
 import { useShallow } from "zustand/react/shallow";
 import { RapierRigidBody, useRapier } from "@react-three/rapier";
-import { MathUtils, Quaternion, Vector3 } from "three";
+import { Vector3 } from "three";
 import { localToWorld } from "@/utils/localToWorld";
-
-const characterURL = "./models/Pirate Captain.glb";
-
-const animationSet = {
-  idle: "CharacterArmature|CharacterArmature|CharacterArmature|Idle|CharacterArmature|Idle",
-  walk: "CharacterArmature|CharacterArmature|CharacterArmature|Walk|CharacterArmature|Walk",
-  run: "CharacterArmature|CharacterArmature|CharacterArmature|Run|CharacterArmature|Run",
-  jump: "CharacterArmature|CharacterArmature|CharacterArmature|Jump|CharacterArmature|Jump",
-  jumpIdle:
-    "CharacterArmature|CharacterArmature|CharacterArmature|Jump_Idle|CharacterArmature",
-  jumpLand:
-    "CharacterArmature|CharacterArmature|CharacterArmature|Jump_Land|CharacterArmature",
-  fall: "CharacterArmature|CharacterArmature|CharacterArmature|Duck|CharacterArmature|Duck", // This is for falling from high sky
-  action2:
-    "CharacterArmature|CharacterArmature|CharacterArmature|Sword|CharacterArmature|Swo",
-  action3:
-    "CharacterArmature|CharacterArmature|CharacterArmature|Idle|CharacterArmature|Idle",
-};
+import { pirateOptions } from "@/utils/PirateOptions";
 
 export function PirateEntity() {
   const characterRef = useRef<CustomEcctrlRigidBody>(null!);
@@ -42,12 +25,11 @@ export function PirateEntity() {
       shipRef: s.shipRef,
       joint: s.activeJoint,
       setJoint: s.setActiveJoint,
-    }))
+    })),
   );
 
-  const joystickButton = useJoystickControls(
-    useShallow((s) => s.curButton3Pressed)
-  );
+  const joystickButton = useJoystickControls((s) => s.curButton3Pressed);
+
   const isHoldingE = useButtonHold("e", 500);
 
   const toggleJoint = () => {
@@ -60,57 +42,57 @@ export function PirateEntity() {
       world.removeImpulseJoint(joint, true);
       setJoint(null);
     } else {
-      // pick world lock position (e.g. pirate's current pos)
-      const rightRedXOffset = new Vector3(0.03, 1.8, -0.7);
-      const leftRedXOffset = new Vector3(0.03, 1.8, 0.7);
-
-      const leftRedXQuaternion = new Quaternion().setFromAxisAngle(
-        new Vector3(0, 1, 0),
-        MathUtils.degToRad(32)
-      );
-      const rightRedXQuaternion = new Quaternion().setFromAxisAngle(
-        new Vector3(0, 1, 0),
-        MathUtils.degToRad(180 - 32)
+      const rightDockWorld = localToWorld(shipRef, pirateOptions.rightX.offset);
+      const leftDockWorld = localToWorld(shipRef, pirateOptions.leftX.offset);
+      const centerDockWorld = localToWorld(
+        shipRef,
+        pirateOptions.centerRudderX.offset,
       );
 
-      console.log(leftRedXQuaternion);
-
-      const rightDockWorld = localToWorld(shipRef, rightRedXOffset);
-      const leftDockWorld = localToWorld(shipRef, leftRedXOffset);
-
-      const piratePos = pirate.translation();
-      const pirateVec = new Vector3(piratePos.x, piratePos.y, piratePos.z);
+      const {
+        x: piratePosX,
+        y: piratePosY,
+        z: piratePosZ,
+      } = pirate.translation();
+      const pirateVec = new Vector3(piratePosX, piratePosY, piratePosZ);
 
       // only lock if close enough
-      if (
-        pirateVec.distanceTo(rightDockWorld) > 1.0 &&
-        pirateVec.distanceTo(leftDockWorld) > 1.0
-      ) {
+      const distanceToRight = pirateVec.distanceTo(rightDockWorld);
+      const distanceToLeft = pirateVec.distanceTo(leftDockWorld);
+      const distanceToCenter = pirateVec.distanceTo(centerDockWorld);
+
+      const smallestDistance = Math.min(
+        distanceToRight,
+        distanceToLeft,
+        distanceToCenter,
+      );
+      if (smallestDistance > 1.0) {
         console.info("Too far from left and right docking points");
         return;
       }
-
-      const isRightClosest =
-        pirateVec.distanceTo(rightDockWorld) <
-        pirateVec.distanceTo(leftDockWorld);
-
-      const closestRedXOffset = isRightClosest
-        ? rightRedXOffset
-        : leftRedXOffset;
-      const closestRedXAngle = isRightClosest ?
-        rightRedXQuaternion :
-        leftRedXQuaternion;
+      const { lock: closestRedXAngle, offset: closestRedXOffset } = [
+        { distance: distanceToRight, ...pirateOptions.rightX },
+        { distance: distanceToLeft, ...pirateOptions.leftX },
+        { distance: distanceToCenter, ...pirateOptions.centerRudderX },
+      ].reduce((closest, current) =>
+        current.distance < closest.distance ? current : closest,
+      );
 
       // create joint with local anchors
       const params = rapier.JointData.fixed(
         { x: 0, y: 0, z: 0 }, // pirate local anchor
-        { x: closestRedXAngle.x, y: closestRedXAngle.y, z: closestRedXAngle.z, w: closestRedXAngle.w }, // pirate local anchor rotation
+        {
+          x: closestRedXAngle.x,
+          y: closestRedXAngle.y,
+          z: closestRedXAngle.z,
+          w: closestRedXAngle.w,
+        }, // pirate local anchor rotation
         {
           x: closestRedXOffset.x,
           y: closestRedXOffset.y,
           z: closestRedXOffset.z,
         },
-        { x: 0, y: 0, z: 0, w: 1 }
+        { x: 0, y: 0, z: 0, w: 1 },
       );
 
       const newJoint = world.createImpulseJoint(params, pirate, ship, true);
@@ -157,10 +139,13 @@ export function PirateEntity() {
         action3: 2,
       }}
     >
-      <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
+      <EcctrlAnimation
+        characterURL={pirateOptions.characterUrl}
+        animationSet={pirateOptions.animationSet}
+      >
         <PirateModel
-          position={[0, -0.74, 0]}
-          scale={0.85}
+          position={pirateOptions.initialPosition}
+          scale={pirateOptions.scale}
         />
       </EcctrlAnimation>
     </Ecctrl>

@@ -11,13 +11,5 @@ export const EcctrlJoystickControls = () => {
     setIsTouchScreen(isUsingTouchScreen);
   }, []);
 
-  return (
-    <>
-      {isTouchScreen && (
-        <EcctrlJoystick
-          buttonNumber={3}
-        />
-      )}
-    </>
-  );
+  return <>{isTouchScreen && <EcctrlJoystick buttonNumber={3} />}</>;
 };

@@ -4,7 +4,7 @@ import { Quaternion, Vector3 } from "three";
 
 export function localToWorld(
   shipRef: RefObject<RapierRigidBody>,
-  localOffset: Vector3
+  localOffset: Vector3,
 ) {
   if (!shipRef.current) return new Vector3();
 

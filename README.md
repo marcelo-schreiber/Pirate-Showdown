@@ -18,8 +18,6 @@
 ## Ideas
 
 - Wind particles
-- Water splashes
-- Cannon smoke
 - Seagulls flying
-- Underwater effects
 - Ship trails
+- Holding cannon or rudder animation

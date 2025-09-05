@@ -1,5 +1,7 @@
 import { useGame } from "@/hooks/useGame";
 import { localToWorld } from "@/utils/localToWorld";
+import { pirateOptions } from "@/utils/PirateOptions";
+import { areVectorsCloseEnough } from "@/utils/vectorCompare";
 import { useFrame } from "@react-three/fiber";
 import { useRapier } from "@react-three/rapier";
 import { JSX, useEffect, useRef } from "react";
@@ -56,7 +58,7 @@ export function Trajectory({
       joint: s.activeJoint,
       characterRef: s.characterRef,
       shipRef: s.shipRef,
-    }))
+    })),
   );
 
   // Refs for performant per-frame updates
@@ -69,7 +71,7 @@ export function Trajectory({
     positionsRef.current = new Float32Array(steps * 3);
     geometryRef.current.setAttribute(
       "position",
-      new THREE.BufferAttribute(positionsRef.current, 3)
+      new THREE.BufferAttribute(positionsRef.current, 3),
     );
   }, [steps]);
 
@@ -77,7 +79,7 @@ export function Trajectory({
   useEffect(() => {
     geometryRef.current.setAttribute(
       "position",
-      new THREE.BufferAttribute(positionsRef.current, 3)
+      new THREE.BufferAttribute(positionsRef.current, 3),
     );
   }, []);
 
@@ -88,6 +90,12 @@ export function Trajectory({
       line.visible = false;
       return;
     }
+    if (areVectorsCloseEnough(joint.anchor2(), pirateOptions.centerRudderX.offset)) {
+      // don't show trajectory when docked at center (steering) position
+      line.visible = false;
+      return;
+    }
+
     line.visible = true;
 
     const gravityVec = new THREE.Vector3(gravity.x, gravity.y, gravity.z);
@@ -132,7 +140,7 @@ export function Trajectory({
 
     // Dynamic velocity variation (sawtooth pattern similar to prior console output)
     const t = state.clock.getElapsedTime();
-    const magnitudeScale = 0.5 + t % 1; // range 0.5..1.5 (adjustable)
+    const magnitudeScale = 0.5 + (t % 1); // range 0.5..1.5 (adjustable)
     const dynVel = baseVel.multiplyScalar(magnitudeScale);
 
     // Integrate trajectory using simple Euler integration
@@ -153,7 +161,7 @@ export function Trajectory({
     }
 
     const attr = geometryRef.current.getAttribute(
-      "position"
+      "position",
     ) as THREE.BufferAttribute;
     attr.needsUpdate = true;
     geometryRef.current.computeBoundingSphere();
@@ -166,7 +174,11 @@ export function Trajectory({
       object={
         (lineRef.current ||= new THREE.Line(
           geometryRef.current,
-          new THREE.LineBasicMaterial({ color, opacity: 0.35, transparent: true })
+          new THREE.LineBasicMaterial({
+            color,
+            opacity: 0.35,
+            transparent: true,
+          }),
         ))
       }
       {...props}

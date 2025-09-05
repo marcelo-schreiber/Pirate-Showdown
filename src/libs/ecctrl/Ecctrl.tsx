@@ -845,9 +845,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     const targetRelativeSpeed = maxVelLimit * (run ? sprintMult : 1);
 
     // Desired relative velocity (character vs platform) along moving direction
-    moveAccNeeded
-      .copy(movingDirection)
-      .multiplyScalar(targetRelativeSpeed);
+    moveAccNeeded.copy(movingDirection).multiplyScalar(targetRelativeSpeed);
 
     // Remove any unintended vertical from slope calc for target (keep separate slopeY force later)
     moveAccNeeded.y = 0;
@@ -861,16 +859,15 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     // Strong lateral traction: eliminate sideways component relative to movingDirection quickly when grounded
     if (canJump) {
       // Current relative horizontal vel (world - platform)
-      const relHoriz = moveImpulse
-        .copy(currentVel)
-        .sub(platformVel)
-        .setY(0);
+      const relHoriz = moveImpulse.copy(currentVel).sub(platformVel).setY(0);
       // Component along move dir
-      const relAlong = movingDirection.clone().multiplyScalar(relHoriz.dot(movingDirection));
+      const relAlong = movingDirection
+        .clone()
+        .multiplyScalar(relHoriz.dot(movingDirection));
       // Side component
       const relSide = relHoriz.sub(relAlong);
       // Apply aggressive damping to side component (higher when on moving object to stick better)
-  const sideDamp = 1 - Math.exp(-delta * (isOnMovingObject ? 25 : 18));
+      const sideDamp = 1 - Math.exp(-delta * (isOnMovingObject ? 25 : 18));
       desiredWorldVel.add(relSide.multiplyScalar(-sideDamp));
     }
 
@@ -911,9 +908,13 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
 
     if (!characterRotated) {
       moveImpulse.set(
-        moveForceNeeded.x * turnVelMultiplier * (canJump ? 1 : airDragMultiplier),
+        moveForceNeeded.x *
+          turnVelMultiplier *
+          (canJump ? 1 : airDragMultiplier),
         slopeY * turnVelMultiplier,
-        moveForceNeeded.z * turnVelMultiplier * (canJump ? 1 : airDragMultiplier),
+        moveForceNeeded.z *
+          turnVelMultiplier *
+          (canJump ? 1 : airDragMultiplier),
       );
     } else {
       moveImpulse.set(

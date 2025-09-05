@@ -3,7 +3,7 @@ import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import { CustomEcctrlRigidBody } from "@/libs/ecctrl/Ecctrl";
 import type { RefObject } from "react";
-import type { RapierRigidBody  } from "@react-three/rapier";
+import type { RapierRigidBody } from "@react-three/rapier";
 import type { ImpulseJoint } from "@dimforge/rapier3d-compat";
 
 export const useGame = create(
@@ -20,7 +20,8 @@ export const useGame = create(
       setDebug: (debug: boolean) => set({ debug }),
 
       activeJoint: null as ImpulseJoint | null,
-      setActiveJoint: (joint: ImpulseJoint | null) => set({ activeJoint: joint }),
+      setActiveJoint: (joint: ImpulseJoint | null) =>
+        set({ activeJoint: joint }),
 
       /**
        * Point to move point
@@ -207,7 +208,7 @@ type State = {
 
   debug: boolean;
   setDebug: (debug: boolean) => void;
-  
+
   moveToPoint: THREE.Vector3 | null;
   curAnimation: string | null;
   animationSet: AnimationSet;
