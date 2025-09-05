@@ -29,7 +29,7 @@ export const pirateOptions = Object.freeze({
     ),
     offset: shipOptions.redX.leftCannon.offset
       .clone()
-      .add(new Vector3(0, 0.78, 0)), // 0.8 is character height
+      .add(new Vector3(0.03, 0.78, 0)), // 0.8 is character height
   },
   rightX: {
     lock: new Quaternion().setFromAxisAngle(
@@ -38,7 +38,7 @@ export const pirateOptions = Object.freeze({
     ),
     offset: shipOptions.redX.rightCannon.offset
       .clone()
-      .add(new Vector3(0, 0.78, 0)), // 0.8 is character height
+      .add(new Vector3(0.03, 0.78, 0)), // 0.8 is character height
   },
   centerRudderX: {
     lock: new Quaternion().setFromAxisAngle(

@@ -38,7 +38,7 @@ export function ShipEntity(props: RigidBodyProps) {
         gravityScale={0}
         linearVelocity={[shipVelocity, 0, 0]}
         lockRotations
-        enabledTranslations={[false, false, false]}
+        enabledTranslations={[true, false, true]}
         colliders={false}
         {...props}
         ref={(r) => {
@@ -111,8 +111,8 @@ export function ShipEntity(props: RigidBodyProps) {
 
         {/* Rudder */}
         <CuboidCollider
-          position={[3.6, 2.35, 0]}
-          args={[0.14, 0.5, 0.25]}
+          position={[3.5, 1.9, 0]}
+          args={[0.3, 1, 0.25]}
           rotation={[0, 0, 0]}
         />
 
