@@ -16,6 +16,10 @@ export const useGame = create(
       shipRef: null!,
       setShipRef: (shipRef: RefObject<RapierRigidBody>) => set({ shipRef }),
 
+      shipRotation: [0, 0, 0],
+      setShipRotation: (rotation: [number, number, number]) =>
+        set({ shipRotation: rotation }),
+
       debug: false,
       setDebug: (debug: boolean) => set({ debug }),
 
@@ -202,6 +206,9 @@ type State = {
 
   shipRef: RefObject<RapierRigidBody>;
   setShipRef: (shipRef: RefObject<RapierRigidBody>) => void;
+
+  shipRotation: [number, number, number];
+  setShipRotation: (rotation: [number, number, number]) => void;
 
   activeJoint: ImpulseJoint | null;
   setActiveJoint: (joint: ImpulseJoint | null) => void;

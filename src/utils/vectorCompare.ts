@@ -15,7 +15,7 @@ export function almostEqual(a: number, b: number, eps = 1e-6) {
 export function areVectorsCloseEnough(
   o1: Vector3Like,
   o2: Vector3Like,
-  eps = 1e-6
+  eps = 1e-6,
 ) {
   return (
     almostEqual(o1.x, o2.x, eps) &&

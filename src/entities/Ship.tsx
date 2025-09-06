@@ -8,35 +8,59 @@ import {
   RigidBody,
   type RigidBodyProps,
 } from "@react-three/rapier";
-import { useControls } from "leva";
 import { useRef } from "react";
 import { useShallow } from "zustand/shallow";
 import { shipOptions } from "@/utils/shipOptions";
+import { useFrame } from "@react-three/fiber";
+import { Euler, Quaternion, Vector3 } from "three";
+
+// Removed custom lerpAngleRad (per-axis Euler interpolation caused wrap / gimbal issues)
 
 export function ShipEntity(props: RigidBodyProps) {
-  const { setShipRef } = useGame(
+  const { setShipRef, shipRotation } = useGame(
     useShallow((state) => {
       return {
         setShipRef: state.setShipRef,
+        shipRotation: state.shipRotation,
       };
     }),
   );
 
-  const { shipVelocity } = useControls("Ship", {
-    shipVelocity: {
-      value: 0,
-      min: -10,
-      max: 10,
-      step: 0.1,
-    },
-  });
   const shipRef = useRef<RapierRigidBody>(null!);
+
+  // Reusable quaternions to avoid allocations every frame
+  const targetQuat = new Quaternion();
+  const currentQuat = new Quaternion();
+
+  useFrame(() => {
+    const body = shipRef.current;
+    if (!body) return;
+
+    // Build target quaternion from desired shipRotation Euler
+    targetQuat.setFromEuler(
+      new Euler(shipRotation[0], shipRotation[1], shipRotation[2]),
+    );
+
+    const r = body.rotation();
+    currentQuat.set(r.x, r.y, r.z, r.w);
+
+    // Slerp for stable shortest-path interpolation (avoids ±90°/±180° wrap glitches)
+    currentQuat.slerp(targetQuat, 0.1);
+    body.setRotation(currentQuat, true);
+
+    // Set linear velocity along the ship's local -X (its forward direction in model space)
+    const forward = new Vector3(0, 0, -1)
+      .applyQuaternion(currentQuat)
+      .normalize();
+    const speed = 2;
+    body.setLinvel({ x: forward.x * speed, y: 0, z: forward.z * speed }, true);
+  });
+
   return (
     <>
       <RigidBody
         type="dynamic"
         gravityScale={0}
-        linearVelocity={[shipVelocity, 0, 0]}
         lockRotations
         enabledTranslations={[true, false, true]}
         colliders={false}

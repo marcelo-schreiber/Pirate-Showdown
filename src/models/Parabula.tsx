@@ -90,7 +90,9 @@ export function Trajectory({
       line.visible = false;
       return;
     }
-    if (areVectorsCloseEnough(joint.anchor2(), pirateOptions.centerRudderX.offset)) {
+    if (
+      areVectorsCloseEnough(joint.anchor2(), pirateOptions.centerRudderX.offset)
+    ) {
       // don't show trajectory when docked at center (steering) position
       line.visible = false;
       return;

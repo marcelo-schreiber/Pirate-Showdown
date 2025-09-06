@@ -12,23 +12,38 @@ import { RapierRigidBody, useRapier } from "@react-three/rapier";
 import { Vector3 } from "three";
 import { localToWorld } from "@/utils/localToWorld";
 import { pirateOptions } from "@/utils/PirateOptions";
+import { useKeyboardControls } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
+import { Controls } from "@/Experience";
+import { areVectorsCloseEnough } from "@/utils/vectorCompare";
 
 export function PirateEntity() {
   const characterRef = useRef<CustomEcctrlRigidBody>(null!);
   const localCharacterRef = useRef<RapierRigidBody>(null!);
   const { rapier, world } = useRapier();
 
-  const { debug, setCharacterRef, shipRef, joint, setJoint } = useGame(
+  const {
+    debug,
+    setCharacterRef,
+    shipRef,
+    joint,
+    setJoint,
+    setShipRotation,
+    shipRotation,
+  } = useGame(
     useShallow((s) => ({
       debug: s.debug,
       setCharacterRef: s.setCharacterRef,
       shipRef: s.shipRef,
       joint: s.activeJoint,
       setJoint: s.setActiveJoint,
+      setShipRotation: s.setShipRotation,
+      shipRotation: s.shipRotation,
     })),
   );
 
   const joystickButton = useJoystickControls((s) => s.curButton3Pressed);
+  const [, get] = useKeyboardControls<Controls>();
 
   const isHoldingE = useButtonHold("e", 500);
 
@@ -106,6 +121,27 @@ export function PirateEntity() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isHoldingE, joystickButton]);
+
+  useFrame(() => {
+    const leftPressed = get().leftward;
+    const rightPressed = get().rightward;
+    const isOnRudder =
+      joint &&
+      areVectorsCloseEnough(
+        pirateOptions.centerRudderX.offset,
+        joint.anchor2(),
+      );
+    console.log(shipRotation);
+    if (isOnRudder) {
+      if (leftPressed && !rightPressed) {
+        // turn left
+        setShipRotation([0, shipRotation[1] + 0.006, shipRotation[2]]);
+      } else if (rightPressed && !leftPressed) {
+        // turn right
+        setShipRotation([0, shipRotation[1] - 0.006, shipRotation[2]]);
+      }
+    }
+  });
 
   return (
     <Ecctrl

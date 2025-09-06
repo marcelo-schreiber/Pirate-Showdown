@@ -24,6 +24,17 @@ import { Trajectory } from "@/models/Parabula";
 import { EcctrlJoystickControls } from "@/components/EcctrlJoystickControls";
 import { Euler, Vector3 } from "three";
 
+export enum Controls {
+  forward = "forward",
+  backward = "backward",
+  leftward = "leftward",
+  rightward = "rightward",
+  jump = "jump",
+  run = "run",
+  action2 = "action2",
+  action3 = "action3",
+}
+
 const keyboardMap = [
   { name: "forward", keys: ["ArrowUp", "KeyW"] },
   { name: "backward", keys: ["ArrowDown", "KeyS"] },
