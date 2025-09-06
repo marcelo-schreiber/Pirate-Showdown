@@ -14,8 +14,6 @@ import { shipOptions } from "@/utils/shipOptions";
 import { useFrame } from "@react-three/fiber";
 import { Euler, Quaternion, Vector3 } from "three";
 
-// Removed custom lerpAngleRad (per-axis Euler interpolation caused wrap / gimbal issues)
-
 export function ShipEntity(props: RigidBodyProps) {
   const { setShipRef, shipRotation } = useGame(
     useShallow((state) => {
@@ -49,9 +47,10 @@ export function ShipEntity(props: RigidBodyProps) {
     body.setRotation(currentQuat, true);
 
     // Set linear velocity along the ship's local -X (its forward direction in model space)
-    const forward = new Vector3(0, 0, -1)
+    const forward = new Vector3(-1, 0, 0)
       .applyQuaternion(currentQuat)
       .normalize();
+
     const speed = 2;
     body.setLinvel({ x: forward.x * speed, y: 0, z: forward.z * speed }, true);
   });
