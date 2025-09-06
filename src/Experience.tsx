@@ -22,7 +22,6 @@ import { useShallow } from "zustand/react/shallow";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { Trajectory } from "@/models/Parabula";
 import { EcctrlJoystickControls } from "@/components/EcctrlJoystickControls";
-import { Euler, Vector3 } from "three";
 
 export enum Controls {
   forward = "forward",
@@ -54,7 +53,7 @@ const handleLockControls = (e: PointerEvent<HTMLDivElement>) => {
 
 export function Experience() {
   const { debug, setDebug } = useGame(
-    useShallow((s) => ({ debug: s.debug, setDebug: s.setDebug })),
+    useShallow((s) => ({ debug: s.debug, setDebug: s.setDebug }))
   );
 
   const isMobile = useIsMobile();
@@ -69,17 +68,6 @@ export function Experience() {
     ToneMappingModeControl: {
       value: "NEUTRAL" as keyof typeof ToneMappingMode,
       options: Object.keys(ToneMappingMode) as (keyof typeof ToneMappingMode)[],
-    },
-  });
-
-  const { shipPosition, shipRotation } = useControls("Ship", {
-    shipPosition: {
-      value: { x: 0, y: 0, z: 0 },
-      step: 0.1,
-    },
-    shipRotation: {
-      value: { x: 0, y: 0, z: 0 },
-      step: 0.1,
     },
   });
 
@@ -112,14 +100,7 @@ export function Experience() {
             <KeyboardControls map={keyboardMap}>
               <PirateEntity />
             </KeyboardControls>
-            <Ship
-              position={
-                new Vector3(shipPosition.x, shipPosition.y, shipPosition.z)
-              }
-              rotation={
-                new Euler(shipRotation.x, shipRotation.y, shipRotation.z)
-              }
-            />
+            <Ship />
             <RagingSea />
             <Trajectory elevationDeg={10} />
           </Physics>

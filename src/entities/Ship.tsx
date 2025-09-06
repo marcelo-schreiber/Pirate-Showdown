@@ -11,56 +11,24 @@ import {
 import { useRef } from "react";
 import { useShallow } from "zustand/shallow";
 import { shipOptions } from "@/utils/shipOptions";
-import { useFrame } from "@react-three/fiber";
-import { Euler, Quaternion, Vector3 } from "three";
 
 export function ShipEntity(props: RigidBodyProps) {
-  const { setShipRef, shipRotation } = useGame(
+  const { setShipRef } = useGame(
     useShallow((state) => {
       return {
         setShipRef: state.setShipRef,
-        shipRotation: state.shipRotation,
       };
-    }),
+    })
   );
 
   const shipRef = useRef<RapierRigidBody>(null!);
-
-  // Reusable quaternions to avoid allocations every frame
-  const targetQuat = new Quaternion();
-  const currentQuat = new Quaternion();
-
-  useFrame(() => {
-    const body = shipRef.current;
-    if (!body) return;
-
-    // Build target quaternion from desired shipRotation Euler
-    targetQuat.setFromEuler(
-      new Euler(shipRotation[0], shipRotation[1], shipRotation[2]),
-    );
-
-    const r = body.rotation();
-    currentQuat.set(r.x, r.y, r.z, r.w);
-
-    // Slerp for stable shortest-path interpolation (avoids ±90°/±180° wrap glitches)
-    currentQuat.slerp(targetQuat, 0.1);
-    body.setRotation(currentQuat, true);
-
-    // Set linear velocity along the ship's local -X (its forward direction in model space)
-    const forward = new Vector3(-1, 0, 0)
-      .applyQuaternion(currentQuat)
-      .normalize();
-
-    const speed = 2;
-    body.setLinvel({ x: forward.x * speed, y: 0, z: forward.z * speed }, true);
-  });
 
   return (
     <>
       <RigidBody
         type="dynamic"
         gravityScale={0}
-        lockRotations
+        enabledRotations={[false, true, false]}
         enabledTranslations={[true, false, true]}
         colliders={false}
         {...props}

@@ -309,7 +309,7 @@ export const shipOptions = Object.freeze({
       scale: 15,
     },
     centerRudder: {
-      offset: new Vector3(4.25, 1.95, 0),
+      offset: new Vector3(4.35, 1.95, 0),
       scale: 15,
     },
   },
