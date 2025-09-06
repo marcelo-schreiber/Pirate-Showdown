@@ -146,7 +146,6 @@ export function PirateEntity() {
     <Ecctrl
       debug={debug}
       animated={joint == null}
-      disableControl={joint != null}
       position={[0, 3, 0]}
       ref={(r) => {
         if (r) {
