@@ -113,6 +113,8 @@ export function PirateEntity() {
   }, [isHoldingE, joystickButton]);
 
   useFrame(() => {
+    if (!shipRef?.current || !localCharacterRef?.current) return;
+
     const leftPressed = get().leftward;
     const rightPressed = get().rightward;
     const isOnRudder =
