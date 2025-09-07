@@ -4,7 +4,7 @@ import { useGLTF } from "@react-three/drei";
 
 export function PirateModel(props: JSX.IntrinsicElements["group"]) {
   const group = useRef<THREE.Group>(null!);
-  const { nodes, materials } = useGLTF("/models/Pirate Captain.glb");
+  const { nodes, materials } = useGLTF("https://lb6qttqwri.ufs.sh/f/brR5phe6Ssb8Uppgjf3t7LsKWgHdT8qJcIZrNeozMGjCyP5Y");
 
   materials.AtlasMaterial.side = THREE.DoubleSide;
 
@@ -52,4 +52,4 @@ export function PirateModel(props: JSX.IntrinsicElements["group"]) {
   );
 }
 
-useGLTF.preload("/models/Pirate Captain.glb");
+useGLTF.preload("https://lb6qttqwri.ufs.sh/f/brR5phe6Ssb8Uppgjf3t7LsKWgHdT8qJcIZrNeozMGjCyP5Y");

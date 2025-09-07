@@ -17,7 +17,7 @@ export const pirateOptions = Object.freeze({
     action3:
       "CharacterArmature|CharacterArmature|CharacterArmature|Idle|CharacterArmature|Idle",
   },
-  characterUrl: "./models/Pirate Captain.glb",
+  characterUrl: "https://lb6qttqwri.ufs.sh/f/brR5phe6Ssb8Uppgjf3t7LsKWgHdT8qJcIZrNeozMGjCyP5Y",
 
   scale: 0.85,
   initialPosition: new Vector3(0, -0.74, 0),

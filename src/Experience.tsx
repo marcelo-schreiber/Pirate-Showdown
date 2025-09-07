@@ -90,7 +90,7 @@ export function Experience() {
           </EffectComposer>
           <Skybox />
           <Environment
-            files="/environment/env.exr"
+            files="https://lb6qttqwri.ufs.sh/f/brR5phe6Ssb8Dy8Xgmr3WBtdLC1pe0TUoNgRH7ZSO2rxKJ5i?ext=.exr"
             background={false}
             environmentIntensity={1.1}
           />
