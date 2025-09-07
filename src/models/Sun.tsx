@@ -46,7 +46,7 @@ export function Sun() {
       lightRef.current.parent?.add(lightRef.current.target);
 
       helperRef.current = new THREE.CameraHelper(
-        lightRef.current.shadow.camera
+        lightRef.current.shadow.camera,
       );
       lightRef.current.parent?.add(helperRef.current);
     }

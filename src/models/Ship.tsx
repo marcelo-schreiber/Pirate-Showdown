@@ -5,7 +5,9 @@ import type { Mesh } from "three";
 
 export function ShipModel(props: JSX.IntrinsicElements["group"]) {
   const meshRef = useRef<THREE.Mesh>(null!);
-  const { nodes, materials } = useGLTF("https://lb6qttqwri.ufs.sh/f/brR5phe6Ssb8tpsnLtEdn5OeNV6mIsurbz4jaPTFiH01ghSY");
+  const { nodes, materials } = useGLTF(
+    "https://lb6qttqwri.ufs.sh/f/brR5phe6Ssb8tpsnLtEdn5OeNV6mIsurbz4jaPTFiH01ghSY",
+  );
   materials.Atlas.side = THREE.DoubleSide;
 
   return (
@@ -22,4 +24,6 @@ export function ShipModel(props: JSX.IntrinsicElements["group"]) {
   );
 }
 
-useGLTF.preload("https://lb6qttqwri.ufs.sh/f/brR5phe6Ssb8tpsnLtEdn5OeNV6mIsurbz4jaPTFiH01ghSY");
+useGLTF.preload(
+  "https://lb6qttqwri.ufs.sh/f/brR5phe6Ssb8tpsnLtEdn5OeNV6mIsurbz4jaPTFiH01ghSY",
+);

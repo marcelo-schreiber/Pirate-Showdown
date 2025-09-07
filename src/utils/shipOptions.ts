@@ -298,7 +298,8 @@ export const shipOptions = Object.freeze({
     scale: { x: 12.5, y: 1.025, z: 4.3 },
   },
   initialPosition: new Vector3(0, -0.5, 0),
-  modelUrl: "https://lb6qttqwri.ufs.sh/f/brR5phe6Ssb8tpsnLtEdn5OeNV6mIsurbz4jaPTFiH01ghSY",
+  modelUrl:
+    "https://lb6qttqwri.ufs.sh/f/brR5phe6Ssb8tpsnLtEdn5OeNV6mIsurbz4jaPTFiH01ghSY",
   redX: {
     leftCannon: {
       offset: new Vector3(0.04, 1.02, -0.8),

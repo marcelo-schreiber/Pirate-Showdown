@@ -29,7 +29,7 @@ export function PirateEntity() {
       shipRef: s.shipRef,
       joint: s.activeJoint,
       setJoint: s.setActiveJoint,
-    }))
+    })),
   );
 
   const joystickButton = useJoystickControls((s) => s.curButton3Pressed);
@@ -51,7 +51,7 @@ export function PirateEntity() {
       const leftDockWorld = localToWorld(shipRef, pirateOptions.leftX.offset);
       const centerDockWorld = localToWorld(
         shipRef,
-        pirateOptions.centerRudderX.offset
+        pirateOptions.centerRudderX.offset,
       );
 
       const {
@@ -69,7 +69,7 @@ export function PirateEntity() {
       const smallestDistance = Math.min(
         distanceToRight,
         distanceToLeft,
-        distanceToCenter
+        distanceToCenter,
       );
       if (smallestDistance > 1.0) {
         console.info("Too far from left and right docking points");
@@ -80,7 +80,7 @@ export function PirateEntity() {
         { distance: distanceToLeft, ...pirateOptions.leftX },
         { distance: distanceToCenter, ...pirateOptions.centerRudderX },
       ].reduce((closest, current) =>
-        current.distance < closest.distance ? current : closest
+        current.distance < closest.distance ? current : closest,
       );
 
       // create joint with local anchors
@@ -97,7 +97,7 @@ export function PirateEntity() {
           y: closestRedXOffset.y,
           z: closestRedXOffset.z,
         },
-        { x: 0, y: 0, z: 0, w: 1 }
+        { x: 0, y: 0, z: 0, w: 1 },
       );
 
       const newJoint = world.createImpulseJoint(params, pirate, ship, true);
@@ -121,7 +121,7 @@ export function PirateEntity() {
       joint &&
       areVectorsCloseEnough(
         pirateOptions.centerRudderX.offset,
-        joint.anchor2()
+        joint.anchor2(),
       );
 
     if (isOnRudder) {

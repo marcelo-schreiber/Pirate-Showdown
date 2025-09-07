@@ -53,7 +53,7 @@ const handleLockControls = (e: PointerEvent<HTMLDivElement>) => {
 
 export function Experience() {
   const { debug, setDebug } = useGame(
-    useShallow((s) => ({ debug: s.debug, setDebug: s.setDebug }))
+    useShallow((s) => ({ debug: s.debug, setDebug: s.setDebug })),
   );
 
   const isMobile = useIsMobile();

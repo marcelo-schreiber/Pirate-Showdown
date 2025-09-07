@@ -18,7 +18,7 @@ export function ShipEntity(props: RigidBodyProps) {
       return {
         setShipRef: state.setShipRef,
       };
-    })
+    }),
   );
 
   const shipRef = useRef<RapierRigidBody>(null!);
