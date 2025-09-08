@@ -169,7 +169,7 @@ export function PirateEntity() {
       slopeUpExtraForce={0.2}
       rayLength={0.5}
       slopeRayLength={0.5}
-      camCollision={false}
+      camCollision={true}
       controllerKeys={{
         forward: 12,
         backward: 13,
