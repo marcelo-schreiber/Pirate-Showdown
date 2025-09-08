@@ -164,7 +164,7 @@ export function RagingSea() {
         </Plane>
       </RigidBody>
       {/* make a rigidbody cube around the close sea */}
-      <RigidBody
+      {/* <RigidBody
         type="fixed"
         colliders={false}
         position={[0, -5, -50]}
@@ -198,7 +198,7 @@ export function RagingSea() {
         rotation={[-Math.PI / 2, 0, Math.PI / 2]}
       >
         <CuboidCollider args={[50, 5, 50]} />
-      </RigidBody>
+      </RigidBody> */}
 
       {/* far sea */}
       <Plane
@@ -226,9 +226,6 @@ export function RagingSea() {
           uReflectionColor={reflectionColor}
         />
       </Plane>
-
-      {/* fog */}
-
     </>
   );
 }
