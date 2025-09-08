@@ -96,7 +96,7 @@ export function Experience() {
           />
           <Perf position="top-left" minimal={!debug} />
           <Sun />
-          <Physics debug={debug}>
+          <Physics debug={debug} timeStep="vary">
             <KeyboardControls map={keyboardMap}>
               <PirateEntity />
             </KeyboardControls>
