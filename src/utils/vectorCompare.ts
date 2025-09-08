@@ -8,6 +8,12 @@ type Vector3Like =
     }
   | Vector3;
 
+
+export function anglesAlmostEqual(a: number, b: number, eps = 1e-6) {
+  const diff = Math.abs(a - b) % (2 * Math.PI);
+  return diff < eps || Math.abs(diff - 2 * Math.PI) < eps;
+}
+
 export function almostEqual(a: number, b: number, eps = 1e-6) {
   return Math.abs(a - b) < eps;
 }

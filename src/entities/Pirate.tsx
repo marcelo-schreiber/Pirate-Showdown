@@ -15,25 +15,37 @@ import { pirateOptions } from "@/utils/PirateOptions";
 import { useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { Controls } from "@/Experience";
-import { areVectorsCloseEnough } from "@/utils/vectorCompare";
+import {
+  anglesAlmostEqual,
+  areVectorsCloseEnough,
+} from "@/utils/vectorCompare";
 
 export function PirateEntity() {
   const characterRef = useRef<CustomEcctrlRigidBody>(null!);
   const localCharacterRef = useRef<RapierRigidBody>(null!);
   const { rapier, world } = useRapier();
 
-  const { debug, setCharacterRef, shipRef, joint, setJoint, resetAnimation } = useGame(
-    useShallow((s) => ({
-      debug: s.debug,
-      setCharacterRef: s.setCharacterRef,
-      shipRef: s.shipRef,
-      joint: s.activeJoint,
-      setJoint: s.setActiveJoint,
-      resetAnimation: s.reset,
-    })),
-  );
+  const { debug, setCharacterRef, shipRef, joint, setJoint, resetAnimation } =
+    useGame(
+      useShallow((s) => ({
+        debug: s.debug,
+        setCharacterRef: s.setCharacterRef,
+        shipRef: s.shipRef,
+        joint: s.activeJoint,
+        setJoint: s.setActiveJoint,
+        resetAnimation: s.reset,
+      }))
+    );
 
-  const joystickButton = useJoystickControls((s) => s.curButton3Pressed);
+  const { lockButtonPressed, joystickDir, joystickStrength } =
+    useJoystickControls(
+      useShallow((s) => ({
+        lockButtonPressed: s.curButton3Pressed,
+        joystickDir: s.curJoystickAng,
+        joystickStrength: s.curJoystickDis,
+      }))
+    );
+
   const [, get] = useKeyboardControls<Controls>();
 
   const isHoldingE = useButtonHold("e", 500);
@@ -52,7 +64,7 @@ export function PirateEntity() {
       const leftDockWorld = localToWorld(shipRef, pirateOptions.leftX.offset);
       const centerDockWorld = localToWorld(
         shipRef,
-        pirateOptions.centerRudderX.offset,
+        pirateOptions.centerRudderX.offset
       );
 
       const {
@@ -70,7 +82,7 @@ export function PirateEntity() {
       const smallestDistance = Math.min(
         distanceToRight,
         distanceToLeft,
-        distanceToCenter,
+        distanceToCenter
       );
       if (smallestDistance > 1.0) {
         console.info("Too far from left and right docking points");
@@ -81,7 +93,7 @@ export function PirateEntity() {
         { distance: distanceToLeft, ...pirateOptions.leftX },
         { distance: distanceToCenter, ...pirateOptions.centerRudderX },
       ].reduce((closest, current) =>
-        current.distance < closest.distance ? current : closest,
+        current.distance < closest.distance ? current : closest
       );
 
       // create joint with local anchors
@@ -98,7 +110,7 @@ export function PirateEntity() {
           y: closestRedXOffset.y,
           z: closestRedXOffset.z,
         },
-        { x: 0, y: 0, z: 0, w: 1 },
+        { x: 0, y: 0, z: 0, w: 1 }
       );
 
       const newJoint = world.createImpulseJoint(params, pirate, ship, true);
@@ -109,11 +121,11 @@ export function PirateEntity() {
   };
 
   useEffect(() => {
-    if (isHoldingE || joystickButton) {
+    if (isHoldingE || lockButtonPressed) {
       toggleJoint();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isHoldingE, joystickButton]);
+  }, [isHoldingE, lockButtonPressed]);
 
   useFrame(() => {
     if (!shipRef?.current || !localCharacterRef?.current) return;
@@ -124,10 +136,11 @@ export function PirateEntity() {
       joint &&
       areVectorsCloseEnough(
         pirateOptions.centerRudderX.offset,
-        joint.anchor2(),
+        joint.anchor2()
       );
 
     if (isOnRudder) {
+      // keyboard controls
       if (leftPressed && !rightPressed) {
         // turn left
         shipRef.current.setAngvel(new Vector3(0, 0.2, 0), true);
@@ -136,6 +149,17 @@ export function PirateEntity() {
         shipRef.current.setAngvel(new Vector3(0, -0.2, 0), true);
       } else {
         shipRef.current.setAngvel(new Vector3(0, 0, 0), true);
+      }
+
+      if (Math.abs(joystickStrength) !== 0) {
+        // joystick controls
+        if (anglesAlmostEqual(joystickDir, Math.PI, 1)) {
+          // turn left
+          shipRef.current.setAngvel(new Vector3(0, 0.2, 0), true);
+        } else if (anglesAlmostEqual(joystickDir, 0, 1)) {
+          // turn right
+          shipRef.current.setAngvel(new Vector3(0, 0.2, 0), true);
+        }
       }
     } else {
       shipRef.current.setAngvel(new Vector3(0, 0, 0), true);
