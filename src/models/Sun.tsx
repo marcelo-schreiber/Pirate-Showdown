@@ -34,7 +34,7 @@ export function Sun() {
     camBottom: { value: -28, min: -300, max: 0, step: 1 },
     camNear: { value: 140, min: 0.1, max: 400, step: 0.1 },
     camFar: { value: 222, min: 50, max: 1000, step: 1 },
-    mapSize: { value: 8192, options: [512, 1024, 2048, 4096] },
+    mapSize: { value: 2048, options: [512, 1024, 2048, 4096] },
     bias: { value: -0.0001, min: -0.01, max: 0.01, step: 0.0001 },
     normalBias: { value: 0.02, min: 0, max: 1, step: 0.01 },
     showHelper: false,
