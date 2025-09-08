@@ -1,4 +1,9 @@
-# Todo
+# Pirate Showdown
+
+> [!NOTE]
+> This repository is a work in progress
+
+## Todo
 
 - lock/unlock player in cannon
 - shoot both cannons
