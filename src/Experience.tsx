@@ -74,7 +74,7 @@ export function Experience() {
   return (
     <>
       <Canvas
-        shadows="soft"
+        shadows="variance"
         dpr={Math.min(window.devicePixelRatio, 2)}
         camera={{
           fov: 55,
