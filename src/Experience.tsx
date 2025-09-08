@@ -74,7 +74,7 @@ export function Experience() {
   return (
     <>
       <Canvas
-        shadows="variance"
+        shadows="soft"
         dpr={Math.min(window.devicePixelRatio, 2)}
         camera={{
           fov: 55,
@@ -92,7 +92,7 @@ export function Experience() {
           <Environment
             files="https://lb6qttqwri.ufs.sh/f/brR5phe6Ssb8Dy8Xgmr3WBtdLC1pe0TUoNgRH7ZSO2rxKJ5i?ext=.exr"
             background={false}
-            environmentIntensity={1.1}
+            environmentIntensity={1.2}
           />
           <Perf position="top-left" minimal={!debug} />
           <Sun />

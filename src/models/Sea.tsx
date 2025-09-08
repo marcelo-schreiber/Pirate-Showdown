@@ -5,7 +5,7 @@ import { useRef } from "react";
 import * as THREE from "three";
 
 import vertexShader from "@/shaders/vertexShaders.vert";
-import fragmentShader from "@/shaders/fragmentShaders.frag";
+import fragmentShader from "@/shaders/fragmentShaders.glsl";
 import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import { useGame } from "@/hooks/useGame";
 import { useShallow } from "zustand/react/shallow";
@@ -17,16 +17,20 @@ const RagingSeaMaterial = shaderMaterial(
     uBigWavesFrequency: [0.2, 0.7],
     uBigWavesSpeed: 0.75,
     uSurfaceColor: new THREE.Color("#99e5e1"),
-    uDepthColor: new THREE.Color("#26a0c2"),
+    uDepthColor: new THREE.Color("#33a7c7"),
     uColorOffset: 0.08,
     uColorMultiplier: 1.1,
     uSmallWavesElevation: 0.15,
     uSmallWavesFrequency: 3,
     uSmallWavesSpeed: 0.2,
     uSmallIterations: 4,
+    uMetalness: 0.55,
+    uRoughness: 0.25,
+    uLightDirection: new THREE.Vector3(-1.5, 1, 0),
+    uReflectionColor: new THREE.Color("#eef6f8"),
   },
   vertexShader,
-  fragmentShader,
+  fragmentShader
 );
 RagingSeaMaterial.key = `$${Math.random()}`;
 extend({ RagingSeaMaterial });
@@ -48,13 +52,17 @@ declare module "@react-three/fiber" {
       uSmallWavesFrequency: number;
       uSmallWavesSpeed: number;
       uSmallIterations: number;
+      uMetalness: number;
+      uRoughness: number;
+      uLightDirection: THREE.Vector3;
+      uReflectionColor: THREE.Color | string;
     };
   }
 }
 
 export function RagingSea() {
   const { characterRef, shipRef } = useGame(
-    useShallow((s) => ({ characterRef: s.characterRef, shipRef: s.shipRef })),
+    useShallow((s) => ({ characterRef: s.characterRef, shipRef: s.shipRef }))
   );
   const {
     animate,
@@ -69,26 +77,37 @@ export function RagingSea() {
     smallWavesFrequency,
     smallWavesSpeed,
     smallIterations,
+    metalness,
+    roughness,
+    reflectionColor,
   } = useControls({
-    Ocean: folder({
-      surfaceColor: "#99e5e1",
-      depthColor: "#26a0c2",
-      colorOffset: 0.08,
-      colorMultiplier: 1.1,
-      animate: true,
-    }),
-    "Big waves": folder({
-      bigWavesElevation: 0.55,
-      bigWavesFrequency: [0.16, 0.7],
-      bigWaveSpeed: 0.75,
-    }),
-    "Small waves": folder({
-      smallWavesElevation: 0.2,
-      smallWavesFrequency: 3,
-      smallWavesSpeed: 0.2,
-      smallIterations: 4,
+    Water: folder({
+      Ocean: folder({
+        surfaceColor: "#99e5e1",
+        depthColor: "#33a7c7",
+        colorOffset: 0.08,
+        colorMultiplier: 1.1,
+        animate: true,
+      }),
+      Reflection: folder({
+        metalness: { value: 0.55, min: 0, max: 1, step: 0.01 },
+        roughness: { value: 0.25, min: 0, max: 1, step: 0.01 },
+        reflectionColor: "#eef6f8",
+      }),
+      "Big waves": folder({
+        bigWavesElevation: 0.55,
+        bigWavesFrequency: [0.16, 0.7],
+        bigWaveSpeed: 0.75,
+      }),
+      "Small waves": folder({
+        smallWavesElevation: 0.2,
+        smallWavesFrequency: 3,
+        smallWavesSpeed: 0.2,
+        smallIterations: 4,
+      }),
     }),
   });
+
   const closeShaderRef = useRef<ThreeElements["ragingSeaMaterial"]>(null!);
   const farShaderRef = useRef<ThreeElements["ragingSeaMaterial"]>(null!);
 
@@ -122,7 +141,7 @@ export function RagingSea() {
             }
           }}
         />
-        <Plane args={[100, 100, 55, 55]}>
+        <Plane args={[100, 100, 55, 55]} castShadow receiveShadow>
           <ragingSeaMaterial
             key={RagingSeaMaterial.key}
             ref={closeShaderRef}
@@ -137,26 +156,13 @@ export function RagingSea() {
             uSmallWavesFrequency={smallWavesFrequency}
             uSmallWavesSpeed={smallWavesSpeed}
             uSmallIterations={smallIterations}
+            uMetalness={metalness}
+            uRoughness={roughness}
+            uLightDirection={new THREE.Vector3(1, 1, 0.5)}
+            uReflectionColor={reflectionColor}
           />
         </Plane>
       </RigidBody>
-      <Plane args={[300, 300, 28, 28]} rotation-x={-Math.PI / 2}>
-        <ragingSeaMaterial
-          key={RagingSeaMaterial.key}
-          ref={farShaderRef}
-          uBigWavesElevation={bigWavesElevation}
-          uBigWavesFrequency={bigWavesFrequency}
-          uBigWavesSpeed={bigWaveSpeed}
-          uSurfaceColor={surfaceColor}
-          uDepthColor={depthColor}
-          uColorOffset={colorOffset}
-          uColorMultiplier={colorMultiplier}
-          uSmallWavesElevation={smallWavesElevation}
-          uSmallWavesFrequency={smallWavesFrequency}
-          uSmallWavesSpeed={smallWavesSpeed}
-          uSmallIterations={smallIterations}
-        />
-      </Plane>
     </>
   );
 }

@@ -10,6 +10,7 @@
     uniform float uSmallIterations;
 
     varying float vElevation;
+    varying vec3 vNormal;
 
 //  Perlin 3D Noise 
 // by Stefan Gustavson
@@ -117,8 +118,24 @@ float cnoise3(vec3 v)
         elevation -= abs(cnoise3(vec3(modelPosition.xz * uSmallWavesFrequency * i, uTime * uSmallWavesSpeed)) * uSmallWavesElevation / i);
       }
       modelPosition.y += elevation;
+      
+      // Calculate normal for reflection
+      float delta = 0.1;
+    float elevationX = sin((modelPosition.x + delta) * uBigWavesFrequency.x + uTime * uBigWavesSpeed) *
+        sin(modelPosition.z * uBigWavesFrequency.y + uTime * uBigWavesSpeed) *
+        (cnoise3(vec3((modelPosition.x + delta) / 5.0, modelPosition.z / 5.0, (uTime / 5.0))) * 2.0) * uBigWavesElevation;
+      float elevationZ = sin(modelPosition.x * uBigWavesFrequency.x + uTime * uBigWavesSpeed) *
+        sin((modelPosition.z + delta) * uBigWavesFrequency.y + uTime * uBigWavesSpeed) *
+        (cnoise3(vec3(modelPosition.x / 5.0, (modelPosition.z + delta) / 5.0, (uTime / 5.0))) * 2.0) * uBigWavesElevation;
+      
+      vec3 tangentX = vec3(delta, elevationX - elevation, 0.0);
+      vec3 tangentZ = vec3(0.0, elevationZ - elevation, delta);
+      vec3 calculatedNormal = normalize(cross(tangentX, tangentZ));
+      
       vec4 viewPosition = viewMatrix * modelPosition;
       vec4 projectedPosition = projectionMatrix * viewPosition;
       gl_Position = projectedPosition;
+      
       vElevation = elevation;
+      vNormal = normalize((modelMatrix * vec4(calculatedNormal, 0.0)).xyz);
     }
