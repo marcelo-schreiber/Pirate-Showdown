@@ -141,7 +141,7 @@ export function RagingSea() {
             }
           }}
         />
-        <Plane args={[100, 100, 55, 55]} castShadow receiveShadow>
+        <Plane args={[100, 100, 55, 55]}>
           <ragingSeaMaterial
             key={RagingSeaMaterial.key}
             ref={closeShaderRef}
@@ -202,8 +202,8 @@ export function RagingSea() {
 
       {/* far sea */}
       <Plane
-        args={[1000, 1000, 55, 55]}
-        position={[0, -0.1, -200]}
+        args={[400, 400, 35, 35]}
+        position={[0, -0.1, 0]}
         rotation-x={-Math.PI / 2}
       >
         <ragingSeaMaterial
