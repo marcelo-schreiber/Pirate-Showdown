@@ -22,13 +22,14 @@ export function PirateEntity() {
   const localCharacterRef = useRef<RapierRigidBody>(null!);
   const { rapier, world } = useRapier();
 
-  const { debug, setCharacterRef, shipRef, joint, setJoint } = useGame(
+  const { debug, setCharacterRef, shipRef, joint, setJoint, resetAnimation } = useGame(
     useShallow((s) => ({
       debug: s.debug,
       setCharacterRef: s.setCharacterRef,
       shipRef: s.shipRef,
       joint: s.activeJoint,
       setJoint: s.setActiveJoint,
+      resetAnimation: s.reset,
     })),
   );
 
@@ -102,6 +103,8 @@ export function PirateEntity() {
 
       const newJoint = world.createImpulseJoint(params, pirate, ship, true);
       setJoint(newJoint);
+
+      resetAnimation();
     }
   };
 
@@ -148,6 +151,7 @@ export function PirateEntity() {
     <Ecctrl
       debug={debug}
       animated={joint == null}
+      disableControl={joint !== null}
       position={[0, 3, 0]}
       ref={(r) => {
         if (r) {
