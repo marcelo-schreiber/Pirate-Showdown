@@ -163,6 +163,72 @@ export function RagingSea() {
           />
         </Plane>
       </RigidBody>
+      {/* make a rigidbody cube around the close sea */}
+      <RigidBody
+        type="fixed"
+        colliders={false}
+        position={[0, -5, -50]}
+        rotation-x={-Math.PI / 2}
+      >
+        <CuboidCollider args={[50, 5, 50]} />
+      </RigidBody>
+
+      <RigidBody
+        type="fixed"
+        colliders={false}
+        position={[0, -5, 50]}
+        rotation-x={-Math.PI / 2}
+      >
+        <CuboidCollider args={[50, 5, 50]} />
+      </RigidBody>
+
+      <RigidBody
+        type="fixed"
+        colliders={false}
+        position={[50, -5, 0]}
+        rotation={[-Math.PI / 2, 0, Math.PI / 2]}
+      >
+        <CuboidCollider args={[50, 5, 50]} />
+      </RigidBody>
+
+      <RigidBody
+        type="fixed"
+        colliders={false}
+        position={[-50, -5, 0]}
+        rotation={[-Math.PI / 2, 0, Math.PI / 2]}
+      >
+        <CuboidCollider args={[50, 5, 50]} />
+      </RigidBody>
+
+      {/* far sea */}
+      <Plane
+        args={[1000, 1000, 55, 55]}
+        position={[0, -0.1, -200]}
+        rotation-x={-Math.PI / 2}
+      >
+        <ragingSeaMaterial
+          key={RagingSeaMaterial.key}
+          ref={farShaderRef}
+          uBigWavesElevation={bigWavesElevation}
+          uBigWavesFrequency={bigWavesFrequency}
+          uBigWavesSpeed={bigWaveSpeed}
+          uSurfaceColor={surfaceColor}
+          uDepthColor={depthColor}
+          uColorOffset={colorOffset}
+          uColorMultiplier={colorMultiplier}
+          uSmallWavesElevation={smallWavesElevation}
+          uSmallWavesFrequency={smallWavesFrequency}
+          uSmallWavesSpeed={smallWavesSpeed}
+          uSmallIterations={smallIterations}
+          uMetalness={metalness}
+          uRoughness={roughness}
+          uLightDirection={new THREE.Vector3(1, 1, 0.5)}
+          uReflectionColor={reflectionColor}
+        />
+      </Plane>
+
+      {/* fog */}
+
     </>
   );
 }
