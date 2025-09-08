@@ -21,7 +21,7 @@ import { ToneMappingMode } from "postprocessing";
 import { useShallow } from "zustand/react/shallow";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { Trajectory } from "@/models/Parabula";
-import { EcctrlJoystickControls } from "@/components/EcctrlJoystickControls";
+import { EcctrlJoystickControls } from "@/components/hud/EcctrlJoystickControls";
 
 export enum Controls {
   forward = "forward",
