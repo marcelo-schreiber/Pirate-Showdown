@@ -176,7 +176,6 @@ export function PirateEntity() {
       debug={debug}
       animated={joint == null}
       disableControl={joint !== null}
-      position={[0, 3, 0]}
       ref={(r) => {
         if (r) {
           characterRef.current = r;
@@ -185,14 +184,9 @@ export function PirateEntity() {
         }
       }}
       followLight={false}
-      floatingDis={0.2}
+      friction={-1}
       jumpVel={3.25}
       maxVelLimit={2.3}
-      airDragMultiplier={0.1}
-      rayOriginOffset={{ x: 0, y: -0.6, z: 0 }}
-      slopeUpExtraForce={0.2}
-      rayLength={0.5}
-      slopeRayLength={0.5}
       camCollision={true}
       controllerKeys={{
         forward: 12,

@@ -21,7 +21,7 @@ export const pirateOptions = Object.freeze({
     "https://lb6qttqwri.ufs.sh/f/brR5phe6Ssb8Uppgjf3t7LsKWgHdT8qJcIZrNeozMGjCyP5Y",
 
   scale: 0.85,
-  initialPosition: new Vector3(0, -0.74, 0),
+  initialPosition: new Vector3(0, -0.89, 0),
 
   leftX: {
     lock: new Quaternion().setFromAxisAngle(
@@ -30,7 +30,7 @@ export const pirateOptions = Object.freeze({
     ),
     offset: shipOptions.redX.leftCannon.offset
       .clone()
-      .add(new Vector3(0.03, 0.78, 0)), // 0.8 is character height
+      .add(new Vector3(0.03, 0.89, 0)), // 0.8 is character height
   },
   rightX: {
     lock: new Quaternion().setFromAxisAngle(
@@ -39,7 +39,7 @@ export const pirateOptions = Object.freeze({
     ),
     offset: shipOptions.redX.rightCannon.offset
       .clone()
-      .add(new Vector3(0.03, 0.78, 0)), // 0.8 is character height
+      .add(new Vector3(0.03, 0.89, 0)), // 0.8 is character height
   },
   centerRudderX: {
     lock: new Quaternion().setFromAxisAngle(
@@ -48,6 +48,6 @@ export const pirateOptions = Object.freeze({
     ),
     offset: shipOptions.redX.centerRudder.offset
       .clone()
-      .add(new Vector3(0, 0.78, 0)), // 0.8 is character height
+      .add(new Vector3(0, 0.89, 0)), // 0.8 is character height
   },
 });
