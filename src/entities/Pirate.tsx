@@ -46,6 +46,8 @@ export function PirateEntity() {
       }))
     );
 
+
+    console.log(joystickDir, joystickStrength);
   const [, get] = useKeyboardControls<Controls>();
 
   const isHoldingE = useButtonHold("e", 500);
@@ -158,7 +160,7 @@ export function PirateEntity() {
           shipRef.current.setAngvel(new Vector3(0, 0.2, 0), true);
         } else if (anglesAlmostEqual(joystickDir, 0, 1)) {
           // turn right
-          shipRef.current.setAngvel(new Vector3(0, 0.2, 0), true);
+          shipRef.current.setAngvel(new Vector3(0, -0.2, 0), true);
         }
       }
     } else {
