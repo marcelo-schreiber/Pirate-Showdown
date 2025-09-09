@@ -34,6 +34,67 @@ export { useGame } from "@/hooks/useGame";
 export { EcctrlJoystick } from "./EcctrlJoystick";
 export { useJoystickControls } from "@/hooks/useJoystickControls";
 
+// Convert joystick input to discrete directional booleans (same as keyboard)
+const getJoystickDirections = (
+  joystickDis: number,
+  joystickAng: number,
+  threshold: number = 0.2
+): {
+  forward: boolean;
+  backward: boolean;
+  leftward: boolean;
+  rightward: boolean;
+} => {
+  if (joystickDis < threshold) {
+    return { forward: false, backward: false, leftward: false, rightward: false };
+  }
+
+  // Normalize angle to 0-2π range
+  const normalizedAngle = ((joystickAng % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+  
+  // Convert to degrees for easier understanding
+  const degrees = (normalizedAngle * 180) / Math.PI;
+  
+  // Divide into 8 segments of 45° each, determine which segment we're in
+  const segment = Math.round(degrees / 45) % 8;
+  
+  // Map each segment to direction combinations
+  let forward = false, backward = false, leftward = false, rightward = false;
+  
+  switch (segment) {
+    case 0: // 0° - Right
+      rightward = true;
+      break;
+    case 1: // 45° - Forward-Right
+      forward = true;
+      rightward = true;
+      break;
+    case 2: // 90° - Forward
+      forward = true;
+      break;
+    case 3: // 135° - Forward-Left
+      forward = true;
+      leftward = true;
+      break;
+    case 4: // 180° - Left
+      leftward = true;
+      break;
+    case 5: // 225° - Backward-Left
+      backward = true;
+      leftward = true;
+      break;
+    case 6: // 270° - Backward
+      backward = true;
+      break;
+    case 7: // 315° - Backward-Right
+      backward = true;
+      rightward = true;
+      break;
+  }
+
+  return { forward, backward, leftward, rightward };
+};
+
 // Retrieve current moving direction of the character
 const getMovingDirection = (
   forward: boolean,
@@ -1325,12 +1386,8 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     const { joystickDis, joystickAng, runState, button1Pressed } =
       getJoystickValues();
 
-    // Move character to the moving direction (joystick controls)
-    if (joystickDis > 0) {
-      // Apply camera rotation to character model
-      modelEuler.y = pivot.rotation.y + (joystickAng - Math.PI / 2);
-      moveCharacter(delta, runState, slopeAngle, movingObjectVelocity);
-    }
+    // Convert joystick input to discrete directions (same as keyboard)
+    const joystickDirections = getJoystickDirections(joystickDis, joystickAng);
 
     /**
      * Getting all the useful keys from useKeyboardControls
@@ -1338,37 +1395,36 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     const { forward, backward, leftward, rightward, jump, run } =
       isInsideKeyboardControls && getKeys ? getKeys() : presetKeys;
 
-    // Getting moving directions (IIFE)
+    // Combine keyboard and joystick inputs
+    const combinedForward = forward || joystickDirections.forward || gamepadKeys.forward;
+    const combinedBackward = backward || joystickDirections.backward || gamepadKeys.backward;
+    const combinedLeftward = leftward || joystickDirections.leftward || gamepadKeys.leftward;
+    const combinedRightward = rightward || joystickDirections.rightward || gamepadKeys.rightward;
+    const combinedRun = run || runState;
+
+    // Getting moving directions using the same logic for all input types
     modelEuler.y = ((movingDirection) =>
       movingDirection === null ? modelEuler.y : movingDirection)(
-      getMovingDirection(forward, backward, leftward, rightward, pivot),
+      getMovingDirection(combinedForward, combinedBackward, combinedLeftward, combinedRightward, pivot),
     );
 
-    // Move character to the moving direction
-    if (
-      forward ||
-      backward ||
-      leftward ||
-      rightward ||
-      gamepadKeys.forward ||
-      gamepadKeys.backward ||
-      gamepadKeys.leftward ||
-      gamepadKeys.rightward
-    )
-      moveCharacter(delta, run, slopeAngle, movingObjectVelocity);
+    // Move character to the moving direction (unified for all input types)
+    if (combinedForward || combinedBackward || combinedLeftward || combinedRightward) {
+      moveCharacter(delta, combinedRun, slopeAngle, movingObjectVelocity);
+    }
 
     // Jump impulse
     if ((jump || button1Pressed) && canJump) {
       // characterRef.current.applyImpulse(jumpDirection.set(0, 0.5, 0), true);
       jumpVelocityVec.set(
         currentVel.x,
-        run ? sprintJumpMult * jumpVel : jumpVel,
+        combinedRun ? sprintJumpMult * jumpVel : jumpVel,
         currentVel.z,
       );
       // Apply slope normal to jump direction
       characterRef.current.setLinvel(
         jumpDirection
-          .set(0, (run ? sprintJumpMult * jumpVel : jumpVel) * slopJumpMult, 0)
+          .set(0, (combinedRun ? sprintJumpMult * jumpVel : jumpVel) * slopJumpMult, 0)
           .projectOnVector(actualSlopeNormalVec)
           .add(jumpVelocityVec),
         true,
@@ -1502,17 +1558,12 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
           // Character moving and unmoving should provide different drag force to the platform
           if (rayHitObjectBodyType === 0) {
             if (
-              !forward &&
-              !backward &&
-              !leftward &&
-              !rightward &&
+              !combinedForward &&
+              !combinedBackward &&
+              !combinedLeftward &&
+              !combinedRightward &&
               canJump &&
-              joystickDis === 0 &&
-              !isPointMoving &&
-              !gamepadKeys.forward &&
-              !gamepadKeys.backward &&
-              !gamepadKeys.leftward &&
-              !gamepadKeys.rightward
+              !isPointMoving
             ) {
               movingObjectDragForce
                 .copy(bodyContactForce)
@@ -1634,17 +1685,12 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
      * Apply drag force if it's not moving
      */
     if (
-      !forward &&
-      !backward &&
-      !leftward &&
-      !rightward &&
+      !combinedForward &&
+      !combinedBackward &&
+      !combinedLeftward &&
+      !combinedRightward &&
       canJump &&
-      joystickDis === 0 &&
-      !isPointMoving &&
-      !gamepadKeys.forward &&
-      !gamepadKeys.backward &&
-      !gamepadKeys.leftward &&
-      !gamepadKeys.rightward
+      !isPointMoving
     ) {
       // not on a moving object
       if (!isOnMovingObject) {
@@ -1707,15 +1753,10 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
      */
     if (isModePointToMove) {
       functionKeyDown =
-        forward ||
-        backward ||
-        leftward ||
-        rightward ||
-        joystickDis > 0 ||
-        gamepadKeys.forward ||
-        gamepadKeys.backward ||
-        gamepadKeys.leftward ||
-        gamepadKeys.rightward ||
+        combinedForward ||
+        combinedBackward ||
+        combinedLeftward ||
+        combinedRightward ||
         jump ||
         button1Pressed;
       pointToMove(delta, slopeAngle, movingObjectVelocity, functionKeyDown);
@@ -1725,28 +1766,12 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
      * Fixed camera feature
      */
     if (isModeFixedCamera) {
-      if (
-        leftward ||
-        gamepadKeys.leftward ||
-        (joystickDis > 0 &&
-          joystickAng > (2 * Math.PI) / 3 &&
-          joystickAng < (4 * Math.PI) / 3) ||
-        (gamepadJoystickDis > 0 &&
-          gamepadJoystickAng > (2 * Math.PI) / 3 &&
-          gamepadJoystickAng < (4 * Math.PI) / 3)
-      ) {
-        pivot.rotation.y += run
+      if (combinedLeftward) {
+        pivot.rotation.y += combinedRun
           ? delta * sprintMult * fixedCamRotMult
           : delta * fixedCamRotMult;
-      } else if (
-        rightward ||
-        gamepadKeys.rightward ||
-        (joystickDis > 0 && joystickAng < Math.PI / 3) ||
-        joystickAng > (5 * Math.PI) / 3 ||
-        (gamepadJoystickDis > 0 && gamepadJoystickAng < Math.PI / 3) ||
-        gamepadJoystickAng > (5 * Math.PI) / 3
-      ) {
-        pivot.rotation.y -= run
+      } else if (combinedRightward) {
+        pivot.rotation.y -= combinedRun
           ? delta * sprintMult * fixedCamRotMult
           : delta * fixedCamRotMult;
       }
@@ -1757,18 +1782,13 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
      */
     if (animated) {
       if (
-        !forward &&
-        !backward &&
-        !leftward &&
-        !rightward &&
+        !combinedForward &&
+        !combinedBackward &&
+        !combinedLeftward &&
+        !combinedRightward &&
         !jump &&
         !button1Pressed &&
-        joystickDis === 0 &&
         !isPointMoving &&
-        !gamepadKeys.forward &&
-        !gamepadKeys.backward &&
-        !gamepadKeys.leftward &&
-        !gamepadKeys.rightward &&
         canJump
       ) {
         if (idleAnimation) idleAnimation();
@@ -1776,21 +1796,13 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         if (jumpAnimation) jumpAnimation();
       } else if (
         canJump &&
-        (forward ||
-          backward ||
-          leftward ||
-          rightward ||
-          joystickDis > 0 ||
-          isPointMoving ||
-          gamepadKeys.forward ||
-          gamepadKeys.backward ||
-          gamepadKeys.leftward ||
-          gamepadKeys.rightward)
+        (combinedForward ||
+          combinedBackward ||
+          combinedLeftward ||
+          combinedRightward ||
+          isPointMoving)
       ) {
-        // run || runState
-        //   ? runAnimation && runAnimation()
-        //   : walkAnimation && walkAnimation();
-        if (run || runState) {
+        if (combinedRun) {
           if (runAnimation) runAnimation();
         } else if (walkAnimation) walkAnimation();
       } else if (!canJump) {

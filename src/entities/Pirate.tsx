@@ -175,7 +175,9 @@ export function PirateEntity() {
     <Ecctrl
       debug={debug}
       animated={joint == null}
+      position={[0, 3, 0]}
       disableControl={joint !== null}
+
       ref={(r) => {
         if (r) {
           characterRef.current = r;
@@ -186,7 +188,7 @@ export function PirateEntity() {
       followLight={false}
       friction={-1}
       jumpVel={3.25}
-      maxVelLimit={2.3}
+      maxVelLimit={1.9}
       camCollision={true}
       controllerKeys={{
         forward: 12,
