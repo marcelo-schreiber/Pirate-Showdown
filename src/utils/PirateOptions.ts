@@ -26,7 +26,7 @@ export const pirateOptions = Object.freeze({
   leftX: {
     lock: new Quaternion().setFromAxisAngle(
       new Vector3(0, 1, 0),
-      MathUtils.degToRad(180 - 32),
+      MathUtils.degToRad(180 - 35),
     ),
     offset: shipOptions.redX.leftCannon.offset
       .clone()
@@ -35,7 +35,7 @@ export const pirateOptions = Object.freeze({
   rightX: {
     lock: new Quaternion().setFromAxisAngle(
       new Vector3(0, 1, 0),
-      MathUtils.degToRad(32),
+      MathUtils.degToRad(35),
     ),
     offset: shipOptions.redX.rightCannon.offset
       .clone()

@@ -39,8 +39,9 @@ export function Trajectory({
   steps = 200,
   startPos,
   startVel,
-  color = "yellow",
+  color = "lightgrey",
   elevationDeg = 0,
+  stripWidth = 0.4,
   ...props
 }: {
   steps?: number;
@@ -48,7 +49,8 @@ export function Trajectory({
   startVel?: Vector3; // optional override of computed forward velocity
   color?: string;
   elevationDeg?: number; // additional upward pitch in degrees applied to computed forward velocity
-} & JSX.IntrinsicElements["line"]) {
+  stripWidth?: number; // width of the parabolic strip
+} & JSX.IntrinsicElements["mesh"]) {
   const {
     world: { gravity, timestep },
   } = useRapier();
@@ -62,17 +64,37 @@ export function Trajectory({
   );
 
   // Refs for performant per-frame updates
-  const lineRef = useRef<THREE.Line>(null!);
-  const positionsRef = useRef<Float32Array>(new Float32Array(steps * 3));
+  const meshRef = useRef<THREE.Mesh>(null!);
+  const positionsRef = useRef<Float32Array>(new Float32Array(steps * 2 * 3)); // 2 vertices per step for strip
+  const indicesRef = useRef<Uint16Array>(new Uint16Array((steps - 1) * 6)); // 2 triangles per segment
   const geometryRef = useRef<BufferGeometry>(new BufferGeometry());
 
   // Reallocate buffers if steps changes
   useEffect(() => {
-    positionsRef.current = new Float32Array(steps * 3);
+    positionsRef.current = new Float32Array(steps * 2 * 3);
+    indicesRef.current = new Uint16Array((steps - 1) * 6);
     geometryRef.current.setAttribute(
       "position",
       new THREE.BufferAttribute(positionsRef.current, 3),
     );
+    geometryRef.current.setIndex(new THREE.BufferAttribute(indicesRef.current, 1));
+    
+    // Set up indices for triangle strip
+    const indices = indicesRef.current;
+    for (let i = 0; i < steps - 1; i++) {
+      const baseIndex = i * 6;
+      const vertIndex = i * 2;
+      
+      // First triangle
+      indices[baseIndex] = vertIndex;
+      indices[baseIndex + 1] = vertIndex + 1;
+      indices[baseIndex + 2] = vertIndex + 2;
+      
+      // Second triangle
+      indices[baseIndex + 3] = vertIndex + 1;
+      indices[baseIndex + 4] = vertIndex + 3;
+      indices[baseIndex + 5] = vertIndex + 2;
+    }
   }, [steps]);
 
   // Initialize geometry once
@@ -81,24 +103,25 @@ export function Trajectory({
       "position",
       new THREE.BufferAttribute(positionsRef.current, 3),
     );
+    geometryRef.current.setIndex(new THREE.BufferAttribute(indicesRef.current, 1));
   }, []);
 
   useFrame((state) => {
-    const line = lineRef.current;
-    if (!line) return;
+    const mesh = meshRef.current;
+    if (!mesh) return;
     if (!joint || !characterRef?.current?.group || !shipRef?.current) {
-      line.visible = false;
+      mesh.visible = false;
       return;
     }
     if (
       areVectorsCloseEnough(joint.anchor2(), pirateOptions.centerRudderX.offset)
     ) {
       // don't show trajectory when docked at center (steering) position
-      line.visible = false;
+      mesh.visible = false;
       return;
     }
 
-    line.visible = true;
+    mesh.visible = true;
 
     const gravityVec = new THREE.Vector3(gravity.x, gravity.y, gravity.z);
 
@@ -145,16 +168,32 @@ export function Trajectory({
     const magnitudeScale = 0.5 + (t % 1); // range 0.5..1.5 (adjustable)
     const dynVel = baseVel.multiplyScalar(magnitudeScale);
 
+    // Calculate right vector for strip width
+    const forward = dynVel.clone().normalize();
+    const up = new THREE.Vector3(0, 1, 0);
+    const right = new THREE.Vector3().crossVectors(forward, up).normalize();
+    
     // Integrate trajectory using simple Euler integration
     const pos = origin.clone();
     const vel = dynVel.clone();
 
     const positions = positionsRef.current;
     for (let i = 0; i < steps; i++) {
-      const idx = i * 3;
-      positions[idx] = pos.x;
-      positions[idx + 1] = pos.y;
-      positions[idx + 2] = pos.z;
+      // Calculate positions for both sides of the strip
+      const leftPos = pos.clone().addScaledVector(right, -stripWidth / 2);
+      const rightPos = pos.clone().addScaledVector(right, stripWidth / 2);
+      
+      // Left vertex
+      const leftIdx = i * 6; // 2 vertices * 3 components per step
+      positions[leftIdx] = leftPos.x;
+      positions[leftIdx + 1] = leftPos.y;
+      positions[leftIdx + 2] = leftPos.z;
+      
+      // Right vertex
+      const rightIdx = leftIdx + 3;
+      positions[rightIdx] = rightPos.x;
+      positions[rightIdx + 1] = rightPos.y;
+      positions[rightIdx + 2] = rightPos.z;
 
       // v = v + g * dt
       vel.addScaledVector(gravityVec, timestep);
@@ -174,12 +213,13 @@ export function Trajectory({
   return (
     <primitive
       object={
-        (lineRef.current ||= new THREE.Line(
+        (meshRef.current ||= new THREE.Mesh(
           geometryRef.current,
-          new THREE.LineBasicMaterial({
+          new THREE.MeshBasicMaterial({
             color,
             opacity: 0.35,
             transparent: true,
+            side: THREE.DoubleSide,
           }),
         ))
       }
