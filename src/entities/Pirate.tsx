@@ -46,6 +46,8 @@ export function PirateEntity() {
       }))
     );
 
+
+    console.log(joystickDir, joystickStrength);
   const [, get] = useKeyboardControls<Controls>();
 
   const isHoldingE = useButtonHold("e", 500);
@@ -158,7 +160,7 @@ export function PirateEntity() {
           shipRef.current.setAngvel(new Vector3(0, 0.2, 0), true);
         } else if (anglesAlmostEqual(joystickDir, 0, 1)) {
           // turn right
-          shipRef.current.setAngvel(new Vector3(0, 0.2, 0), true);
+          shipRef.current.setAngvel(new Vector3(0, -0.2, 0), true);
         }
       }
     } else {
@@ -175,8 +177,9 @@ export function PirateEntity() {
     <Ecctrl
       debug={debug}
       animated={joint == null}
-      disableControl={joint !== null}
       position={[0, 3, 0]}
+      disableControl={joint !== null}
+
       ref={(r) => {
         if (r) {
           characterRef.current = r;
@@ -185,14 +188,9 @@ export function PirateEntity() {
         }
       }}
       followLight={false}
-      floatingDis={0.2}
+      friction={-1}
       jumpVel={3.25}
-      maxVelLimit={2.3}
-      airDragMultiplier={0.1}
-      rayOriginOffset={{ x: 0, y: -0.6, z: 0 }}
-      slopeUpExtraForce={0.2}
-      rayLength={0.5}
-      slopeRayLength={0.5}
+      maxVelLimit={1.9}
       camCollision={true}
       controllerKeys={{
         forward: 12,
