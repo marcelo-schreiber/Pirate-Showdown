@@ -74,7 +74,7 @@ export function Experience() {
   return (
     <>
       <Canvas
-        shadows="variance"
+        shadows="percentage"
         dpr={Math.min(window.devicePixelRatio, 2)}
         camera={{
           fov: 55,
@@ -96,7 +96,7 @@ export function Experience() {
           />
           <Perf position="top-left" minimal={!debug} />
           <Sun />
-          <Physics debug={debug}>
+          <Physics debug={debug} timeStep="vary">
             <KeyboardControls map={keyboardMap}>
               <PirateEntity />
             </KeyboardControls>
