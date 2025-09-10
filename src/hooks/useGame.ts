@@ -13,6 +13,10 @@ export const useGame = create(
       setCharacterRef: (characterRef: RefObject<CustomEcctrlRigidBody>) =>
         set({ characterRef }),
 
+      hasGoBackWarning: false,
+      setHasGoBackWarning: (hasGoBackWarning: boolean) =>
+        set({ hasGoBackWarning }),
+
       shipRef: null!,
       setShipRef: (shipRef: RefObject<RapierRigidBody>) => set({ shipRef }),
 
@@ -22,6 +26,10 @@ export const useGame = create(
       activeJoint: null as ImpulseJoint | null,
       setActiveJoint: (joint: ImpulseJoint | null) =>
         set({ activeJoint: joint }),
+
+  // UI direction arrow angle (deg) to world center computed in Canvas
+  centerDirAngleDeg: 0,
+  setCenterDirAngleDeg: (deg: number) => set({ centerDirAngleDeg: deg }),
 
       /**
        * Point to move point
@@ -208,6 +216,12 @@ type State = {
 
   debug: boolean;
   setDebug: (debug: boolean) => void;
+
+  hasGoBackWarning: boolean;
+  setHasGoBackWarning: (hasGoBackWarning: boolean) => void;
+
+  centerDirAngleDeg: number;
+  setCenterDirAngleDeg: (deg: number) => void;
 
   moveToPoint: THREE.Vector3 | null;
   curAnimation: string | null;

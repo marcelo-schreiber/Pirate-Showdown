@@ -22,6 +22,8 @@ import { useShallow } from "zustand/react/shallow";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { Trajectory } from "@/models/Parabula";
 import { EcctrlJoystickControls } from "@/components/hud/EcctrlJoystickControls";
+import { GoBackWarning } from "@/components/hud/GoBackWarning";
+import { CenterArrowComputer } from "@/components/hud/CenterArrowComputer";
 
 export enum Controls {
   forward = "forward",
@@ -103,12 +105,14 @@ export function Experience() {
             <Ship />
             <RagingSea />
             <Trajectory elevationDeg={10} />
+            <CenterArrowComputer />
           </Physics>
         </Suspense>
       </Canvas>
       <Loader />
       <Leva hidden={!debug} />
       <EcctrlJoystickControls />
+  <GoBackWarning />
     </>
   );
 }

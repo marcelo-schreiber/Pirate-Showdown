@@ -11,17 +11,33 @@ import {
 import { useRef } from "react";
 import { useShallow } from "zustand/shallow";
 import { shipOptions } from "@/utils/shipOptions";
+import { useFrame } from "@react-three/fiber";
 
 export function ShipEntity(props: RigidBodyProps) {
-  const { setShipRef } = useGame(
+  const { setShipRef, setHasGoBackWarning } = useGame(
     useShallow((state) => {
       return {
         setShipRef: state.setShipRef,
+        setHasGoBackWarning: state.setHasGoBackWarning,
       };
     }),
   );
 
   const shipRef = useRef<RapierRigidBody>(null!);
+
+  useFrame(() => {
+    const ship = shipRef.current;
+    if (!ship) return;
+
+    const shipPosition = ship.translation();
+
+    if (Math.abs(shipPosition.x) > 50 || Math.abs(shipPosition.z) > 50) {
+      setHasGoBackWarning(true);
+    } else {
+      setHasGoBackWarning(false);
+    }
+    
+  })
 
   return (
     <>
