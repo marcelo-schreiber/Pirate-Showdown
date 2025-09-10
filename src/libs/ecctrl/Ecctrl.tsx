@@ -904,9 +904,6 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
       .copy(movingObjectVelocity)
       .projectOnVector(movingDirection)
       .multiply(movingDirection);
-    // Calculate angle between moving object velocity direction and character moving direction
-    const angleBetweenCharacterDirAndObjectDir =
-      movingObjectVelocity.angleTo(movingDirection);
 
     /**
      * Setup rejection velocity, (currently only work on ground)
@@ -921,25 +918,21 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
 
     /**
      * Calculate required accelaration and force: a = Δv/Δt
-     * If it's on a moving/rotating platform, apply platform velocity to Δv accordingly
+     * Keep character movement speed consistent regardless of platform velocity
      * Also, apply reject velocity when character is moving opposite of it's moving direction
      */
     moveAccNeeded.set(
       (movingDirection.x *
-        (maxVelLimit * (run ? sprintMult : 1) +
-          movingObjectVelocityInCharacterDir.x) -
+        (maxVelLimit * (run ? sprintMult : 1)) -
         (currentVel.x -
-          movingObjectVelocity.x *
-          Math.sin(angleBetweenCharacterDirAndObjectDir) +
+          movingObjectVelocity.x +
           rejectVel.x * (isOnMovingObject ? 0 : rejectVelMult))) /
       accDeltaTime,
       0,
       (movingDirection.z *
-        (maxVelLimit * (run ? sprintMult : 1) +
-          movingObjectVelocityInCharacterDir.z) -
+        (maxVelLimit * (run ? sprintMult : 1)) -
         (currentVel.z -
-          movingObjectVelocity.z *
-          Math.sin(angleBetweenCharacterDirAndObjectDir) +
+          movingObjectVelocity.z +
           rejectVel.z * (isOnMovingObject ? 0 : rejectVelMult))) /
       accDeltaTime
     );

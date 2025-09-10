@@ -169,7 +169,7 @@ export function PirateEntity() {
 
     const forward = new Vector3(-1, 0, 0);
     forward.applyQuaternion(shipRef.current.rotation());
-    forward.multiplyScalar(2);
+    forward.multiplyScalar(1.8);
     shipRef.current.setLinvel(forward, true);
   });
 
@@ -179,7 +179,6 @@ export function PirateEntity() {
       animated={joint == null}
       position={[0, 3, 0]}
       disableControl={joint !== null}
-
       ref={(r) => {
         if (r) {
           characterRef.current = r;
