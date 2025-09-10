@@ -36,7 +36,7 @@ export function Sun() {
     camFar: { value: 222, min: 50, max: 1000, step: 1 },
     mapSize: { value: 8192, options: [512, 1024, 2048, 4096] },
     bias: { value: -0.0001, min: -0.01, max: 0.01, step: 0.0001 },
-    normalBias: { value: 0.02, min: 0, max: 1, step: 0.01 },
+    normalBias: { value: -0.01, min: 0, max: 1, step: 0.01 },
     showHelper: false,
   });
 
