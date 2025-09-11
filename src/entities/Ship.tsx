@@ -36,8 +36,7 @@ export function ShipEntity(props: RigidBodyProps) {
     } else {
       setHasGoBackWarning(false);
     }
-    
-  })
+  });
 
   return (
     <>

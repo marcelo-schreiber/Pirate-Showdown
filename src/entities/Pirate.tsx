@@ -5,7 +5,7 @@ import Ecctrl, {
 } from "@/libs/ecctrl/Ecctrl";
 import { PirateModel } from "@/models/Pirate";
 import { useGame } from "@/hooks/useGame";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useButtonHold } from "@/hooks/useKeyHold";
 import { useShallow } from "zustand/react/shallow";
 import { RapierRigidBody, useRapier } from "@react-three/rapier";
@@ -34,7 +34,7 @@ export function PirateEntity() {
         joint: s.activeJoint,
         setJoint: s.setActiveJoint,
         resetAnimation: s.reset,
-      }))
+      })),
     );
 
   const { lockButtonPressed, joystickDir, joystickStrength } =
@@ -43,16 +43,14 @@ export function PirateEntity() {
         lockButtonPressed: s.curButton3Pressed,
         joystickDir: s.curJoystickAng,
         joystickStrength: s.curJoystickDis,
-      }))
+      })),
     );
 
-
-    console.log(joystickDir, joystickStrength);
   const [, get] = useKeyboardControls<Controls>();
 
   const isHoldingE = useButtonHold("e", 500);
 
-  const toggleJoint = () => {
+  const toggleJoint = useCallback(() => {
     if (!localCharacterRef?.current || !shipRef?.current) return;
 
     const pirate = localCharacterRef.current;
@@ -66,7 +64,7 @@ export function PirateEntity() {
       const leftDockWorld = localToWorld(shipRef, pirateOptions.leftX.offset);
       const centerDockWorld = localToWorld(
         shipRef,
-        pirateOptions.centerRudderX.offset
+        pirateOptions.centerRudderX.offset,
       );
 
       const {
@@ -84,7 +82,7 @@ export function PirateEntity() {
       const smallestDistance = Math.min(
         distanceToRight,
         distanceToLeft,
-        distanceToCenter
+        distanceToCenter,
       );
       if (smallestDistance > 1.0) {
         console.info("Too far from left and right docking points");
@@ -95,7 +93,7 @@ export function PirateEntity() {
         { distance: distanceToLeft, ...pirateOptions.leftX },
         { distance: distanceToCenter, ...pirateOptions.centerRudderX },
       ].reduce((closest, current) =>
-        current.distance < closest.distance ? current : closest
+        current.distance < closest.distance ? current : closest,
       );
 
       // create joint with local anchors
@@ -112,7 +110,7 @@ export function PirateEntity() {
           y: closestRedXOffset.y,
           z: closestRedXOffset.z,
         },
-        { x: 0, y: 0, z: 0, w: 1 }
+        { x: 0, y: 0, z: 0, w: 1 },
       );
 
       const newJoint = world.createImpulseJoint(params, pirate, ship, true);
@@ -120,7 +118,15 @@ export function PirateEntity() {
 
       resetAnimation();
     }
-  };
+  }, [
+    joint,
+    localCharacterRef,
+    rapier,
+    resetAnimation,
+    setJoint,
+    shipRef,
+    world,
+  ]);
 
   useEffect(() => {
     if (isHoldingE || lockButtonPressed) {
@@ -138,7 +144,7 @@ export function PirateEntity() {
       joint &&
       areVectorsCloseEnough(
         pirateOptions.centerRudderX.offset,
-        joint.anchor2()
+        joint.anchor2(),
       );
 
     if (isOnRudder) {
@@ -187,11 +193,11 @@ export function PirateEntity() {
           setCharacterRef(characterRef);
         }
       }}
-      followLight={false}
+      followLight
       friction={-1}
       jumpVel={3.25}
       maxVelLimit={1.9}
-      camCollision={true}
+      camCollision
       controllerKeys={{
         forward: 12,
         backward: 13,

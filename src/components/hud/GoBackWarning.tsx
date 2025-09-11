@@ -5,14 +5,15 @@ import { useShallow } from "zustand/shallow";
 
 // Simple HUD that shows a directional arrow to world center with a 20s countdown
 export const GoBackWarning = () => {
-  const { hasGoBackWarning, shipRef, setHasGoBackWarning, centerDirAngleDeg } = useGame(
-    useShallow((s) => ({
-      hasGoBackWarning: s.hasGoBackWarning,
-      shipRef: s.shipRef,
-      setHasGoBackWarning: s.setHasGoBackWarning,
-      centerDirAngleDeg: s.centerDirAngleDeg,
-    })),
-  );
+  const { hasGoBackWarning, shipRef, setHasGoBackWarning, centerDirAngleDeg } =
+    useGame(
+      useShallow((s) => ({
+        hasGoBackWarning: s.hasGoBackWarning,
+        shipRef: s.shipRef,
+        setHasGoBackWarning: s.setHasGoBackWarning,
+        centerDirAngleDeg: s.centerDirAngleDeg,
+      })),
+    );
 
   const [timeLeft, setTimeLeft] = useState(20);
   const intervalRef = useRef<number | null>(null);
@@ -88,12 +89,18 @@ export const GoBackWarning = () => {
   const zAxisRef = useRef(new THREE.Vector3(0, 0, 1));
   // keep target quaternion updated from incoming angle
   useEffect(() => {
-  targetQuat.current.setFromAxisAngle(zAxisRef.current, THREE.MathUtils.degToRad(centerDirAngleDeg));
+    targetQuat.current.setFromAxisAngle(
+      zAxisRef.current,
+      THREE.MathUtils.degToRad(centerDirAngleDeg),
+    );
   }, [centerDirAngleDeg]);
   // initialize current quat when showing UI, to avoid jump
   useEffect(() => {
     if (hasGoBackWarning) {
-  currentQuat.current.setFromAxisAngle(zAxisRef.current, THREE.MathUtils.degToRad(centerDirAngleDeg));
+      currentQuat.current.setFromAxisAngle(
+        zAxisRef.current,
+        THREE.MathUtils.degToRad(centerDirAngleDeg),
+      );
       setDisplayAngle(centerDirAngleDeg);
     }
   }, [hasGoBackWarning, centerDirAngleDeg]);
@@ -126,21 +133,39 @@ export const GoBackWarning = () => {
       <div style={panelStyle}>
         <div style={titleStyle}>Off the map, matey!</div>
         <div style={contentRowStyle}>
-          <div style={{ ...arrowWrapperStyle, transform: `rotate(${displayAngle}deg)` }}>
-            <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <div
+            style={{
+              ...arrowWrapperStyle,
+              transform: `rotate(${displayAngle}deg)`,
+            }}
+          >
+            <svg
+              width="64"
+              height="64"
+              viewBox="0 0 64 64"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <defs>
                 <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
                   <stop offset="0%" stopColor="#f0c97a" />
                   <stop offset="100%" stopColor="#b9873b" />
                 </linearGradient>
               </defs>
-              <path d="M8 32h34" stroke="url(#g)" strokeWidth="8" strokeLinecap="round" />
+              <path
+                d="M8 32h34"
+                stroke="url(#g)"
+                strokeWidth="8"
+                strokeLinecap="round"
+              />
               <path d="M34 16l18 16-18 16V16z" fill="url(#g)" />
             </svg>
           </div>
           <div style={timerBadgeStyle}>{timeLeft}s</div>
         </div>
-        <div style={hintStyle}>Steer back to the center or be reeled in by the depths.</div>
+        <div style={hintStyle}>
+          Steer back to the center or be reeled in by the depths.
+        </div>
       </div>
     </div>
   );

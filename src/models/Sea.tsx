@@ -30,7 +30,7 @@ const RagingSeaMaterial = shaderMaterial(
     uReflectionColor: new THREE.Color("#eef6f8"),
   },
   vertexShader,
-  fragmentShader
+  fragmentShader,
 );
 RagingSeaMaterial.key = `$${Math.random()}`;
 extend({ RagingSeaMaterial });
@@ -62,7 +62,7 @@ declare module "@react-three/fiber" {
 
 export function RagingSea() {
   const { characterRef, shipRef } = useGame(
-    useShallow((s) => ({ characterRef: s.characterRef, shipRef: s.shipRef }))
+    useShallow((s) => ({ characterRef: s.characterRef, shipRef: s.shipRef })),
   );
   const {
     animate,

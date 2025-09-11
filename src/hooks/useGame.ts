@@ -27,9 +27,9 @@ export const useGame = create(
       setActiveJoint: (joint: ImpulseJoint | null) =>
         set({ activeJoint: joint }),
 
-  // UI direction arrow angle (deg) to world center computed in Canvas
-  centerDirAngleDeg: 0,
-  setCenterDirAngleDeg: (deg: number) => set({ centerDirAngleDeg: deg }),
+      // UI direction arrow angle (deg) to world center computed in Canvas
+      centerDirAngleDeg: 0,
+      setCenterDirAngleDeg: (deg: number) => set({ centerDirAngleDeg: deg }),
 
       /**
        * Point to move point

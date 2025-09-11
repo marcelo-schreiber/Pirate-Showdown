@@ -77,19 +77,21 @@ export function Trajectory({
       "position",
       new THREE.BufferAttribute(positionsRef.current, 3),
     );
-    geometryRef.current.setIndex(new THREE.BufferAttribute(indicesRef.current, 1));
-    
+    geometryRef.current.setIndex(
+      new THREE.BufferAttribute(indicesRef.current, 1),
+    );
+
     // Set up indices for triangle strip
     const indices = indicesRef.current;
     for (let i = 0; i < steps - 1; i++) {
       const baseIndex = i * 6;
       const vertIndex = i * 2;
-      
+
       // First triangle
       indices[baseIndex] = vertIndex;
       indices[baseIndex + 1] = vertIndex + 1;
       indices[baseIndex + 2] = vertIndex + 2;
-      
+
       // Second triangle
       indices[baseIndex + 3] = vertIndex + 1;
       indices[baseIndex + 4] = vertIndex + 3;
@@ -103,7 +105,9 @@ export function Trajectory({
       "position",
       new THREE.BufferAttribute(positionsRef.current, 3),
     );
-    geometryRef.current.setIndex(new THREE.BufferAttribute(indicesRef.current, 1));
+    geometryRef.current.setIndex(
+      new THREE.BufferAttribute(indicesRef.current, 1),
+    );
   }, []);
 
   useFrame((state) => {
@@ -172,7 +176,7 @@ export function Trajectory({
     const forward = dynVel.clone().normalize();
     const up = new THREE.Vector3(0, 1, 0);
     const right = new THREE.Vector3().crossVectors(forward, up).normalize();
-    
+
     // Integrate trajectory using simple Euler integration
     const pos = origin.clone();
     const vel = dynVel.clone();
@@ -182,13 +186,13 @@ export function Trajectory({
       // Calculate positions for both sides of the strip
       const leftPos = pos.clone().addScaledVector(right, -stripWidth / 2);
       const rightPos = pos.clone().addScaledVector(right, stripWidth / 2);
-      
+
       // Left vertex
       const leftIdx = i * 6; // 2 vertices * 3 components per step
       positions[leftIdx] = leftPos.x;
       positions[leftIdx + 1] = leftPos.y;
       positions[leftIdx + 2] = leftPos.z;
-      
+
       // Right vertex
       const rightIdx = leftIdx + 3;
       positions[rightIdx] = rightPos.x;

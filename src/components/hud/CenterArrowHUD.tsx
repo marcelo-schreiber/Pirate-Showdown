@@ -3,7 +3,6 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useRef } from "react";
 import { useGame } from "@/hooks/useGame";
 import { useShallow } from "zustand/shallow";
-import { Model as AnchorModel } from "@/models/Anchor";
 
 // 3D anchor HUD: sits in front of the camera and rotates toward world center
 export const CenterArrowHUD = () => {
@@ -13,7 +12,10 @@ export const CenterArrowHUD = () => {
   const camPos = useRef(new THREE.Vector3());
 
   const { hasGoBackWarning, shipRef } = useGame(
-    useShallow((s) => ({ hasGoBackWarning: s.hasGoBackWarning, shipRef: s.shipRef })),
+    useShallow((s) => ({
+      hasGoBackWarning: s.hasGoBackWarning,
+      shipRef: s.shipRef,
+    })),
   );
 
   const { camera } = useThree();
@@ -64,10 +66,6 @@ export const CenterArrowHUD = () => {
         <circleGeometry args={[0.22, 48]} />
         <meshBasicMaterial color="#6b4d1b" transparent opacity={0.35} />
       </mesh>
-      {/* Anchor */}
-      <group ref={anchor} position={[0, 0, 0.01]}>
-        <AnchorModel />
-      </group>
     </group>
   );
 };

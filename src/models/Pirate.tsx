@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { JSX, useRef } from "react";
+import { JSX, Suspense, useRef } from "react";
 import { useGLTF } from "@react-three/drei";
 
 export function PirateModel(props: JSX.IntrinsicElements["group"]) {
@@ -18,39 +18,45 @@ export function PirateModel(props: JSX.IntrinsicElements["group"]) {
   });
 
   return (
-    <group ref={group} {...props} dispose={null}>
-      <group name="Root_Scene">
-        <group name="RootNode" userData={{ name: "RootNode" }}>
-          <group
-            name="CharacterArmature"
-            userData={{ name: "CharacterArmature" }}
-          >
-            <mesh>
-              <primitive object={nodes.Root} />
-            </mesh>
+    <Suspense fallback={<capsuleGeometry args={[0.3, 0.7]} />}>
+      <group ref={group} {...props} dispose={null}>
+        <group name="Root_Scene">
+          <group name="RootNode" userData={{ name: "RootNode" }}>
+            <group
+              name="CharacterArmature"
+              userData={{ name: "CharacterArmature" }}
+            >
+              <mesh>
+                <primitive object={nodes.Root} />
+              </mesh>
+            </group>
+            <skinnedMesh
+              castShadow
+              receiveShadow
+              name="Captain_Barbarossa_"
+              geometry={
+                (nodes.Captain_Barbarossa_ as THREE.SkinnedMesh).geometry
+              }
+              material={materials.AtlasMaterial}
+              skeleton={
+                (nodes.Captain_Barbarossa_ as THREE.SkinnedMesh).skeleton
+              }
+              userData={{ name: "Captain_Barbarossa " }}
+            />
+            <skinnedMesh
+              castShadow
+              receiveShadow
+              name="Ernest"
+              geometry={(nodes.Ernest as THREE.SkinnedMesh).geometry}
+              material={materials.AtlasMaterial}
+              skeleton={(nodes.Ernest as THREE.SkinnedMesh).skeleton}
+              position={[0.6339, 0.9204, -0.3849]}
+              userData={{ name: "Ernest" }}
+            />
           </group>
-          <skinnedMesh
-            castShadow
-            receiveShadow
-            name="Captain_Barbarossa_"
-            geometry={(nodes.Captain_Barbarossa_ as THREE.SkinnedMesh).geometry}
-            material={materials.AtlasMaterial}
-            skeleton={(nodes.Captain_Barbarossa_ as THREE.SkinnedMesh).skeleton}
-            userData={{ name: "Captain_Barbarossa " }}
-          />
-          <skinnedMesh
-            castShadow
-            receiveShadow
-            name="Ernest"
-            geometry={(nodes.Ernest as THREE.SkinnedMesh).geometry}
-            material={materials.AtlasMaterial}
-            skeleton={(nodes.Ernest as THREE.SkinnedMesh).skeleton}
-            position={[0.6339, 0.9204, -0.3849]}
-            userData={{ name: "Ernest" }}
-          />
         </group>
       </group>
-    </group>
+    </Suspense>
   );
 }
 

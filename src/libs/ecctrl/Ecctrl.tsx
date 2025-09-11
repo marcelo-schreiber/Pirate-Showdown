@@ -38,7 +38,7 @@ export { useJoystickControls } from "@/hooks/useJoystickControls";
 const getJoystickDirections = (
   joystickDis: number,
   joystickAng: number,
-  threshold: number = 0.2
+  threshold: number = 0.2,
 ): {
   forward: boolean;
   backward: boolean;
@@ -46,21 +46,30 @@ const getJoystickDirections = (
   rightward: boolean;
 } => {
   if (joystickDis < threshold) {
-    return { forward: false, backward: false, leftward: false, rightward: false };
+    return {
+      forward: false,
+      backward: false,
+      leftward: false,
+      rightward: false,
+    };
   }
 
   // Normalize angle to 0-2π range
-  const normalizedAngle = ((joystickAng % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-  
+  const normalizedAngle =
+    ((joystickAng % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+
   // Convert to degrees for easier understanding
   const degrees = (normalizedAngle * 180) / Math.PI;
-  
+
   // Divide into 8 segments of 45° each, determine which segment we're in
   const segment = Math.round(degrees / 45) % 8;
-  
+
   // Map each segment to direction combinations
-  let forward = false, backward = false, leftward = false, rightward = false;
-  
+  let forward = false,
+    backward = false,
+    leftward = false,
+    rightward = false;
+
   switch (segment) {
     case 0: // 0° - Right
       rightward = true;
@@ -840,10 +849,10 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
   const getMoveToPoint = useGame((state) => state.getMoveToPoint);
   // Access moving ship rigidbody for relative velocity compensation
   const shipRef = useGame((state) => state.shipRef);
-      const movingObjectVelocityInCharacterDir: THREE.Vector3 = useMemo(
-      () => new THREE.Vector3(),
-      [],
-    );
+  const movingObjectVelocityInCharacterDir: THREE.Vector3 = useMemo(
+    () => new THREE.Vector3(),
+    [],
+  );
   const bodySensorRef = useRef<Collider | null>(null);
   const handleOnIntersectionEnter = () => {
     isBodyHitWall = true;
@@ -860,20 +869,20 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     _: number,
     run: boolean,
     slopeAngle: number,
-    movingObjectVelocity: THREE.Vector3
+    movingObjectVelocity: THREE.Vector3,
   ) => {
-    if (!characterRef.current) return
+    if (!characterRef.current) return;
 
-    const {
-      x,y,z 
-    } = shipRef?.current ? shipRef.current.linvel() as THREE.Vector3 : new THREE.Vector3(0,0,0)
+    const { x, y, z } = shipRef?.current
+      ? (shipRef.current.linvel() as THREE.Vector3)
+      : new THREE.Vector3(0, 0, 0);
 
-    movingObjectVelocityInCharacterDir.set(x,y,z)
+    movingObjectVelocityInCharacterDir.set(x, y, z);
     /**
      * Setup moving direction
      */
     // Only apply slope angle to moving direction
-    // when slope angle is between 0.2rad and slopeMaxAngle, 
+    // when slope angle is between 0.2rad and slopeMaxAngle,
     // and actualSlopeAngle < slopeMaxAngle
     if (
       actualSlopeAngle < slopeMaxAngle &&
@@ -887,7 +896,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
       movingDirection.set(
         0,
         Math.sin(slopeAngle) > 0 ? 0 : Math.sin(slopeAngle),
-        Math.sin(slopeAngle) > 0 ? 0.1 : 1
+        Math.sin(slopeAngle) > 0 ? 0.1 : 1,
       );
     } else {
       movingDirection.set(0, 0, 1);
@@ -912,7 +921,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     wantToMoveVel.set(
       movingDirection.x * wantToMoveMeg,
       0,
-      movingDirection.z * wantToMoveMeg
+      movingDirection.z * wantToMoveMeg,
     );
     rejectVel.copy(currentVel).sub(wantToMoveVel);
 
@@ -922,24 +931,22 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
      * Also, apply reject velocity when character is moving opposite of it's moving direction
      */
     moveAccNeeded.set(
-      (movingDirection.x *
-        (maxVelLimit * (run ? sprintMult : 1)) -
+      (movingDirection.x * (maxVelLimit * (run ? sprintMult : 1)) -
         (currentVel.x -
           movingObjectVelocity.x +
           rejectVel.x * (isOnMovingObject ? 0 : rejectVelMult))) /
-      accDeltaTime,
+        accDeltaTime,
       0,
-      (movingDirection.z *
-        (maxVelLimit * (run ? sprintMult : 1)) -
+      (movingDirection.z * (maxVelLimit * (run ? sprintMult : 1)) -
         (currentVel.z -
           movingObjectVelocity.z +
           rejectVel.z * (isOnMovingObject ? 0 : rejectVelMult))) /
-      accDeltaTime
+        accDeltaTime,
     );
 
     // Wanted to move force function: F = ma
     const moveForceNeeded = moveAccNeeded.multiplyScalar(
-      characterRef.current.mass()
+      characterRef.current.mass(),
     );
 
     /**
@@ -953,19 +960,19 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     if (!characterRotated) {
       moveImpulse.set(
         moveForceNeeded.x *
-        turnVelMultiplier *
-        (canJump ? 1 : airDragMultiplier), // if it's in the air, give it less control
+          turnVelMultiplier *
+          (canJump ? 1 : airDragMultiplier), // if it's in the air, give it less control
         slopeAngle === null || slopeAngle == 0 // if it's on a slope, apply extra up/down force to the body
           ? 0
           : movingDirection.y *
-          turnVelMultiplier *
-          (movingDirection.y > 0 // check it is on slope up or slope down
-            ? slopeUpExtraForce
-            : slopeDownExtraForce) *
-          (run ? sprintMult : 1),
+              turnVelMultiplier *
+              (movingDirection.y > 0 // check it is on slope up or slope down
+                ? slopeUpExtraForce
+                : slopeDownExtraForce) *
+              (run ? sprintMult : 1),
         moveForceNeeded.z *
-        turnVelMultiplier *
-        (canJump ? 1 : airDragMultiplier) // if it's in the air, give it less control
+          turnVelMultiplier *
+          (canJump ? 1 : airDragMultiplier), // if it's in the air, give it less control
       );
     }
     // If character complete turning, change the impulse quaternion default
@@ -975,11 +982,11 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         slopeAngle === null || slopeAngle == 0 // if it's on a slope, apply extra up/down force to the body
           ? 0
           : movingDirection.y *
-          (movingDirection.y > 0 // check it is on slope up or slope down
-            ? slopeUpExtraForce
-            : slopeDownExtraForce) *
-          (run ? sprintMult : 1),
-        moveForceNeeded.z * (canJump ? 1 : airDragMultiplier)
+              (movingDirection.y > 0 // check it is on slope up or slope down
+                ? slopeUpExtraForce
+                : slopeDownExtraForce) *
+              (run ? sprintMult : 1),
+        moveForceNeeded.z * (canJump ? 1 : airDragMultiplier),
       );
     }
 
@@ -991,7 +998,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         y: currentPos.y + moveImpulsePointY,
         z: currentPos.z,
       },
-      true
+      true,
     );
   };
 
@@ -1132,12 +1139,9 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
   /**
    * Rotate character on Y function
    */
-  const rotateCharacterOnY = useCallback(
-    (rad: number) => {
-      modelRotationY.current += rad;
-    },
-    [],
-  );
+  const rotateCharacterOnY = useCallback((rad: number) => {
+    modelRotationY.current += rad;
+  }, []);
 
   useEffect(() => {
     // Initialize directional light
@@ -1389,20 +1393,35 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
       isInsideKeyboardControls && getKeys ? getKeys() : presetKeys;
 
     // Combine keyboard and joystick inputs
-    const combinedForward = forward || joystickDirections.forward || gamepadKeys.forward;
-    const combinedBackward = backward || joystickDirections.backward || gamepadKeys.backward;
-    const combinedLeftward = leftward || joystickDirections.leftward || gamepadKeys.leftward;
-    const combinedRightward = rightward || joystickDirections.rightward || gamepadKeys.rightward;
+    const combinedForward =
+      forward || joystickDirections.forward || gamepadKeys.forward;
+    const combinedBackward =
+      backward || joystickDirections.backward || gamepadKeys.backward;
+    const combinedLeftward =
+      leftward || joystickDirections.leftward || gamepadKeys.leftward;
+    const combinedRightward =
+      rightward || joystickDirections.rightward || gamepadKeys.rightward;
     const combinedRun = run || runState;
 
     // Getting moving directions using the same logic for all input types
     modelRotationY.current = ((movingDirection) =>
       movingDirection === null ? modelRotationY.current : movingDirection)(
-      getMovingDirection(combinedForward, combinedBackward, combinedLeftward, combinedRightward, pivot),
+      getMovingDirection(
+        combinedForward,
+        combinedBackward,
+        combinedLeftward,
+        combinedRightward,
+        pivot,
+      ),
     );
 
     // Move character to the moving direction (unified for all input types)
-    if (combinedForward || combinedBackward || combinedLeftward || combinedRightward) {
+    if (
+      combinedForward ||
+      combinedBackward ||
+      combinedLeftward ||
+      combinedRightward
+    ) {
       moveCharacter(delta, combinedRun, slopeAngle, movingObjectVelocity);
     }
 
@@ -1417,7 +1436,11 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
       // Apply slope normal to jump direction
       characterRef.current.setLinvel(
         jumpDirection
-          .set(0, (combinedRun ? sprintJumpMult * jumpVel : jumpVel) * slopJumpMult, 0)
+          .set(
+            0,
+            (combinedRun ? sprintJumpMult * jumpVel : jumpVel) * slopJumpMult,
+            0,
+          )
           .projectOnVector(actualSlopeNormalVec)
           .add(jumpVelocityVec),
         true,
@@ -1430,7 +1453,10 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     }
 
     // Rotate character Indicator
-    modelQuat.setFromAxisAngle(new THREE.Vector3(0, 1, 0), modelRotationY.current);
+    modelQuat.setFromAxisAngle(
+      new THREE.Vector3(0, 1, 0),
+      modelRotationY.current,
+    );
     characterModelIndicator.quaternion.rotateTowards(
       modelQuat,
       delta * turnSpeed,
