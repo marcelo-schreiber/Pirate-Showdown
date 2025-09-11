@@ -7,7 +7,7 @@ import { Sun } from "@/models/Sun";
 import { ShipEntity as Ship } from "@/entities/Ship";
 import { PirateEntity } from "@/entities/Pirate";
 import type { PointerEvent } from "react";
-import { Environment, KeyboardControls, Loader } from "@react-three/drei";
+import { Environment, KeyboardControls, Loader, Preload } from "@react-three/drei";
 import { useGame } from "@/hooks/useGame";
 import { Skybox } from "@/models/SkyBox";
 import { RagingSea } from "@/models/Sea";
@@ -86,6 +86,7 @@ export function Experience() {
         onPointerDown={handleLockControls}
       >
         <Suspense fallback={null}>
+          <Preload all />
           <EffectComposer enabled={!isMobile}>
             <ToneMapping mode={ToneMappingMode[ToneMappingModeControl]} />
             <Vignette />
@@ -105,14 +106,14 @@ export function Experience() {
             <Ship />
             <RagingSea />
             <Trajectory elevationDeg={10} />
-            <CenterArrowComputer />
           </Physics>
+          <CenterArrowComputer />
         </Suspense>
       </Canvas>
       <Loader />
       <Leva hidden={!debug} />
+      <GoBackWarning />
       <EcctrlJoystickControls />
-  <GoBackWarning />
     </>
   );
 }
