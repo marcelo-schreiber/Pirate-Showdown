@@ -781,7 +781,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     () => new THREE.Vector3(),
     [],
   );
-  const modelEuler: THREE.Euler = useMemo(() => new THREE.Euler(), []);
+  const modelRotationY = useRef<number>(0);
   const modelQuat: THREE.Quaternion = useMemo(() => new THREE.Quaternion(), []);
   const moveImpulse: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
   const movingDirection: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
@@ -947,7 +947,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
      */
     characterRotated =
       Math.sin(characterModelIndicator.rotation.y).toFixed(3) ==
-      Math.sin(modelEuler.y).toFixed(3);
+      Math.sin(modelRotationY.current).toFixed(3);
 
     // If character hasn't complete turning, change the impulse quaternion follow characterModelIndicator quaternion
     if (!characterRotated) {
@@ -1014,7 +1014,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
 
     // Check if is camera based movement
     if (isModeCameraBased && slopeRayOriginRef.current) {
-      modelEuler.y = pivot.rotation.y;
+      modelRotationY.current = pivot.rotation.y;
       pivot.getWorldDirection(modelFacingVec);
       // Update slopeRayOrigin to new positon
       slopeRayOriginUpdatePosition.set(movingDirection.x, 0, movingDirection.z);
@@ -1091,13 +1091,13 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
       );
       crossVector.crossVectors(pointToPoint, vectorZ);
       // Rotate character to moving direction
-      modelEuler.y =
+      modelRotationY.current =
         (crossVector.y > 0 ? -1 : 1) * pointToPoint.angleTo(vectorZ);
       // If mode is also set to fixed camera. keep the camera on the back of character
       if (isModeFixedCamera)
         pivot.rotation.y = THREE.MathUtils.lerp(
           pivot.rotation.y,
-          modelEuler.y,
+          modelRotationY.current,
           fixedCamRotMult * delta * 3,
         );
       // Once character close to the target point (distance<0.3),
@@ -1134,9 +1134,9 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
    */
   const rotateCharacterOnY = useCallback(
     (rad: number) => {
-      modelEuler.y += rad;
+      modelRotationY.current += rad;
     },
-    [modelEuler],
+    [],
   );
 
   useEffect(() => {
@@ -1278,7 +1278,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
 
   useEffect(() => {
     // Initialize character facing direction
-    modelEuler.y = characterInitDir;
+    modelRotationY.current = characterInitDir;
 
     window.addEventListener("visibilitychange", sleepCharacter);
     window.addEventListener("gamepadconnected", gamepadConnect);
@@ -1289,7 +1289,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
       window.removeEventListener("gamepadconnected", gamepadConnect);
       window.removeEventListener("gamepaddisconnected", gamepadDisconnect);
     };
-  }, [characterInitDir, modelEuler, sleepCharacter]);
+  }, [characterInitDir, sleepCharacter]);
 
   useFrame((state, delta) => {
     if (delta > 1) delta %= 1;
@@ -1361,8 +1361,8 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
       handleButtons(gamepad.buttons);
       handleSticks(gamepad.axes);
       // Getting moving directions (IIFE)
-      modelEuler.y = ((movingDirection) =>
-        movingDirection === null ? modelEuler.y : movingDirection)(
+      modelRotationY.current = ((movingDirection) =>
+        movingDirection === null ? modelRotationY.current : movingDirection)(
         getMovingDirection(
           gamepadKeys.forward,
           gamepadKeys.backward,
@@ -1396,8 +1396,8 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     const combinedRun = run || runState;
 
     // Getting moving directions using the same logic for all input types
-    modelEuler.y = ((movingDirection) =>
-      movingDirection === null ? modelEuler.y : movingDirection)(
+    modelRotationY.current = ((movingDirection) =>
+      movingDirection === null ? modelRotationY.current : movingDirection)(
       getMovingDirection(combinedForward, combinedBackward, combinedLeftward, combinedRightward, pivot),
     );
 
@@ -1430,7 +1430,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     }
 
     // Rotate character Indicator
-    modelQuat.setFromEuler(modelEuler);
+    modelQuat.setFromAxisAngle(new THREE.Vector3(0, 1, 0), modelRotationY.current);
     characterModelIndicator.quaternion.rotateTowards(
       modelQuat,
       delta * turnSpeed,
