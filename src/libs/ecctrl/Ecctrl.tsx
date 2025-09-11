@@ -1,6 +1,7 @@
 import { useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import {
+  quat,
   RigidBody,
   CapsuleCollider,
   useRapier,
@@ -191,7 +192,12 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     slopeRayDir = { x: 0, y: -1, z: 0 },
     slopeUpExtraForce = 0.1,
     slopeDownExtraForce = 0.2,
-    // AutoBalance Force setups - REMOVED
+    // AutoBalance Force setups
+    autoBalance = true,
+    autoBalanceSpringK = 0.3,
+    autoBalanceDampingC = 0.03,
+    autoBalanceSpringOnY = 0.5,
+    autoBalanceDampingOnY = 0.015,
     // Animation temporary setups
     animated = false,
     // Mode setups
@@ -242,8 +248,35 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
   /**
    * Body collider setup
    */
+  const modelFacingVec: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
+  const bodyFacingVec: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
+  const bodyBalanceVec: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
+  const bodyBalanceVecOnX: THREE.Vector3 = useMemo(
+    () => new THREE.Vector3(),
+    [],
+  );
+  const bodyFacingVecOnY: THREE.Vector3 = useMemo(
+    () => new THREE.Vector3(),
+    [],
+  );
+  const bodyBalanceVecOnZ: THREE.Vector3 = useMemo(
+    () => new THREE.Vector3(),
+    [],
+  );
+  const vectorY: THREE.Vector3 = useMemo(() => new THREE.Vector3(0, 1, 0), []);
   const vectorZ: THREE.Vector3 = useMemo(() => new THREE.Vector3(0, 0, 1), []);
+  const crossVecOnX: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
+  const crossVecOnY: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
+  const crossVecOnZ: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
   const bodyContactForce: THREE.Vector3 = useMemo(
+    () => new THREE.Vector3(),
+    [],
+  );
+  const slopeRayOriginUpdatePosition: THREE.Vector3 = useMemo(
+    () => new THREE.Vector3(),
+    [],
+  );
+  const camBasedMoveCrossVecOnY: THREE.Vector3 = useMemo(
     () => new THREE.Vector3(),
     [],
   );
@@ -276,7 +309,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
   let characterControlsDebug = null;
   let floatingRayDebug = null;
   let slopeRayDebug = null;
-
+  let autoBalanceForceDebug = null;
 
   // Character controls debug
   characterControlsDebug = useControls(
@@ -504,7 +537,53 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
       slopeRayDebug.slopeDownExtraForce ?? slopeDownExtraForce;
   }
 
-  // Auto balance force debug - REMOVED
+  // Auto balance force debug
+  autoBalanceForceDebug = useControls(
+    "AutoBalance Force",
+    debug
+      ? {
+          autoBalance: {
+            value: true,
+          },
+          autoBalanceSpringK: {
+            value: autoBalanceSpringK,
+            min: 0,
+            max: 5,
+            step: 0.01,
+          },
+          autoBalanceDampingC: {
+            value: autoBalanceDampingC,
+            min: 0,
+            max: 0.1,
+            step: 0.001,
+          },
+          autoBalanceSpringOnY: {
+            value: autoBalanceSpringOnY,
+            min: 0,
+            max: 5,
+            step: 0.01,
+          },
+          autoBalanceDampingOnY: {
+            value: autoBalanceDampingOnY,
+            min: 0,
+            max: 0.1,
+            step: 0.001,
+          },
+        }
+      : {},
+    { collapsed: true },
+  ) as Partial<AutoBalanceForceSchema>;
+  if (debug) {
+    autoBalance = autoBalanceForceDebug.autoBalance ?? autoBalance;
+    autoBalanceSpringK =
+      autoBalanceForceDebug.autoBalanceSpringK ?? autoBalanceSpringK;
+    autoBalanceDampingC =
+      autoBalanceForceDebug.autoBalanceDampingC ?? autoBalanceDampingC;
+    autoBalanceSpringOnY =
+      autoBalanceForceDebug.autoBalanceSpringOnY ?? autoBalanceSpringOnY;
+    autoBalanceDampingOnY =
+      autoBalanceForceDebug.autoBalanceDampingOnY ?? autoBalanceDampingOnY;
+  }
 
   /**
    * Check if inside keyboardcontrols
@@ -712,6 +791,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
   const currentVel: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
   const currentPos: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
   const dragForce: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
+  const dragAngForce: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
   const wantToMoveVel: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
   const rejectVel: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
 
@@ -916,9 +996,68 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
   };
 
   /**
-   * Character auto balance function - REMOVED
-   * Auto balance logic has been removed to allow model-only rotation
+   * Character auto balance function
    */
+  const autoBalanceCharacter = () => {
+    if (!characterRef.current) return;
+    // Match body component to character model rotation on Y
+    bodyFacingVec
+      .set(0, 0, 1)
+      .applyQuaternion(quat(characterRef.current.rotation()));
+    bodyBalanceVec
+      .set(0, 1, 0)
+      .applyQuaternion(quat(characterRef.current.rotation()));
+
+    bodyBalanceVecOnX.set(0, bodyBalanceVec.y, bodyBalanceVec.z);
+    bodyFacingVecOnY.set(bodyFacingVec.x, 0, bodyFacingVec.z);
+    bodyBalanceVecOnZ.set(bodyBalanceVec.x, bodyBalanceVec.y, 0);
+
+    // Check if is camera based movement
+    if (isModeCameraBased && slopeRayOriginRef.current) {
+      modelEuler.y = pivot.rotation.y;
+      pivot.getWorldDirection(modelFacingVec);
+      // Update slopeRayOrigin to new positon
+      slopeRayOriginUpdatePosition.set(movingDirection.x, 0, movingDirection.z);
+      camBasedMoveCrossVecOnY
+        .copy(slopeRayOriginUpdatePosition)
+        .cross(modelFacingVec);
+      slopeRayOriginRef.current.position.x =
+        slopeRayOriginOffset *
+        Math.sin(
+          slopeRayOriginUpdatePosition.angleTo(modelFacingVec) *
+            (camBasedMoveCrossVecOnY.y < 0 ? 1 : -1),
+        );
+      slopeRayOriginRef.current.position.z =
+        slopeRayOriginOffset *
+        Math.cos(
+          slopeRayOriginUpdatePosition.angleTo(modelFacingVec) *
+            (camBasedMoveCrossVecOnY.y < 0 ? 1 : -1),
+        );
+    } else {
+      characterModelIndicator.getWorldDirection(modelFacingVec);
+    }
+    crossVecOnX.copy(vectorY).cross(bodyBalanceVecOnX);
+    crossVecOnY.copy(modelFacingVec).cross(bodyFacingVecOnY);
+    crossVecOnZ.copy(vectorY).cross(bodyBalanceVecOnZ);
+
+    dragAngForce.set(
+      (crossVecOnX.x < 0 ? 1 : -1) *
+        autoBalanceSpringK *
+        bodyBalanceVecOnX.angleTo(vectorY) -
+        characterRef.current.angvel().x * autoBalanceDampingC,
+      (crossVecOnY.y < 0 ? 1 : -1) *
+        autoBalanceSpringOnY *
+        modelFacingVec.angleTo(bodyFacingVecOnY) -
+        characterRef.current.angvel().y * autoBalanceDampingOnY,
+      (crossVecOnZ.z < 0 ? 1 : -1) *
+        autoBalanceSpringK *
+        bodyBalanceVecOnZ.angleTo(vectorY) -
+        characterRef.current.angvel().z * autoBalanceDampingC,
+    );
+
+    // Apply balance torque impulse
+    characterRef.current.applyTorqueImpulse(dragAngForce, true);
+  };
 
   /**
    * Character sleep function
@@ -1123,10 +1262,10 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
   });
 
   useEffect(() => {
-    // Lock character rotations - rigid body should not rotate
+    // Lock character rotations at Y axis
     const body = characterRef.current;
     const model = characterModelRef.current;
-    body?.setEnabledRotations(false, false, false, false);
+    body?.setEnabledRotations(autoBalance, autoBalance, autoBalance, false);
 
     // Reset character quaternion (use captured refs to avoid stale ref warning)
     return () => {
@@ -1135,7 +1274,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
         body.setRotation({ x: 0, y: 0, z: 0, w: 1 }, false);
       }
     };
-  }, []);
+  }, [autoBalance]);
 
   useEffect(() => {
     // Initialize character facing direction
@@ -1297,8 +1436,8 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
       delta * turnSpeed,
     );
 
-    // Always rotate character model instead of rigid body
-    if (characterModelRef.current) {
+    // If autobalance is off, rotate character model itself
+    if (!autoBalance && characterModelRef.current) {
       if (isModeCameraBased) {
         characterModelRef.current.quaternion.copy(pivot.quaternion);
       } else {
@@ -1598,8 +1737,9 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
     }
 
     /**
-     * Auto balance force removed - using model-only rotation instead
+     * Apply auto balance force to the character
      */
+    if (autoBalance && characterRef.current) autoBalanceCharacter();
 
     /**
      * Point to move feature
@@ -1674,7 +1814,6 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
       ref={characterRef}
       position={props.position || [0, 5, 0]}
       friction={props.friction || -0.5}
-      enabledRotations={[false, false, false]}
       onContactForce={(e) =>
         bodyContactForce.set(e.totalForce.x, e.totalForce.y, e.totalForce.z)
       }
@@ -1762,7 +1901,13 @@ type SlopeRaySchema = {
   slopeDownExtraForce: number;
 };
 
-
+type AutoBalanceForceSchema = {
+  autoBalance: boolean;
+  autoBalanceSpringK: number;
+  autoBalanceDampingC: number;
+  autoBalanceSpringOnY: number;
+  autoBalanceDampingOnY: number;
+};
 
 export type camListenerTargetType = "document" | "domElement";
 
@@ -1841,7 +1986,12 @@ export interface EcctrlProps extends RigidBodyProps {
   headrayOriginOffset?: number;
   headRayLength?: number;
   headRayDir?: { x: number; y: number; z: number };
-
+  // AutoBalance Force setups
+  autoBalance?: boolean;
+  autoBalanceSpringK?: number;
+  autoBalanceDampingC?: number;
+  autoBalanceSpringOnY?: number;
+  autoBalanceDampingOnY?: number;
   // Animation temporary setups
   animated?: boolean;
   // Mode setups
