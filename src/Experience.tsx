@@ -14,6 +14,7 @@ import {
   Loader,
   Preload,
   useDetectGPU,
+  useProgress,
 } from "@react-three/drei";
 import { useGame } from "@/hooks/useGame";
 import { RagingSea } from "@/models/Sea";
@@ -61,11 +62,13 @@ const handleLockControls = (e: PointerEvent<HTMLDivElement>) => {
 
 export function Experience() {
   const { debug, setDebug } = useGame(
-    useShallow((s) => ({ debug: s.debug, setDebug: s.setDebug })),
+    useShallow((s) => ({ debug: s.debug, setDebug: s.setDebug }))
   );
   const GPUTier = useDetectGPU();
+  const { active } = useProgress();
 
   const [pausedPhysics, setPausedPhysics] = useState(true);
+
   useEffect(() => {
     const timeout = setTimeout(() => {
       setPausedPhysics(false);
@@ -119,7 +122,11 @@ export function Experience() {
           />
           <Perf position="top-left" minimal={!debug} />
           <Sun />
-          <Physics debug={debug} timeStep="vary" paused={pausedPhysics}>
+          <Physics
+            debug={debug}
+            timeStep="vary"
+            paused={pausedPhysics || active}
+          >
             <KeyboardControls map={keyboardMap}>
               <PirateEntity />
             </KeyboardControls>
