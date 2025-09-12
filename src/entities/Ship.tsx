@@ -97,9 +97,9 @@ export function ShipEntity(props: RigidBodyProps) {
         />
         {/* Wall Front */}
         <CuboidCollider
-          position={[-5.7, 2, 1]}
+          position={[-5.7, 2.1, 1]}
           args={[1.45, 0.27, 0.2]}
-          rotation={[0.11, -0.65, -0.09]}
+          rotation={[0, -0.65, -0.09]}
         />
 
         {/* Wall Front */}

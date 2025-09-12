@@ -41,7 +41,7 @@ export function Trajectory({
   startVel,
   color = "lightgrey",
   elevationDeg = 0,
-  stripWidth = 0.4,
+  stripWidth = 0.37,
   ...props
 }: {
   steps?: number;
@@ -138,6 +138,11 @@ export function Trajectory({
       origin = localToWorld(shipRef, origin);
       // make it lower by 0.3
       origin.y -= 0.3;
+      // go forward a bit
+      const forward = getForward(joint.frameX1());
+      forward.y = 0;
+      forward.normalize();
+      origin.add(forward.multiplyScalar(1.2));
     }
 
     // Base velocity
@@ -221,7 +226,7 @@ export function Trajectory({
           geometryRef.current,
           new THREE.MeshBasicMaterial({
             color,
-            opacity: 0.35,
+            opacity: 0.28,
             transparent: true,
             side: THREE.DoubleSide,
           }),

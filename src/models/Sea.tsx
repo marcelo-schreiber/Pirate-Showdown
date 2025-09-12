@@ -126,7 +126,7 @@ export function RagingSea() {
     <>
       <RigidBody type="fixed" colliders={false} rotation-x={-Math.PI / 2}>
         <CuboidCollider
-          args={[50, 50, 50]}
+          args={[150, 150, 50]}
           position={[0, 0, -50.1]}
           sensor
           onIntersectionEnter={() => {
