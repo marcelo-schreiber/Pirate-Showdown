@@ -1,5 +1,7 @@
 # Pirate Showdown
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/89c7ba48-962f-41dc-bf92-090470c13ee5/deploy-status)](https://app.netlify.com/projects/pirate-showdown/deploys)
+
 > [!NOTE]
 > This repository is a work in progress
 
