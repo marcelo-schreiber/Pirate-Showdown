@@ -12,6 +12,7 @@ type ActionWithPrivateVars = THREE.AnimationAction & {
 
 export function EcctrlAnimation(props: EcctrlAnimationProps) {
   // Change the character src to yours
+  const characterId = props.characterId || 'character1';
   const group = useRef<THREE.Group | null>(null);
   const { animations } = useGLTF(props.characterURL);
   const { actions } = useAnimations(animations, group);
@@ -19,10 +20,10 @@ export function EcctrlAnimation(props: EcctrlAnimationProps) {
   /**
    * Character animations setup
    */
-  const curAnimation = useGame((state) => state.curAnimation);
-  const resetAnimation = useGame((state) => state.reset);
+  const curAnimation = useGame((state) => state[characterId].curAnimation);
+  const resetAnimation = useGame((state) => state[characterId].reset);
   const initializeAnimationSet = useGame(
-    (state) => state.initializeAnimationSet,
+    (state) => state[characterId].initializeAnimationSet,
   );
 
   useEffect(() => {
@@ -99,4 +100,5 @@ export type EcctrlAnimationProps = {
   characterURL: string;
   animationSet: AnimationSet;
   children: React.ReactNode;
+  characterId?: 'character1' | 'character2';
 };

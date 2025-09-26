@@ -6,6 +6,7 @@ import { Suspense, useEffect, useState } from "react";
 import { Sun } from "@/models/Sun";
 import { ShipEntity as Ship } from "@/entities/Ship";
 import { PirateEntity } from "@/entities/Pirate";
+import { PirateEntity as Pirate2 } from "@/entities/Pirate2";
 import type { PointerEvent } from "react";
 import {
   AdaptiveDpr,
@@ -44,14 +45,25 @@ export enum Controls {
 }
 
 const keyboardMap = [
-  { name: "forward", keys: ["ArrowUp", "KeyW"] },
-  { name: "backward", keys: ["ArrowDown", "KeyS"] },
-  { name: "leftward", keys: ["ArrowLeft", "KeyA"] },
-  { name: "rightward", keys: ["ArrowRight", "KeyD"] },
+  { name: "forward", keys: ["KeyW"] },
+  { name: "backward", keys: ["KeyS"] },
+  { name: "leftward", keys: ["KeyA"] },
+  { name: "rightward", keys: ["KeyD"] },
   { name: "jump", keys: ["Space"] },
   { name: "run", keys: ["Shift"] },
   { name: "action2", keys: ["f"] },
   { name: "action3", keys: ["e"] },
+];
+
+const secondKeyboardMap = [
+  { name: "forward", keys: ["ArrowUp"] },
+  { name: "backward", keys: ["ArrowDown"] },
+  { name: "leftward", keys: ["ArrowLeft"] },
+  { name: "rightward", keys: ["ArrowRight"] },
+  { name: "jump", keys: ["m"] },
+  { name: "run", keys: ["Shift"] },
+  { name: "action2", keys: ["n"] },
+  { name: "action3", keys: ["b"] },
 ];
 
 const handleLockControls = (e: PointerEvent<HTMLDivElement>) => {
@@ -129,6 +141,9 @@ export function Experience() {
           >
             <KeyboardControls map={keyboardMap}>
               <PirateEntity />
+            </KeyboardControls>
+            <KeyboardControls map={secondKeyboardMap}>
+              <Pirate2 />
             </KeyboardControls>
             <Ship />
             <RagingSea />

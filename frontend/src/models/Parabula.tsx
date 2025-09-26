@@ -57,8 +57,8 @@ export function Trajectory({
 
   const { joint, characterRef, shipRef } = useGame(
     useShallow((s) => ({
-      joint: s.activeJoint,
-      characterRef: s.characterRef,
+      joint: s.character1.activeJoint,
+      characterRef: s.character1.characterRef,
       shipRef: s.shipRef,
     })),
   );

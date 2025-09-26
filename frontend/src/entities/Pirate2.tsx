@@ -3,7 +3,7 @@ import Ecctrl, {
   EcctrlAnimation,
   useJoystickControls,
 } from "@/libs/ecctrl/Ecctrl";
-import { PirateModel } from "@/models/Pirate";
+import { PirateModel } from "@/models/Pirate2";
 import { useGame } from "@/hooks/useGame";
 import { useCallback, useEffect, useRef } from "react";
 import { useButtonHold } from "@/hooks/useKeyHold";
@@ -11,7 +11,7 @@ import { useShallow } from "zustand/react/shallow";
 import { RapierRigidBody, useRapier } from "@react-three/rapier";
 import { Vector3 } from "three";
 import { localToWorld } from "@/utils/localToWorld";
-import { pirateOptions } from "@/utils/PirateOptions";
+import { pirate2Options as pirateOptions } from "@/utils/PirateOptions";
 import { useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { Controls } from "@/Experience";
@@ -29,11 +29,11 @@ export function PirateEntity() {
     useGame(
       useShallow((s) => ({
         debug: s.debug,
-        setCharacterRef: s.character1.setCharacterRef,
+        setCharacterRef: s.character2.setCharacterRef,
         shipRef: s.shipRef,
-        joint: s.character1.activeJoint,
-        setJoint: s.character1.setActiveJoint,
-        resetAnimation: s.character1.reset,
+        joint: s.character2.activeJoint,
+        setJoint: s.character2.setActiveJoint,
+        resetAnimation: s.character2.reset,
       })),
     );
 
@@ -184,9 +184,10 @@ export function PirateEntity() {
       debug={debug}
       animated={joint == null}
       enabledRotations={[false, true, false]}
-      position={[0, 5, 0]}
+      position={[2, 5, 2]}
       disableControl={joint !== null}
-      characterId="character1"
+      disableFollowCam
+      characterId="character2"
       ref={(r) => {
         if (r) {
           characterRef.current = r;
@@ -212,7 +213,7 @@ export function PirateEntity() {
       <EcctrlAnimation
         characterURL={pirateOptions.characterUrl}
         animationSet={pirateOptions.animationSet}
-        characterId="character1"
+        characterId="character2"
       >
         <PirateModel
           position={pirateOptions.initialPosition}

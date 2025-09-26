@@ -30,7 +30,7 @@ const RagingSeaMaterial = shaderMaterial(
     uReflectionColor: new THREE.Color("#eef6f8"),
   },
   vertexShader,
-  fragmentShader,
+  fragmentShader
 );
 RagingSeaMaterial.key = `$${Math.random()}`;
 extend({ RagingSeaMaterial });
@@ -61,8 +61,10 @@ declare module "@react-three/fiber" {
 }
 
 export function RagingSea() {
-  const { characterRef, shipRef } = useGame(
-    useShallow((s) => ({ characterRef: s.characterRef, shipRef: s.shipRef })),
+  const { shipRef } = useGame(
+    useShallow((s) => ({
+      shipRef: s.shipRef,
+    }))
   );
   const {
     animate,
@@ -129,16 +131,15 @@ export function RagingSea() {
           args={[150, 150, 50]}
           position={[0, 0, -50.1]}
           sensor
-          onIntersectionEnter={() => {
-            if (characterRef.current) {
-              const targetPos = shipRef.current?.translation() || {
-                x: 0,
-                y: 0,
-                z: 0,
-              };
-              targetPos.y += 2; // slightly above
-              characterRef.current.group?.setTranslation(targetPos, true);
-            }
+          onIntersectionEnter={({ other: { rigidBody } }) => {
+            if (!rigidBody) return;
+            const targetPos = shipRef.current?.translation() || {
+              x: 0,
+              y: 0,
+              z: 0,
+            };
+            targetPos.y += 2; // slightly above
+            rigidBody.setTranslation(targetPos, true);
           }}
         />
         <Plane args={[100, 100, 55, 55]} position-z={-1}>

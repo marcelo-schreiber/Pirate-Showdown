@@ -17,11 +17,11 @@ export function Sun() {
       intensity={5}
       shadow-mapSize={[2048, 2048]}
       shadow-camera-near={1}
-      shadow-camera-far={222}
-      shadow-camera-top={50}
-      shadow-camera-right={50}
-      shadow-camera-bottom={-28}
-      shadow-camera-left={-50}
+      shadow-camera-far={50}
+      shadow-camera-top={10}
+      shadow-camera-right={10}
+      shadow-camera-bottom={-10}
+      shadow-camera-left={-10}
       name="followLight"
     />
   );

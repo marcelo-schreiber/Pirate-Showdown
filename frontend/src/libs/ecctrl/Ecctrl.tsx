@@ -140,6 +140,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
   {
     children,
     debug = false,
+    characterId = 'character1',
     capsuleHalfHeight = 0.35,
     capsuleRadius = 0.3,
     floatHeight = 0.3,
@@ -245,7 +246,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
   let functionKeyDown: boolean = false;
   let isModeFixedCamera: boolean = false;
   let isModeCameraBased: boolean = false;
-  const setMoveToPoint = useGame((state) => state.setMoveToPoint);
+  const setMoveToPoint = useGame((state) => state[characterId].setMoveToPoint);
   const findMode = (mode: string, modes: string) =>
     modes.split(" ").some((m) => m === mode);
   if (mode) {
@@ -291,25 +292,25 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
   );
 
   // Animation change functions
-  const idleAnimation = useGame((state) => (!animated ? null : state.idle));
-  const walkAnimation = useGame((state) => (!animated ? null : state.walk));
-  const runAnimation = useGame((state) => (!animated ? null : state.run));
-  const jumpAnimation = useGame((state) => (!animated ? null : state.jump));
+  const idleAnimation = useGame((state) => (!animated ? null : state[characterId].idle));
+  const walkAnimation = useGame((state) => (!animated ? null : state[characterId].walk));
+  const runAnimation = useGame((state) => (!animated ? null : state[characterId].run));
+  const jumpAnimation = useGame((state) => (!animated ? null : state[characterId].jump));
   const jumpIdleAnimation = useGame((state) =>
-    !animated ? null : state.jumpIdle,
+    !animated ? null : state[characterId].jumpIdle,
   );
-  const fallAnimation = useGame((state) => (!animated ? null : state.fall));
+  const fallAnimation = useGame((state) => (!animated ? null : state[characterId].fall));
   const action1Animation = useGame((state) =>
-    !animated ? null : state.action1,
+    !animated ? null : state[characterId].action1,
   );
   const action2Animation = useGame((state) =>
-    !animated ? null : state.action2,
+    !animated ? null : state[characterId].action2,
   );
   const action3Animation = useGame((state) =>
-    !animated ? null : state.action3,
+    !animated ? null : state[characterId].action3,
   );
   const action4Animation = useGame((state) =>
-    !animated ? null : state.action4,
+    !animated ? null : state[characterId].action4,
   );
 
   /**
@@ -846,7 +847,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = (
   let isPointMoving = false;
   const crossVector: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
   const pointToPoint: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
-  const getMoveToPoint = useGame((state) => state.getMoveToPoint);
+  const getMoveToPoint = useGame((state) => state[characterId].getMoveToPoint);
   // Access moving ship rigidbody for relative velocity compensation
   const shipRef = useGame((state) => state.shipRef);
   const movingObjectVelocityInCharacterDir: THREE.Vector3 = useMemo(
@@ -1946,6 +1947,7 @@ export interface CustomEcctrlRigidBody {
 export interface EcctrlProps extends RigidBodyProps {
   children?: ReactNode;
   debug?: boolean;
+  characterId?: 'character1' | 'character2';
   capsuleHalfHeight?: number;
   capsuleRadius?: number;
   floatHeight?: number;
