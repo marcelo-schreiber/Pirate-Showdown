@@ -147,7 +147,8 @@ export function Experience() {
             </KeyboardControls>
             <Ship />
             <RagingSea />
-            <Trajectory elevationDeg={10} />
+            <Trajectory elevationDeg={10} characterId="character1" />
+            <Trajectory elevationDeg={10} characterId="character2" />
           </Physics>
           <CenterArrowComputer />
         </Suspense>

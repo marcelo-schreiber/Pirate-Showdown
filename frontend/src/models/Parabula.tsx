@@ -42,6 +42,7 @@ export function Trajectory({
   color = "lightgrey",
   elevationDeg = 0,
   stripWidth = 0.37,
+  characterId = 'character1',
   ...props
 }: {
   steps?: number;
@@ -50,6 +51,7 @@ export function Trajectory({
   color?: string;
   elevationDeg?: number; // additional upward pitch in degrees applied to computed forward velocity
   stripWidth?: number; // width of the parabolic strip
+  characterId?: 'character1' | 'character2';
 } & JSX.IntrinsicElements["mesh"]) {
   const {
     world: { gravity, timestep },
@@ -57,8 +59,8 @@ export function Trajectory({
 
   const { joint, characterRef, shipRef } = useGame(
     useShallow((s) => ({
-      joint: s.character1.activeJoint,
-      characterRef: s.character1.characterRef,
+      joint: s[characterId].activeJoint,
+      characterRef: s[characterId].characterRef,
       shipRef: s.shipRef,
     })),
   );
