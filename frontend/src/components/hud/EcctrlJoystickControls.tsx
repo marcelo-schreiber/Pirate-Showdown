@@ -5,9 +5,15 @@ export const EcctrlJoystickControls = () => {
   const [isTouchScreen, setIsTouchScreen] = useState(false);
 
   useEffect(() => {
-    // Check if using a touch control device, show/hide joystick
-    const isUsingTouchScreen =
-      "ontouchstart" in window || navigator.maxTouchPoints > 0;
+    // Show the joystick only on coarse touch pointers.
+    // Source - https://stackoverflow.com/a/63666289
+    // Posted by Vladyslav Marchenko, modified by community. See post 'Timeline' for change history
+    // Retrieved 2026-05-15, License - CC BY-SA 4.0
+
+    const isUsingTouchScreen = matchMedia(
+      "(hover: none), (pointer: coarse)",
+    ).matches;
+
     setIsTouchScreen(isUsingTouchScreen);
   }, []);
 
