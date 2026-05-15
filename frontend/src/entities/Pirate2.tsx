@@ -169,6 +169,8 @@ export function PirateEntity() {
           shipRef.current.setAngvel(new Vector3(0, -0.2, 0), true);
         }
       }
+    } else {
+      shipRef.current.setAngvel(new Vector3(0, 0, 0), true);
     }
 
     const forward = new Vector3(-1, 0, 0);
