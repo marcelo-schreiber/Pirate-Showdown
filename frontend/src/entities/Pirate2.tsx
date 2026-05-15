@@ -25,17 +25,25 @@ export function PirateEntity() {
   const localCharacterRef = useRef<RapierRigidBody>(null!);
   const { rapier, world } = useRapier();
 
-  const { debug, setCharacterRef, shipRef, joint, setJoint, resetAnimation } =
-    useGame(
-      useShallow((s) => ({
-        debug: s.debug,
-        setCharacterRef: s.character2.setCharacterRef,
-        shipRef: s.shipRef,
-        joint: s.character2.activeJoint,
-        setJoint: s.character2.setActiveJoint,
-        resetAnimation: s.character2.reset,
-      })),
-    );
+  const {
+    debug,
+    setCharacterRef,
+    shipRef,
+    joint,
+    otherCharacterJoint,
+    setJoint,
+    resetAnimation,
+  } = useGame(
+    useShallow((s) => ({
+      debug: s.debug,
+      setCharacterRef: s.character2.setCharacterRef,
+      shipRef: s.shipRef,
+      joint: s.character2.activeJoint,
+      otherCharacterJoint: s.character1.activeJoint,
+      setJoint: s.character2.setActiveJoint,
+      resetAnimation: s.character2.reset,
+    })),
+  );
 
   const { lockButtonPressed, joystickDir, joystickStrength } =
     useJoystickControls(
@@ -146,6 +154,16 @@ export function PirateEntity() {
         pirateOptions.centerRudderX.offset,
         joint.anchor2(),
       );
+    const isOtherCharacterOnRudder =
+      otherCharacterJoint &&
+      areVectorsCloseEnough(
+        pirateOptions.centerRudderX.offset,
+        otherCharacterJoint.anchor2(),
+      );
+
+    if (!isOnRudder && !isOtherCharacterOnRudder) {
+      shipRef.current.setAngvel(new Vector3(0, 0, 0), true);
+    }
 
     if (isOnRudder) {
       // keyboard controls
@@ -169,8 +187,6 @@ export function PirateEntity() {
           shipRef.current.setAngvel(new Vector3(0, -0.2, 0), true);
         }
       }
-    } else {
-      shipRef.current.setAngvel(new Vector3(0, 0, 0), true);
     }
 
     const forward = new Vector3(-1, 0, 0);
