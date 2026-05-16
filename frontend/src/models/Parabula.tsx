@@ -168,9 +168,8 @@ export function Trajectory({
         baseVel = dir.multiplyScalar(baseVel.length());
       }
     }
-
     // Dynamic velocity variation (sawtooth pattern similar to prior console output)
-    const t = state.clock.getElapsedTime();
+    const t = state.clock.elapsedTime; // getElapsedTime() bugs the other player for some reason (???????)
     const magnitudeScale = 0.5 + (t % 1); // range 0.5..1.5 (adjustable)
     const dynVel = baseVel.multiplyScalar(magnitudeScale);
 
